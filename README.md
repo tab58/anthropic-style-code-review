@@ -277,6 +277,15 @@ To enforce it:
 
 > **Do both parts of step 4.** With 0 required approvals and the approvals check not required, nothing blocks a merge.
 
+### Hardening: don't let a PR branch forge the checks
+
+With `pull_request`, GitHub runs the workflow file **from the PR branch**, with the repo's secrets. Anyone with write access can push a branch whose workflow copies the app key (or uses `GITHUB_TOKEN`) and posts a green `…/approvals` check. When the checks are required, close that:
+
+1. **Run only the copy of the workflow on the default branch.** Trigger reviews with `pull_request_target` (types `opened, synchronize, reopened`) instead of `pull_request`. The action only reads the checked-out PR code through sandboxed read-only tools and never executes it; keep `persist-credentials: false` on the checkout.
+2. **Keep the secrets in an environment that only the default branch can deploy from.** Put `provider_api_key` and the app credentials in an environment (e.g. `ai-review`) with a deployment-branch policy of `main` only, add `environment: ai-review` to the job, and delete the repo-level copies. A branch's own workflow can then neither read them nor use the environment.
+3. **Relay review events.** `pull_request_review` and `pull_request_review_comment` also run the PR branch's copy, so they can't get the secrets. Put them in a secret-free relay workflow (`permissions: {}`) that does nothing, and have the main workflow run on `workflow_run` of that relay (conclusion `success`), passing `pr_number: ${{ github.event.workflow_run.pull_requests[0].number }}`. `workflow_run` runs are gate-only: they recount the checks without LLM calls.
+4. **Require the checks from your app only.** In the ruleset's required status checks, set the source of `…/approvals` (and `…/security`) to your GitHub App, so a check with the same name posted by any other identity doesn't count.
+
 Known limits:
 - Only the PR author is excluded. Someone who pushed commits to the branch can still approve it.
 - Fork PRs never get the check until a maintainer dispatches a review, so they stay blocked. That's the safe direction.

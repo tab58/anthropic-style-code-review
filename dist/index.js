@@ -344969,7 +344969,7 @@ function onOff(source, name) {
   if (raw === "off" || raw === "false") return false;
   throw new Error(`Input ${name} must be on or off, got "${raw}"`);
 }
-var GATE_EVENTS = /* @__PURE__ */ new Set(["pull_request_review", "pull_request_review_comment"]);
+var GATE_EVENTS = /* @__PURE__ */ new Set(["pull_request_review", "pull_request_review_comment", "workflow_run"]);
 var workflowOptions = (source) => ({
   depth: source.get("depth") || void 0,
   voters: intInput(source, "voters", 1),

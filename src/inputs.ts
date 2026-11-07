@@ -66,9 +66,8 @@ function onOff(source: InputSource, name: string): boolean | undefined {
   if (raw === 'off' || raw === 'false') return false
   throw new Error(`Input ${name} must be on or off, got "${raw}"`)
 }
-
-/** Events that only recompute the merge gates. */
-const GATE_EVENTS = new Set(['pull_request_review', 'pull_request_review_comment'])
+/** Events that only recompute the merge gates. `workflow_run` is the relay for hardened setups (see README). */
+const GATE_EVENTS = new Set(['pull_request_review', 'pull_request_review_comment', 'workflow_run'])
 
 /** Workflow tuning inputs, validated. */
 const workflowOptions = (source: InputSource): WorkflowOptions => ({
