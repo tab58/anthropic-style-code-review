@@ -155,6 +155,35 @@ Fork PRs are skipped automatically, because they get no secrets and can't post. 
 gh workflow run review.yml --repo YOUR_ORG/your-project -f pr_number=123
 ```
 
+### Posting as a GitHub App (optional)
+
+The default `GITHUB_TOKEN` can post reviews and checks, but GitHub won't let it resolve review threads. Fixed findings are still recorded as fixed and stop blocking, but their threads stay visually open. To have the bot resolve them, and to give it its own name, post as a GitHub App:
+
+1. Create an app (**Org settings → Developer settings → GitHub Apps → New**). Turn off the webhook. Repository permissions: **Checks**, **Issues** and **Pull requests** read & write; **Contents** read-only.
+2. Generate a private key, then install the app on the repo.
+3. Save the App ID and the key as secrets, e.g. `REVIEW_APP_ID` and `REVIEW_APP_KEY` (`gh secret set REVIEW_APP_KEY < key.pem`).
+4. Mint a token in the job and pass it in, with `bot_login` set to the app's bot login:
+
+```yaml
+    steps:
+      - uses: actions/create-github-app-token@v2
+        id: app
+        with:
+          app-id: ${{ secrets.REVIEW_APP_ID }}
+          private-key: ${{ secrets.REVIEW_APP_KEY }}
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha || format('refs/pull/{0}/head', inputs.pr_number) }}
+          persist-credentials: false
+      - uses: tab58/anthropic-style-code-review@v1
+        with:
+          provider_api_key: ${{ secrets.PROVIDER_API_KEY }}
+          github_token: ${{ steps.app.outputs.token }}
+          bot_login: your-app-slug[bot]
+```
+
+The action recognizes its own reviews and threads by `bot_login`. After switching identities, it starts PRs that are already open over at round 1.
+
 ### Pinning a version
 
 - `@v1` follows compatible releases.
