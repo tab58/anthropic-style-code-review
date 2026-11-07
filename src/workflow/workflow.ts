@@ -91,6 +91,8 @@ export interface GitHub {
   pullReviews(): Promise<readonly PullReview[]>
   /** True when `login` has write, maintain or admin permission on the repo. */
   canApprove(login: string): Promise<boolean>
+  /** True when `login` is an active member of the repo owner's team `team` (slug); false when not or no such team. */
+  inTeam(team: string, login: string): Promise<boolean>
   /** Labels the PR `risk:<tier>`, removing the other tier labels. */
   setRiskLabel(tier: RiskTier): Promise<void>
 }

@@ -32,6 +32,8 @@ type FakeOpts = {
   reviewError?: (comments: number) => unknown
   pullReviews?: PullReview[]
   writers?: string[]
+  /** Members of every team; or an error to throw from the membership lookup. */
+  team?: string[] | Error
   labelError?: unknown
   resolveError?: unknown
 }
@@ -70,6 +72,10 @@ function fakeGitHub(opts: FakeOpts = {}) {
     },
     pullReviews: async () => opts.pullReviews ?? [],
     canApprove: async (login) => (opts.writers ?? []).includes(login),
+    inTeam: async (_team, login) => {
+      if (opts.team instanceof Error) throw opts.team
+      return (opts.team ?? []).includes(login)
+    },
     setRiskLabel: async (tier) => {
       if (opts.labelError) throw opts.labelError
       labels.push(tier)
@@ -646,6 +652,33 @@ describe('risk tiers', () => {
     const forced = fakeGitHub({ files: { 'REVIEW.md': '---\nrisk_high_paths: ["src/**"]\n---\n' } })
     await run(forced)
     expect(approvals(forced).at(-1)?.title).toBe('Risk high: 0 of 2 approvals')
+  })
+
+  it('needs at least one approval when the author is not in risk_trusted_team, even at low', async () => {
+    const files = { 'REVIEW.md': '---\nrisk_trusted_team: codeowners\nrisk_approvals: { medium: 0 }\n---\n' }
+    const outsider = fakeGitHub({ files, team: ['bob'] })
+    await run(outsider)
+    expect(approvals(outsider).at(-1)).toMatchObject({ conclusion: 'failure', title: 'Risk medium: 0 of 1 approvals' })
+    expect(approvals(outsider).at(-1)?.summary).toContain('author @alice is not in the trusted team codeowners')
+
+    const member = fakeGitHub({ files, team: ['alice'] })
+    await run(member)
+    expect(approvals(member).at(-1)).toMatchObject({ conclusion: 'success', title: 'Risk medium: 0 of 0 approvals' })
+
+    const approved = fakeGitHub({ files, team: ['bob'], pullReviews: [approve('bob')], writers: ['bob'] })
+    await run(approved)
+    expect(approvals(approved).at(-1)).toMatchObject({ conclusion: 'success', title: 'Risk medium: 1 of 1 approvals' })
+  })
+
+  it('treats a failed team lookup as untrusted and never lowers a higher tier requirement', async () => {
+    const lookupFails = fakeGitHub({ files: { 'REVIEW.md': '---\nrisk_trusted_team: codeowners\nrisk_approvals: { medium: 0 }\n---\n' }, team: new Error('Resource not accessible') })
+    await run(lookupFails)
+    expect(approvals(lookupFails).at(-1)?.title).toBe('Risk medium: 0 of 1 approvals')
+    expect(approvals(lookupFails).at(-1)?.summary).toContain('could not check whether @alice is in the trusted team codeowners (Resource not accessible)')
+
+    const high = fakeGitHub({ files: { 'REVIEW.md': '---\nrisk_trusted_team: codeowners\nrisk_high_paths: ["src/**"]\n---\n' }, team: [] })
+    await run(high)
+    expect(approvals(high).at(-1)?.title).toBe('Risk high: 0 of 2 approvals')
   })
 
   it('marks oversized and paused rounds high without calling the classifier', async () => {

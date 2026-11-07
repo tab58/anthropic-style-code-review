@@ -19,6 +19,8 @@ export type ReviewConfig = {
   readonly riskHighPaths?: readonly string[]
   /** Approvals needed per risk tier; missing tiers keep their defaults (low 0, medium 1, high 2). */
   readonly riskApprovals?: { readonly low?: number; readonly medium?: number; readonly high?: number }
+  /** Org team slug whose members are trusted authors; anyone else needs at least one approval at every tier. */
+  readonly riskTrustedTeam?: string
 }
 
 /** A parsed REVIEW.md. */
@@ -65,6 +67,7 @@ const FrontmatterSchema = Type.Object({
       { additionalProperties: false },
     ),
   ),
+  risk_trusted_team: Type.Optional(Type.String({ minLength: 1 })),
 })
 
 /** Parses YAML, rethrowing errors with a REVIEW.md-specific message. */
@@ -79,7 +82,7 @@ function parseFrontmatterYaml(yaml: string): unknown {
 /** Explains which frontmatter field is invalid. */
 function frontmatterError(raw: unknown): Error {
   if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return new Error('REVIEW.md frontmatter must be a mapping')
-  const field = (['depth', 'skip_paths', 'nit_cap', 'security_paths', 'security_exclude_paths', 'risk_high_paths', 'risk_approvals'] as const).find((k) => {
+  const field = (['depth', 'skip_paths', 'nit_cap', 'security_paths', 'security_exclude_paths', 'risk_high_paths', 'risk_approvals', 'risk_trusted_team'] as const).find((k) => {
     const v: unknown = Reflect.get(raw, k)
     return v !== undefined && !Check(FrontmatterSchema.properties[k], v)
   })
@@ -92,6 +95,7 @@ function frontmatterError(raw: unknown): Error {
     security_exclude_paths: globs,
     risk_high_paths: globs,
     risk_approvals: 'a mapping of low/medium/high to non-negative integers',
+    risk_trusted_team: 'a team slug',
   } as const
   return new Error(field ? `REVIEW.md ${field} must be ${expected[field]}` : 'REVIEW.md frontmatter is invalid')
 }
@@ -118,6 +122,7 @@ export function parseReviewMd(text: string): ReviewMd {
       ...(raw.security_exclude_paths !== undefined && { securityExcludePaths: raw.security_exclude_paths }),
       ...(raw.risk_high_paths !== undefined && { riskHighPaths: raw.risk_high_paths }),
       ...(raw.risk_approvals !== undefined && { riskApprovals: raw.risk_approvals }),
+      ...(raw.risk_trusted_team !== undefined && { riskTrustedTeam: raw.risk_trusted_team }),
     },
     body: text.slice(match[0].length),
   }

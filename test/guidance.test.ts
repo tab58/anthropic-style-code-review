@@ -105,11 +105,17 @@ describe('risk frontmatter', () => {
     expect(parseReviewMd(md).config).toEqual({ skipPaths: [], riskHighPaths: ['db/**'], riskApprovals: { medium: 0 } })
   })
 
+  it('parses risk_trusted_team', () => {
+    expect(parseReviewMd('---\nrisk_trusted_team: codeowners\n---\n').config).toEqual({ skipPaths: [], riskTrustedTeam: 'codeowners' })
+  })
+
   it.each([
     ['---\nrisk_high_paths: "db/**"\n---\n', /risk_high_paths must be a list of glob strings/],
     ['---\nrisk_approvals: { high: -1 }\n---\n', /risk_approvals must be a mapping/],
     ['---\nrisk_approvals: { urgent: 3 }\n---\n', /risk_approvals must be a mapping/],
     ['---\nrisk_approvals: 2\n---\n', /risk_approvals/],
+    ['---\nrisk_trusted_team: ""\n---\n', /risk_trusted_team must be a team slug/],
+    ['---\nrisk_trusted_team: [a]\n---\n', /risk_trusted_team must be a team slug/],
   ])('rejects invalid %#', (md, err) => {
     expect(() => parseReviewMd(md)).toThrow(err)
   })

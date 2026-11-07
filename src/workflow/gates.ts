@@ -29,12 +29,29 @@ const APPROVALS_FOOTER =
   'Counts the latest review per person: an approval on the current head commit from someone with write access who is not the PR author. ' +
   'A new push resets approvals. This check only blocks merges when branch protection requires it.'
 
-/** Base-branch `risk_approvals`, or the error that makes REVIEW.md unusable. */
-async function riskApprovals(github: GitHub, pr: PullRequest): Promise<Partial<RiskApprovals> | Error> {
+/** Base-branch REVIEW.md risk settings. */
+type RiskPolicy = { readonly approvals: Partial<RiskApprovals>; readonly trustedTeam?: string }
+
+/** Base-branch `risk_approvals` and `risk_trusted_team`, or the error that makes REVIEW.md unusable. */
+async function riskPolicy(github: GitHub, pr: PullRequest): Promise<RiskPolicy | Error> {
   try {
-    return (await loadGuidance({ read: (path) => github.readAtRef(pr.baseSha, path) }, [])).review?.config.riskApprovals ?? {}
+    const config = (await loadGuidance({ read: (path) => github.readAtRef(pr.baseSha, path) }, [])).review?.config
+    return { approvals: config?.riskApprovals ?? {}, ...(config?.riskTrustedTeam !== undefined && { trustedTeam: config.riskTrustedTeam }) }
   } catch (e) {
     return e instanceof Error ? e : new Error(String(e))
+  }
+}
+
+/**
+ * Why the author isn't trusted, or undefined when they are (or no team is configured). A failed lookup counts as
+ * untrusted, the strict direction.
+ */
+async function untrustedReason(github: GitHub, pr: PullRequest, team: string | undefined): Promise<string | undefined> {
+  if (team === undefined) return undefined
+  try {
+    return (await github.inTeam(team, pr.author)) ? undefined : `author @${pr.author} is not in the trusted team ${team}: needs at least 1 approval`
+  } catch (e) {
+    return `could not check whether @${pr.author} is in the trusted team ${team} (${e instanceof Error ? e.message : String(e)}): needs at least 1 approval`
   }
 }
 
@@ -47,13 +64,14 @@ export async function publishApprovals(github: GitHub, pr: PullRequest, name: st
   const assessed = state?.tier !== undefined && state.sha === pr.headSha
   const tier = assessed ? (state?.tier ?? 'medium') : maxTier(state?.tier, 'medium')
   const reasons = assessed ? (state?.tierReasons ?? []) : ['not assessed yet for this commit; assuming at least medium until the review finishes', ...(state?.tierReasons ?? [])]
-  const overrides = await riskApprovals(github, pr)
-  if (overrides instanceof Error) {
-    const summary = `Cannot count approvals: ${overrides.message}. Fix REVIEW.md on the base branch.`
+  const policy = await riskPolicy(github, pr)
+  if (policy instanceof Error) {
+    const summary = `Cannot count approvals: ${policy.message}. Fix REVIEW.md on the base branch.`
     await github.setCheck({ name: `${name}/approvals`, headSha: pr.headSha, conclusion: 'failure', title: 'REVIEW.md is invalid', summary })
     return { conclusion: 'failure', tier, required: requiredApprovals(tier), approved: [], assessed }
   }
-  const required = requiredApprovals(tier, overrides)
+  const untrusted = await untrustedReason(github, pr, policy.trustedTeam)
+  const required = Math.max(requiredApprovals(tier, policy.approvals), untrusted === undefined ? 0 : 1)
   const candidates = approvers(await github.pullReviews(), pr)
   const writable = await Promise.all(candidates.map((login) => github.canApprove(login)))
   const approved = candidates.filter((_, i) => writable[i])
@@ -66,7 +84,7 @@ export async function publishApprovals(github: GitHub, pr: PullRequest, name: st
     summary: [
       `**Risk tier: ${tier}** (${required} approval${required === 1 ? '' : 's'} needed)`,
       '',
-      ...reasons.map((r) => `- ${r}`),
+      ...[...reasons, ...(untrusted === undefined ? [] : [untrusted])].map((r) => `- ${r}`),
       '',
       `Approved by: ${approved.length ? approved.map((l) => `@${l}`).join(', ') : 'nobody yet'}`,
       '',

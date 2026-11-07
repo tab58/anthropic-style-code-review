@@ -45,6 +45,7 @@ const PullReviewSchema = Type.Object({
   user: Type.Union([Type.Object({ login: Type.String(), type: Type.Optional(Type.String()) }), Type.Null()]),
 })
 const PermissionSchema = Type.Object({ permission: Type.String() })
+const MembershipSchema = Type.Object({ state: Type.String() })
 const WRITE_PERMISSIONS = new Set(['admin', 'maintain', 'write'])
 const ThreadsSchema = Type.Object({
   repository: Type.Object({
@@ -180,6 +181,17 @@ async function canApprove(c: GitHubClientConfig, login: string): Promise<boolean
   }
 }
 
+/** True when `login` is an active member of the owner org's team `team`; false on 404 (no such team or member). */
+async function inTeam(c: GitHubClientConfig, team: string, login: string): Promise<boolean> {
+  try {
+    const { data } = await c.api.request('GET /orgs/{org}/teams/{team_slug}/memberships/{username}', { org: c.owner, team_slug: team, username: login })
+    return expect(MembershipSchema, data, 'teams.membership').state === 'active'
+  } catch (e) {
+    if (statusOf(e) === 404) return false
+    throw e
+  }
+}
+
 /** Adds `risk:<tier>` and removes the other tier labels (missing ones are fine). */
 async function setRiskLabel(c: GitHubClientConfig, tier: RiskTier): Promise<void> {
   const issue = { owner: c.owner, repo: c.repo, issue_number: c.prNumber }
@@ -248,6 +260,7 @@ export function createGitHubClient(config: GitHubClientConfig): GitHub {
       permissions.set(login, hit)
       return hit
     },
+    inTeam: (team, login) => inTeam(config, team, login),
     setRiskLabel: (tier) => setRiskLabel(config, tier),
     async createReview({ headSha, body, comments }) {
       await api.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {

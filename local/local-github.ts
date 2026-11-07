@@ -110,6 +110,7 @@ export function createLocalGitHub(c: LocalGitHubConfig): GitHub {
     // No humans review locally: no approvals, nobody can approve.
     pullReviews: async () => [],
     canApprove: async () => false,
+    inTeam: async () => false,
     async setRiskLabel(tier) {
       c.print(`\n🏷  risk:${tier}`)
     },

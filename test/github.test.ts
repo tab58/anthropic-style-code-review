@@ -278,6 +278,19 @@ describe('canApprove', () => {
   })
 })
 
+describe('inTeam', () => {
+  it.each([['active', true], ['pending', false]])('membership state %s → %s', async (state, ok) => {
+    const { gh, calls } = client(() => ({ state }))
+    expect(await gh.inTeam('codeowners', 'bob')).toBe(ok)
+    expect(calls[0]).toMatchObject({ route: 'GET /orgs/{org}/teams/{team_slug}/memberships/{username}', params: { org: 'o', team_slug: 'codeowners', username: 'bob' } })
+  })
+
+  it('is false on 404 and rethrows other errors', async () => {
+    expect(await client(() => { throw httpError(404) }).gh.inTeam('t', 'x')).toBe(false)
+    await expect(client(() => { throw httpError(403) }).gh.inTeam('t', 'x')).rejects.toThrow('HTTP 403')
+  })
+})
+
 describe('setRiskLabel', () => {
   it('adds the tier label and removes the others, ignoring missing labels', async () => {
     const { gh, calls } = client((route) => {

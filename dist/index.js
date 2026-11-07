@@ -344781,6 +344781,7 @@ var PullReviewSchema = typebox_exports.Object({
   user: typebox_exports.Union([typebox_exports.Object({ login: typebox_exports.String(), type: typebox_exports.Optional(typebox_exports.String()) }), typebox_exports.Null()])
 });
 var PermissionSchema = typebox_exports.Object({ permission: typebox_exports.String() });
+var MembershipSchema = typebox_exports.Object({ state: typebox_exports.String() });
 var WRITE_PERMISSIONS = /* @__PURE__ */ new Set(["admin", "maintain", "write"]);
 var ThreadsSchema = typebox_exports.Object({
   repository: typebox_exports.Object({
@@ -344890,6 +344891,15 @@ async function canApprove(c2, login2) {
     throw e2;
   }
 }
+async function inTeam(c2, team, login2) {
+  try {
+    const { data } = await c2.api.request("GET /orgs/{org}/teams/{team_slug}/memberships/{username}", { org: c2.owner, team_slug: team, username: login2 });
+    return expect(MembershipSchema, data, "teams.membership").state === "active";
+  } catch (e2) {
+    if (statusOf(e2) === 404) return false;
+    throw e2;
+  }
+}
 async function setRiskLabel(c2, tier) {
   const issue2 = { owner: c2.owner, repo: c2.repo, issue_number: c2.prNumber };
   await c2.api.request("POST /repos/{owner}/{repo}/issues/{issue_number}/labels", { ...issue2, labels: [`risk:${tier}`] });
@@ -344944,6 +344954,7 @@ function createGitHubClient(config) {
       permissions.set(login2, hit);
       return hit;
     },
+    inTeam: (team, login2) => inTeam(config, team, login2),
     setRiskLabel: (tier) => setRiskLabel(config, tier),
     async createReview({ headSha, body, comments }) {
       await api.request("POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews", {
@@ -345464,7 +345475,8 @@ var FrontmatterSchema = typebox_exports.Object({
       { low: typebox_exports.Optional(typebox_exports.Integer({ minimum: 0 })), medium: typebox_exports.Optional(typebox_exports.Integer({ minimum: 0 })), high: typebox_exports.Optional(typebox_exports.Integer({ minimum: 0 })) },
       { additionalProperties: false }
     )
-  )
+  ),
+  risk_trusted_team: typebox_exports.Optional(typebox_exports.String({ minLength: 1 }))
 });
 function parseFrontmatterYaml(yaml) {
   try {
@@ -345475,7 +345487,7 @@ function parseFrontmatterYaml(yaml) {
 }
 function frontmatterError(raw) {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) return new Error("REVIEW.md frontmatter must be a mapping");
-  const field2 = ["depth", "skip_paths", "nit_cap", "security_paths", "security_exclude_paths", "risk_high_paths", "risk_approvals"].find((k2) => {
+  const field2 = ["depth", "skip_paths", "nit_cap", "security_paths", "security_exclude_paths", "risk_high_paths", "risk_approvals", "risk_trusted_team"].find((k2) => {
     const v2 = Reflect.get(raw, k2);
     return v2 !== void 0 && !Check2(FrontmatterSchema.properties[k2], v2);
   });
@@ -345487,7 +345499,8 @@ function frontmatterError(raw) {
     security_paths: globs,
     security_exclude_paths: globs,
     risk_high_paths: globs,
-    risk_approvals: "a mapping of low/medium/high to non-negative integers"
+    risk_approvals: "a mapping of low/medium/high to non-negative integers",
+    risk_trusted_team: "a team slug"
   };
   return new Error(field2 ? `REVIEW.md ${field2} must be ${expected[field2]}` : "REVIEW.md frontmatter is invalid");
 }
@@ -345504,7 +345517,8 @@ function parseReviewMd(text) {
       ...raw.security_paths !== void 0 && { securityPaths: raw.security_paths },
       ...raw.security_exclude_paths !== void 0 && { securityExcludePaths: raw.security_exclude_paths },
       ...raw.risk_high_paths !== void 0 && { riskHighPaths: raw.risk_high_paths },
-      ...raw.risk_approvals !== void 0 && { riskApprovals: raw.risk_approvals }
+      ...raw.risk_approvals !== void 0 && { riskApprovals: raw.risk_approvals },
+      ...raw.risk_trusted_team !== void 0 && { riskTrustedTeam: raw.risk_trusted_team }
     },
     body: text.slice(match3[0].length)
   };
@@ -345605,11 +345619,20 @@ var SECURITY_SUMMARY = [
   "Low and pre-existing findings never block."
 ].join(" ");
 var APPROVALS_FOOTER = "Counts the latest review per person: an approval on the current head commit from someone with write access who is not the PR author. A new push resets approvals. This check only blocks merges when branch protection requires it.";
-async function riskApprovals(github, pr) {
+async function riskPolicy(github, pr) {
   try {
-    return (await loadGuidance({ read: (path19) => github.readAtRef(pr.baseSha, path19) }, [])).review?.config.riskApprovals ?? {};
+    const config = (await loadGuidance({ read: (path19) => github.readAtRef(pr.baseSha, path19) }, [])).review?.config;
+    return { approvals: config?.riskApprovals ?? {}, ...config?.riskTrustedTeam !== void 0 && { trustedTeam: config.riskTrustedTeam } };
   } catch (e2) {
     return e2 instanceof Error ? e2 : new Error(String(e2));
+  }
+}
+async function untrustedReason(github, pr, team) {
+  if (team === void 0) return void 0;
+  try {
+    return await github.inTeam(team, pr.author) ? void 0 : `author @${pr.author} is not in the trusted team ${team}: needs at least 1 approval`;
+  } catch (e2) {
+    return `could not check whether @${pr.author} is in the trusted team ${team} (${e2 instanceof Error ? e2.message : String(e2)}): needs at least 1 approval`;
   }
 }
 async function publishApprovals(github, pr, name, known) {
@@ -345617,13 +345640,14 @@ async function publishApprovals(github, pr, name, known) {
   const assessed = state3?.tier !== void 0 && state3.sha === pr.headSha;
   const tier = assessed ? state3?.tier ?? "medium" : maxTier(state3?.tier, "medium");
   const reasons = assessed ? state3?.tierReasons ?? [] : ["not assessed yet for this commit; assuming at least medium until the review finishes", ...state3?.tierReasons ?? []];
-  const overrides = await riskApprovals(github, pr);
-  if (overrides instanceof Error) {
-    const summary3 = `Cannot count approvals: ${overrides.message}. Fix REVIEW.md on the base branch.`;
+  const policy = await riskPolicy(github, pr);
+  if (policy instanceof Error) {
+    const summary3 = `Cannot count approvals: ${policy.message}. Fix REVIEW.md on the base branch.`;
     await github.setCheck({ name: `${name}/approvals`, headSha: pr.headSha, conclusion: "failure", title: "REVIEW.md is invalid", summary: summary3 });
     return { conclusion: "failure", tier, required: requiredApprovals(tier), approved: [], assessed };
   }
-  const required2 = requiredApprovals(tier, overrides);
+  const untrusted = await untrustedReason(github, pr, policy.trustedTeam);
+  const required2 = Math.max(requiredApprovals(tier, policy.approvals), untrusted === void 0 ? 0 : 1);
   const candidates = approvers(await github.pullReviews(), pr);
   const writable = await Promise.all(candidates.map((login2) => github.canApprove(login2)));
   const approved = candidates.filter((_2, i2) => writable[i2]);
@@ -345636,7 +345660,7 @@ async function publishApprovals(github, pr, name, known) {
     summary: [
       `**Risk tier: ${tier}** (${required2} approval${required2 === 1 ? "" : "s"} needed)`,
       "",
-      ...reasons.map((r2) => `- ${r2}`),
+      ...[...reasons, ...untrusted === void 0 ? [] : [untrusted]].map((r2) => `- ${r2}`),
       "",
       `Approved by: ${approved.length ? approved.map((l3) => `@${l3}`).join(", ") : "nobody yet"}`,
       "",

@@ -263,6 +263,7 @@ Opt-in (`risk_tiers: on`). Each PR gets a tier, and the tier sets how many human
 | **high** | 2 | CI workflow files, `risk_high_paths` (list the paths your owners always want two people on), a High/Medium security finding introduced, or the review was skipped (diff too large, round cap) |
 
 - **The rules set a floor; an LLM can only raise it.** One classifier session (on `verifier_model`) can bump a PR up for risks the rules can't see, such as billing logic in an innocently named file. It can never lower the tier, so a diff can't talk itself down to `low`. If the classifier fails, the tier is at least medium.
+- **Trusted authors (optional).** Set `risk_trusted_team: <team slug>` in REVIEW.md and only members of that org team get the lighter paths; anyone else needs at least one approval at every tier, including low. The app or token needs **Organization → Members: read** to look the team up; if the lookup fails, the author counts as untrusted.
 - **Tiers never go down within a PR.** The highest tier any push reached sticks, together with its reasons.
 - **What counts as an approval:** each person's latest review is an approval on the current head commit, from someone with write access who isn't the PR author or a bot. A new push resets approvals.
 - **Output:** a `risk:<tier>` label, a `Risk: …` line in the review summary, and the `anthropic-style-code-review/approvals` check listing the reasons and who approved.
@@ -304,6 +305,7 @@ security_paths: ["src/billing/**"]        # also trigger the full security pass
 security_exclude_paths: ["vendor/**"]     # never report security findings here
 risk_high_paths: ["db/migrations/**"]     # always the high risk tier
 risk_approvals: { low: 0, medium: 1, high: 2 }   # approvals per tier (with risk_tiers: on)
+risk_trusted_team: codeowners             # authors outside this org team need >= 1 approval at every tier
 ---
 - Config files: a wrong value that silently misroutes traffic is Important.
 - Never flag missing comments or naming.
