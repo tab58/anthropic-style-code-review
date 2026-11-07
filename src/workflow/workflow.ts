@@ -147,7 +147,7 @@ export const DEFAULT_WORKFLOW_OPTIONS = {
   maxRounds: 3,
   maxDiffLines: 3000,
   maxFindings: 15,
-  concurrency: 3,
+  concurrency: 10,
   nitCap: 3,
   securityReview: true,
   checkName: 'anthropic-style-code-review',
