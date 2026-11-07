@@ -235,6 +235,7 @@ git push && git push origin v1.0.0 && git push -f origin v1   # force only the m
 | `security_finder_model` / `security_verifier_model` | `finder_model` / `verifier_model` | Upgrade security models independently (e.g. a stronger verifier) |
 | `risk_tiers` | `off` | `on` assesses a risk tier, labels the PR `risk:<tier>`, and publishes the approvals gate. See [Risk-tier approvals](#risk-tier-approvals) |
 | `check_name` | `anthropic-style-code-review` | Bug gate name; the others are `<check_name>/security` and `<check_name>/approvals` |
+| `gate_conclusion` | `failure` | How a blocked gate is reported. `neutral` shows grey instead of a red ❌; use it when the checks are informational and not in branch protection |
 
 ## Security review
 

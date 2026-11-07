@@ -1,4 +1,5 @@
 import type { WorkflowOptions } from './workflow/index.js'
+import type { GateConclusion } from './github.js'
 
 /** Where action inputs come from (e.g. `@actions/core`'s `getInput`). */
 export interface InputSource {
@@ -38,6 +39,8 @@ export type ActionInputs = {
   readonly securityVerifierModel: string | undefined
   /** Login the reviews are posted as. */
   readonly botLogin: string
+  /** Conclusion a blocked gate check is published with: `failure` (red), or `neutral` (grey) for opt-in, non-required checks. */
+  readonly gateConclusion: GateConclusion
   /** Workflow tuning; unset inputs are left undefined so workflow and REVIEW.md defaults apply. */
   readonly workflow: WorkflowOptions
 }
@@ -67,6 +70,14 @@ function onOff(source: InputSource, name: string): boolean | undefined {
   throw new Error(`Input ${name} must be on or off, got "${raw}"`)
 }
 
+/** `gate_conclusion`: `failure` (default) or `neutral`. */
+function gateConclusion(source: InputSource): GateConclusion {
+  const raw = source.get('gate_conclusion').trim().toLowerCase()
+  if (raw === '' || raw === 'failure') return 'failure'
+  if (raw === 'neutral') return 'neutral'
+  throw new Error(`Input gate_conclusion must be failure or neutral, got "${raw}"`)
+}
+
 /** Events that only recompute the merge gates. */
 const GATE_EVENTS = new Set(['pull_request_review', 'pull_request_review_comment'])
 
@@ -92,7 +103,8 @@ const workflowOptions = (source: InputSource): WorkflowOptions => ({
  * @param event - The triggering event; its PR number wins over the `pr_number` input.
  * @returns Validated inputs.
  * @throws {@link Error} If there is no PR number, `github_token` is empty, `provider_api_key` is empty on a review
- *   event, a numeric input is not an integer in range, or `security_review` / `risk_tiers` is not on/off.
+ *   event, a numeric input is not an integer in range, `security_review` / `risk_tiers` is not on/off, or
+ *   `gate_conclusion` is not failure/neutral.
  */
 export function readInputs(source: InputSource, event: EventInfo): ActionInputs {
   const prNumber = event.prNumber ?? intInput(source, 'pr_number', 1)
@@ -110,6 +122,7 @@ export function readInputs(source: InputSource, event: EventInfo): ActionInputs 
     securityFinderModel: source.get('security_finder_model') || undefined,
     securityVerifierModel: source.get('security_verifier_model') || undefined,
     botLogin: source.get('bot_login'),
+    gateConclusion: gateConclusion(source),
     workflow: workflowOptions(source),
   }
 }

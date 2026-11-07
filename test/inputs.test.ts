@@ -18,6 +18,7 @@ describe('readInputs', () => {
       securityFinderModel: undefined,
       securityVerifierModel: undefined,
       botLogin: 'b',
+      gateConclusion: 'failure',
       workflow: {
         depth: undefined,
         voters: undefined,
@@ -95,5 +96,13 @@ describe('readInputs', () => {
     [{ ...base, risk_tiers: 'sometimes' }, { name: 'pull_request', prNumber: 1 }, /risk_tiers/],
   ])('rejects invalid inputs %#', (values, event, err) => {
     expect(() => readInputs(source(values), event)).toThrow(err)
+  })
+
+  it.each([['neutral', 'neutral'], ['NEUTRAL', 'neutral'], ['failure', 'failure'], ['', 'failure']] as const)('reads gate_conclusion %j', (value, expected) => {
+    expect(readInputs(source({ ...base, gate_conclusion: value }), { name: 'pull_request', prNumber: 1 }).gateConclusion).toBe(expected)
+  })
+
+  it('rejects an unknown gate_conclusion', () => {
+    expect(() => readInputs(source({ ...base, gate_conclusion: 'skipped' }), { name: 'pull_request', prNumber: 1 })).toThrow(/gate_conclusion/)
   })
 })

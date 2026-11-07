@@ -229,6 +229,22 @@ describe('setCheck', () => {
   })
 })
 
+describe('setCheck with gateConclusion', () => {
+  it.each([
+    ['neutral', 'failure', 'neutral'],
+    ['neutral', 'success', 'success'],
+    ['failure', 'failure', 'failure'],
+  ] as const)('gateConclusion %s publishes %s as %s', async (gateConclusion, conclusion, expected) => {
+    const calls: unknown[] = []
+    const gh = createGitHubClient({
+      api: { request: async (route, params) => (calls.push(params), { data: {} }), graphql: async () => ({}) },
+      owner: 'o', repo: 'r', prNumber: 1, botLogin: 'bot', secrets: [], gateConclusion,
+    })
+    await gh.setCheck({ name: 'gate', headSha: 'h', conclusion, title: 'T', summary: 'S' })
+    expect(calls[0]).toMatchObject({ conclusion: expected })
+  })
+})
+
 describe('pullReviews', () => {
   const review = (login: string | null, state: string, over: Record<string, unknown> = {}) => ({ body: '', state, commit_id: 'h', user: login === null ? null : { login, type: 'User' }, ...over })
 

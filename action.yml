@@ -62,6 +62,9 @@ inputs:
   risk_tiers:
     description: "on | off. Assesses a risk tier (low/medium/high), labels the PR risk:<tier>, and publishes <check_name>/approvals, which fails until the tier's human approvals (default 0/1/2) are on the head commit. Needs issues: write and the pull_request_review trigger."
     default: "off"
+  gate_conclusion:
+    description: "failure | neutral. Conclusion of a blocked gate check. Use neutral (grey, not a red X) when the checks are informational and not required by branch protection."
+    default: failure
   check_name:
     description: Name of the bug merge-gate check run; the other gates are <check_name>/security and <check_name>/approvals.
     default: anthropic-style-code-review
