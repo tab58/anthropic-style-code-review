@@ -345766,7 +345766,7 @@ function summary2({ findings, outOfDiff, security = [], securityOutOfDiff = [], 
     ...resolved > 0 ? ["", `${resolved} earlier finding${resolved === 1 ? "" : "s"} resolved by new commits.`] : [],
     ...outOfDiffLines(outside),
     "",
-    `<sub>Review round ${state3.round}/${maxRounds}. Resolve each thread by fixing it or replying with a reason.</sub>`,
+    `<sub>Review round ${state3.round}/${maxRounds}. Fix each finding, or dismiss it by replying \`/resolve\` and a reason.</sub>`,
     encodeState(state3)
   ].join("\n");
 }
