@@ -345457,7 +345457,8 @@ var StateSchema = typebox_exports.Object({
   fingerprints: typebox_exports.Array(typebox_exports.String()),
   securitySha: typebox_exports.Optional(typebox_exports.String()),
   tier: typebox_exports.Optional(typebox_exports.Union([typebox_exports.Literal("low"), typebox_exports.Literal("medium"), typebox_exports.Literal("high")])),
-  tierReasons: typebox_exports.Optional(typebox_exports.Array(typebox_exports.String()))
+  tierReasons: typebox_exports.Optional(typebox_exports.Array(typebox_exports.String())),
+  fixedThreads: typebox_exports.Optional(typebox_exports.Array(typebox_exports.String()))
 });
 var SECURITY_RE = /<!-- anthropic-style-code-review:security (high|medium|low) (new|pre) (\S+) -->/g;
 var SEVERITIES = ["important", "pre_existing", "nit"];
@@ -345547,7 +345548,9 @@ async function publishApprovals(github, pr, name, known) {
   return { conclusion, tier, required: required2, approved, assessed };
 }
 async function publishGates(github, pr, names2) {
-  const threads = await github.botThreads();
+  const state3 = decodeState(await github.botReviewBodies());
+  const fixed2 = new Set(state3?.fixedThreads ?? []);
+  const threads = (await github.botThreads()).filter((t2) => !fixed2.has(t2.id));
   const openImportant = countOpenImportant(threads);
   await github.setCheck({
     name: names2.name,
@@ -345556,7 +345559,6 @@ async function publishGates(github, pr, names2) {
     title: title(openImportant, "important finding"),
     summary: "Fails while any review thread tagged **Important** is unresolved. Fix it or resolve the thread with a reason."
   });
-  const state3 = names2.security || names2.approvals ? decodeState(await github.botReviewBodies()) : void 0;
   return {
     conclusion: verdict(openImportant > 0),
     openImportant,
@@ -345809,6 +345811,10 @@ async function loadRanges(ctx, pr, state3, due) {
     guidance
   };
 }
+var fixedFields = (state3, added) => {
+  const fixedThreads = [...state3?.fixedThreads ?? [], ...added];
+  return fixedThreads.length > 0 ? { fixedThreads } : {};
+};
 var buildInput = (pr, range2, guidance) => ({
   diff: range2.files.map((f4) => f4.text).join(""),
   guidance: renderGuidance(guidance),
@@ -345828,16 +345834,26 @@ async function isFixed(ctx, reviewer, limit3, t2, input2, depth) {
   );
   return answers.filter((still) => !still).length >= depth.needed;
 }
+async function tryResolve(ctx, t2) {
+  try {
+    await ctx.github.resolveThread(t2.id);
+    return true;
+  } catch (e2) {
+    ctx.log.warning(`Could not resolve fixed thread ${t2.path}:${t2.line ?? "?"} (${errMsg(e2)}); recording it as fixed so it no longer blocks.`);
+    return false;
+  }
+}
 async function autoResolve(ctx, reviewer, limit3, touched, input2, depth) {
-  const open5 = (await ctx.github.botThreads()).filter((t2) => !t2.isResolved && touched.has(t2.path));
-  const fixed2 = await Promise.all(
+  const recorded = new Set(decodeState(await ctx.github.botReviewBodies())?.fixedThreads ?? []);
+  const open5 = (await ctx.github.botThreads()).filter((t2) => !t2.isResolved && touched.has(t2.path) && !recorded.has(t2.id));
+  const results = await Promise.all(
     open5.map(async (t2) => {
-      const yes = await isFixed(ctx, reviewer, limit3, t2, input2, depth);
-      if (yes) await ctx.github.resolveThread(t2.id);
-      return yes;
+      if (!await isFixed(ctx, reviewer, limit3, t2, input2, depth)) return void 0;
+      return { id: t2.id, resolved: await tryResolve(ctx, t2) };
     })
   );
-  return fixed2.filter(Boolean).length;
+  const fixed2 = results.filter((r2) => r2 !== void 0);
+  return { count: fixed2.length, unresolvable: fixed2.filter((r2) => !r2.resolved).map((r2) => r2.id) };
 }
 async function runBugPass(ctx, a) {
   const range2 = a.ranges.bug;
@@ -345923,13 +345939,13 @@ async function reviewRanges(ctx, pr, state3, round, ranges) {
   const limit3 = createLimiter2(settings2.concurrency);
   const touched = new Set([...ranges.bug?.files ?? [], ...ranges.security?.files ?? []].map((f4) => f4.path));
   const anyRange = ranges.bug ?? ranges.security;
-  const resolved = state3 && anyRange ? await autoResolve(ctx, reviewer, limit3, touched, buildInput(pr, anyRange, ranges.guidance), depth) : 0;
+  const auto = state3 && anyRange ? await autoResolve(ctx, reviewer, limit3, touched, buildInput(pr, anyRange, ranges.guidance), depth) : { count: 0, unresolvable: [] };
   const posted = state3?.fingerprints ?? [];
   const args = { reviewer, limit: limit3, ranges, pr, depth, posted };
   const [bugs, security] = await Promise.all([runBugPass(ctx, args), runSecurityPass(ctx, args)]);
   for (const e2 of [...bugs?.errors ?? [], ...security?.status === "done" ? security.result.errors : []]) ctx.log.warning(e2);
   if (security?.status === "failed") ctx.log.warning(`Security review failed: ${security.reason}`);
-  return finishRound(ctx, pr, state3, round, { ranges, bugs, security, resolved, posted, depth, classifier: reviewer });
+  return finishRound(ctx, pr, state3, round, { ranges, bugs, security, resolved: auto.count, unresolvable: auto.unresolvable, posted, depth, classifier: reviewer });
 }
 async function roundRisk(ctx, pr, state3, r2, found) {
   if (!ctx.settings.riskTiers) return { risk: void 0, line: void 0 };
@@ -345947,15 +345963,20 @@ async function finishRound(ctx, pr, state3, round, r2) {
     sha: r2.ranges.bug ? pr.headSha : state3?.sha ?? pr.headSha,
     fingerprints: [...r2.posted, ...bugFindings.map(fingerprint), ...vulns.map(securityFingerprint)],
     ...securitySha !== void 0 && { securitySha },
-    ...tierFields(risk)
+    ...tierFields(risk),
+    ...fixedFields(state3, r2.unresolvable ?? [])
   };
-  const note = securityNote(r2.security);
+  const unresolvable = r2.unresolvable?.length ?? 0;
+  const notes = [
+    securityNote(r2.security),
+    unresolvable > 0 ? `${unresolvable} fixed thread${unresolvable === 1 ? "" : "s"} could not be marked resolved (the token lacks permission); they no longer block merge, but please resolve them by hand.` : void 0
+  ].filter((n) => n !== void 0);
   await postReview(
     ctx,
     pr,
     { bugs: bugFindings, security: vulns },
     r2.ranges.prFiles,
-    (outside) => summary2({ findings: bugFindings, outOfDiff: outside.bugs, security: vulns, securityOutOfDiff: outside.security, notes: note ? [note] : [], risk: riskLine, resolved: r2.resolved, state: newState, maxRounds: ctx.settings.maxRounds })
+    (outside) => summary2({ findings: bugFindings, outOfDiff: outside.bugs, security: vulns, securityOutOfDiff: outside.security, notes, risk: riskLine, resolved: r2.resolved, state: newState, maxRounds: ctx.settings.maxRounds })
   );
   const stats = r2.bugs?.stats ?? { raw: 0, candidates: 0, confirmed: 0 };
   const sec = r2.security?.status === "done" ? `; security ${r2.security.result.stats.confirmed} confirmed (${r2.security.depth})` : r2.security ? "; security FAILED" : "";
@@ -345977,7 +345998,8 @@ async function skipOversized(ctx, pr, state3, round, changed) {
     sha: pr.headSha,
     fingerprints: state3?.fingerprints ?? [],
     ...state3?.securitySha !== void 0 && { securitySha: state3.securitySha },
-    ...tierFields(await skippedRisk(ctx, pr, state3))
+    ...tierFields(await skippedRisk(ctx, pr, state3)),
+    ...fixedFields(state3, [])
   };
   await ctx.github.createReview({ headSha: pr.headSha, body: skippedComment(reason, advanced), comments: [] });
   return skipped(`Review skipped: ${reason}`);

@@ -33,6 +33,7 @@ type FakeOpts = {
   pullReviews?: PullReview[]
   writers?: string[]
   labelError?: unknown
+  resolveError?: unknown
 }
 
 /** In-memory GitHub: reviews create threads; resolving flips them. */
@@ -59,6 +60,7 @@ function fakeGitHub(opts: FakeOpts = {}) {
       comments.forEach((c, i) => threads.push({ id: `new${i}`, isResolved: false, path: c.path, line: c.line, body: c.body }))
     },
     resolveThread: async (id) => {
+      if (opts.resolveError) throw opts.resolveError
       const i = threads.findIndex((t) => t.id === id)
       const t = threads[i]
       if (t) threads[i] = { ...t, isResolved: true }
@@ -148,6 +150,28 @@ describe('createWorkflow().review', () => {
     expect(gh.reviews[0]?.body).toContain('1 earlier finding resolved')
     expect(outcome).toMatchObject({ status: 'reviewed', round: 2, resolved: 1 })
     expect(gh.checks.at(-1)?.conclusion).toBe('success')
+  })
+
+  it('when the token cannot resolve threads: still posts, records them as fixed, and stops counting them', async () => {
+    const gh = fakeGitHub({
+      bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [] })],
+      threads: [important('t1', 'src/a.ts')],
+      resolveError: Object.assign(new Error('Resource not accessible by integration'), { status: 403 }),
+    })
+    const l = log()
+    const outcome = await createWorkflow({ github: gh.github, createReviewer: async () => fakeReviewer([], { recheck: vi.fn(async () => false) }), log: l }, options).review()
+    expect(gh.threads[0]?.isResolved).toBe(false)
+    expect(l.warning).toHaveBeenCalledWith(expect.stringContaining('Resource not accessible'))
+    expect(decodeState(gh.reviews.map((r) => r.body))).toMatchObject({ round: 2, fixedThreads: ['t1'] })
+    expect(gh.reviews[0]?.body).toContain('1 earlier finding resolved')
+    expect(gh.reviews[0]?.body).toContain('could not be marked resolved')
+    expect(outcome).toMatchObject({ status: 'reviewed', resolved: 1 })
+    expect(gh.checks.at(-1)?.conclusion).toBe('success')
+  })
+
+  it('gate runs ignore threads the state records as fixed', async () => {
+    const gh = fakeGitHub({ bodies: [encodeState({ round: 2, sha: 'h2', fingerprints: [], fixedThreads: ['t1'] })], threads: [important('t1', 'src/a.ts'), important('t2', 'src/a.ts')] })
+    expect(await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }, options).gate()).toMatchObject({ openImportant: 1 })
   })
 
   it('does not recheck resolved threads or threads in untouched files', async () => {

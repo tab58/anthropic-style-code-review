@@ -18,6 +18,8 @@ export type ReviewState = {
   readonly tier?: RiskTier
   /** Why the PR has that tier. */
   readonly tierReasons?: readonly string[]
+  /** Threads a verifier quorum found fixed but the token could not resolve; the gates stop counting them. */
+  readonly fixedThreads?: readonly string[]
 }
 
 const STATE_RE = /<!-- anthropic-style-code-review:state (.*?) -->/g
@@ -29,6 +31,7 @@ const StateSchema = Type.Object({
   securitySha: Type.Optional(Type.String()),
   tier: Type.Optional(Type.Union([Type.Literal('low'), Type.Literal('medium'), Type.Literal('high')])),
   tierReasons: Type.Optional(Type.Array(Type.String())),
+  fixedThreads: Type.Optional(Type.Array(Type.String())),
 })
 const SECURITY_RE = /<!-- anthropic-style-code-review:security (high|medium|low) (new|pre) (\S+) -->/g
 const SEVERITIES: readonly Severity[] = ['important', 'pre_existing', 'nit']

@@ -78,7 +78,9 @@ export async function publishApprovals(github: GitHub, pr: PullRequest, name: st
 
 /** Counts blocking threads, checks security coverage of HEAD, and publishes the enabled gates. */
 export async function publishGates(github: GitHub, pr: PullRequest, names: GateNames): Promise<GateResult> {
-  const threads = await github.botThreads()
+  const state = decodeState(await github.botReviewBodies())
+  const fixed = new Set(state?.fixedThreads ?? [])
+  const threads = (await github.botThreads()).filter((t) => !fixed.has(t.id))
   const openImportant = countOpenImportant(threads)
   await github.setCheck({
     name: names.name,
@@ -87,7 +89,6 @@ export async function publishGates(github: GitHub, pr: PullRequest, names: GateN
     title: title(openImportant, 'important finding'),
     summary: 'Fails while any review thread tagged **Important** is unresolved. Fix it or resolve the thread with a reason.',
   })
-  const state = names.security || names.approvals ? decodeState(await github.botReviewBodies()) : undefined
   return {
     conclusion: verdict(openImportant > 0),
     openImportant,
