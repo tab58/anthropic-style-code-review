@@ -224,7 +224,7 @@ git push && git push origin v1.0.0 && git push -f origin v1   # force only the m
 | `verifier_model` | `deepseek-v4.1-flash` | Model for the voters. A different model family gives more independent votes |
 | `depth` | `standard` | `quick` (2 finders, 1 vote), `standard` (4 specialist finders, 2 of 3 votes), `deep` (6 finders, 3 of 5 votes) |
 | `voters` / `votes_needed` | preset | Override the voting setup |
-| `max_concurrency` | `10` | Max agent sessions running at once |
+| `max_concurrency` | `3` | Max agent sessions running at once |
 | `max_rounds` | `3` | Review rounds before the "step back" note |
 | `max_diff_lines` | `3000` | Skip the review when more lines than this changed |
 | `max_findings_to_verify` | `15` | Cap on findings sent to voting |

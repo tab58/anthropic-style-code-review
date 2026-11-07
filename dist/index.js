@@ -346176,7 +346176,7 @@ var DEFAULT_WORKFLOW_OPTIONS = {
   maxRounds: 3,
   maxDiffLines: 3e3,
   maxFindings: 15,
-  concurrency: 10,
+  concurrency: 3,
   nitCap: 3,
   securityReview: true,
   checkName: "anthropic-style-code-review",

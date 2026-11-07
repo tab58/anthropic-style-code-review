@@ -54,7 +54,7 @@ async function main() {
       log: (m) => console.error(m),
     })
   const log = { info: (m: string) => console.error(`· ${m}`), warning: (m: string) => console.error(`⚠ ${m}`) }
-  const workflow = createWorkflow({ github, createReviewer, log }, { depth: values.depth, concurrency: Number(process.env.CONCURRENCY ?? 10), securityReview: !values['no-security'], riskTiers: values.risk })
+  const workflow = createWorkflow({ github, createReviewer, log }, { depth: values.depth, concurrency: Number(process.env.CONCURRENCY ?? 3), securityReview: !values['no-security'], riskTiers: values.risk })
 
   console.error(`Reviewing ${repo} (${values.base}...HEAD)…`)
   const outcome = await workflow.review()

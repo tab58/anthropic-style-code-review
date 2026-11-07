@@ -40,7 +40,7 @@ inputs:
     required: false
   max_concurrency:
     description: Max agent sessions (and so concurrent LLM requests) at once.
-    default: "10"
+    default: "3"
   max_rounds:
     description: Review rounds before posting a "step back" note and stopping.
     default: "3"
