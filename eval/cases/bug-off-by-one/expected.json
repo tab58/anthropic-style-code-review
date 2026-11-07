@@ -1,1 +1,1 @@
-{ "intent": "Add getPage helper for pagination", "bugs": [{ "file": "src/page.ts", "line": 8 }] }
+{"intent": "Add getPage helper for pagination", "bugs": [{"file": "src/page.ts", "line": 8}], "risk": "medium"}

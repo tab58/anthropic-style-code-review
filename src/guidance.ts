@@ -15,6 +15,10 @@ export type ReviewConfig = {
   readonly securityPaths?: readonly string[]
   /** Extra globs whose security findings are dropped. */
   readonly securityExcludePaths?: readonly string[]
+  /** Globs that force the `high` risk tier. */
+  readonly riskHighPaths?: readonly string[]
+  /** Approvals needed per risk tier; missing tiers keep their defaults (low 0, medium 1, high 2). */
+  readonly riskApprovals?: { readonly low?: number; readonly medium?: number; readonly high?: number }
 }
 
 /** A parsed REVIEW.md. */
@@ -54,6 +58,13 @@ const FrontmatterSchema = Type.Object({
   nit_cap: Type.Optional(Type.Integer({ minimum: 0 })),
   security_paths: Type.Optional(Type.Array(Type.String())),
   security_exclude_paths: Type.Optional(Type.Array(Type.String())),
+  risk_high_paths: Type.Optional(Type.Array(Type.String())),
+  risk_approvals: Type.Optional(
+    Type.Object(
+      { low: Type.Optional(Type.Integer({ minimum: 0 })), medium: Type.Optional(Type.Integer({ minimum: 0 })), high: Type.Optional(Type.Integer({ minimum: 0 })) },
+      { additionalProperties: false },
+    ),
+  ),
 })
 
 /** Parses YAML, rethrowing errors with a REVIEW.md-specific message. */
@@ -68,12 +79,20 @@ function parseFrontmatterYaml(yaml: string): unknown {
 /** Explains which frontmatter field is invalid. */
 function frontmatterError(raw: unknown): Error {
   if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return new Error('REVIEW.md frontmatter must be a mapping')
-  const field = (['depth', 'skip_paths', 'nit_cap', 'security_paths', 'security_exclude_paths'] as const).find((k) => {
+  const field = (['depth', 'skip_paths', 'nit_cap', 'security_paths', 'security_exclude_paths', 'risk_high_paths', 'risk_approvals'] as const).find((k) => {
     const v: unknown = Reflect.get(raw, k)
     return v !== undefined && !Check(FrontmatterSchema.properties[k], v)
   })
   const globs = 'a list of glob strings'
-  const expected = { depth: 'a string', skip_paths: globs, nit_cap: 'a non-negative integer', security_paths: globs, security_exclude_paths: globs } as const
+  const expected = {
+    depth: 'a string',
+    skip_paths: globs,
+    nit_cap: 'a non-negative integer',
+    security_paths: globs,
+    security_exclude_paths: globs,
+    risk_high_paths: globs,
+    risk_approvals: 'a mapping of low/medium/high to non-negative integers',
+  } as const
   return new Error(field ? `REVIEW.md ${field} must be ${expected[field]}` : 'REVIEW.md frontmatter is invalid')
 }
 
@@ -82,7 +101,7 @@ function frontmatterError(raw: unknown): Error {
  *
  * @param text - REVIEW.md contents; may be empty or have no frontmatter.
  * @returns The validated settings and the body. Without frontmatter: `skipPaths: []` and the whole text as body.
- * @throws {@link Error} If the frontmatter is not valid YAML, not a mapping, or has a mistyped `depth`, `skip_paths` or `nit_cap`.
+ * @throws {@link Error} If the frontmatter is not valid YAML, not a mapping, or has a mistyped field.
  */
 export function parseReviewMd(text: string): ReviewMd {
   const match = FRONTMATTER.exec(text)
@@ -97,6 +116,8 @@ export function parseReviewMd(text: string): ReviewMd {
       ...(raw.nit_cap !== undefined && { nitCap: raw.nit_cap }),
       ...(raw.security_paths !== undefined && { securityPaths: raw.security_paths }),
       ...(raw.security_exclude_paths !== undefined && { securityExcludePaths: raw.security_exclude_paths }),
+      ...(raw.risk_high_paths !== undefined && { riskHighPaths: raw.risk_high_paths }),
+      ...(raw.risk_approvals !== undefined && { riskApprovals: raw.risk_approvals }),
     },
     body: text.slice(match[0].length),
   }

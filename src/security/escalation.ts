@@ -1,4 +1,5 @@
-import { basename, matchesGlob } from 'node:path'
+import { basename } from 'node:path'
+import { matchesGlobDot } from '../diff.js'
 
 /** Path segments that suggest security-sensitive code (auth, secrets, permissions, …), after a separator… */
 const RISKY_NAME = /(^|[/._-])(auth(?!or)|oauth|login|logout|session|token|jwt|crypto|cipher|secret|password|passwd|credential|permission|acl|rbac|iam|admin)/i
@@ -27,7 +28,7 @@ const RISKY_CODE = [
 /** True when the path itself is security-sensitive. */
 const riskyPath = (path: string, extraGlobs: readonly string[]) =>
   RISKY_NAME.test(path) ||
-  RISKY_CAMEL.test(path) || MANIFEST.test(basename(path)) || [...RISKY_GLOBS, ...extraGlobs].some((g) => matchesGlob(path, g))
+  RISKY_CAMEL.test(path) || MANIFEST.test(basename(path)) || [...RISKY_GLOBS, ...extraGlobs].some((g) => matchesGlobDot(path, g))
 
 /** Lines added by a file's diff (without the leading `+`), hunk content only, minified lines skipped. */
 function addedLines(text: string): readonly string[] {

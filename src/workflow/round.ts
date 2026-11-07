@@ -21,8 +21,10 @@ import {
   type SecurityResult,
   type SecurityReviewer,
 } from '../security/index.js'
+import { requiredApprovals, type RiskAssessment, type RiskClassifier } from '../risk/index.js'
 import { findingComment, securityComment, skippedComment, stepBackComment, summary } from './comments.js'
 import { decodeState, type ReviewState } from './markers.js'
+import { assessRound, tierFields } from './risk.js'
 import type { BotThread, PullRequest, RoundOutcome, WorkflowConfig, WorkflowOptions } from './workflow.js'
 
 /** Options with fixed defaults applied. */
@@ -33,6 +35,7 @@ export type Settings = WorkflowOptions & {
   readonly concurrency: number
   readonly securityReview: boolean
   readonly checkName: string
+  readonly riskTiers: boolean
   readonly nitCapDefault: number
 }
 
@@ -66,11 +69,16 @@ const skipped = (message: string): RoundOutcome => ({ status: 'skipped', message
 /** Paths a pass may report on. */
 const livePaths = (r: PassRange) => r.files.filter((f) => !f.deleted).map((f) => f.path)
 
+/** Tier for commits automated review skipped (high), when risk tiers are on. */
+const skippedRisk = (ctx: Context, pr: PullRequest, state: ReviewState | undefined) =>
+  ctx.settings.riskTiers ? assessRound(pr, state, { prFiles: [], guidance: undefined, bugs: [], security: [], skipped: true }) : Promise.resolve(undefined)
+
 /** Past the round cap: post the step-back note once (when first exceeded), then stay quiet. Security stays behind, so its gate fails closed. */
 async function pauseRound(ctx: Context, pr: PullRequest, state: ReviewState | undefined, round: number): Promise<RoundOutcome> {
   const { maxRounds } = ctx.settings
   if (state?.round === maxRounds) {
-    await ctx.github.createReview({ headSha: pr.headSha, body: stepBackComment(maxRounds, { ...state, round, sha: pr.headSha }), comments: [] })
+    const risk = await skippedRisk(ctx, pr, state)
+    await ctx.github.createReview({ headSha: pr.headSha, body: stepBackComment(maxRounds, { ...state, round, sha: pr.headSha, ...tierFields(risk) }), comments: [] })
   }
   return { status: 'paused', round, message: `Round cap (${maxRounds}) reached; not reviewing.` }
 }
@@ -255,7 +263,7 @@ async function reviewRanges(ctx: Context, pr: PullRequest, state: ReviewState | 
   const [bugs, security] = await Promise.all([runBugPass(ctx, args), runSecurityPass(ctx, args)])
   for (const e of [...(bugs?.errors ?? []), ...(security?.status === 'done' ? security.result.errors : [])]) ctx.log.warning(e)
   if (security?.status === 'failed') ctx.log.warning(`Security review failed: ${security.reason}`)
-  return finishRound(ctx, pr, state, round, { ranges, bugs, security, resolved, posted, depth })
+  return finishRound(ctx, pr, state, round, { ranges, bugs, security, resolved, posted, depth, classifier: reviewer })
 }
 
 /** Everything a round produced, ready to post. */
@@ -266,6 +274,16 @@ type RoundResult = {
   readonly resolved: number
   readonly posted: readonly string[]
   readonly depth: DepthConfig
+  /** Raises the rule floor; omitted for rule-only assessment. */
+  readonly classifier?: RiskClassifier
+}
+
+/** The round's tier (undefined when risk tiers are off) and the summary line for it. */
+async function roundRisk(ctx: Context, pr: PullRequest, state: ReviewState | undefined, r: RoundResult, found: { bugs: readonly Finding[]; security: readonly SecurityFinding[] }) {
+  if (!ctx.settings.riskTiers) return { risk: undefined, line: undefined }
+  const risk: RiskAssessment = await assessRound(pr, state, { prFiles: r.ranges.prFiles, guidance: r.ranges.guidance, ...found, skipped: false }, r.classifier)
+  const n = requiredApprovals(risk.tier, r.ranges.guidance.review?.config.riskApprovals)
+  return { risk, line: `Risk: **${risk.tier}** (${n} approval${n === 1 ? '' : 's'} needed): ${risk.reasons.join('; ')}` }
 }
 
 /** Posts the round's review with the advanced state, and builds the outcome. */
@@ -273,21 +291,23 @@ async function finishRound(ctx: Context, pr: PullRequest, state: ReviewState | u
   const bugFindings = r.bugs?.findings ?? []
   const vulns = r.security?.status === 'done' ? r.security.result.findings : []
   const securitySha = securityComplete(r.security) ? pr.headSha : state?.securitySha
+  const { risk, line: riskLine } = await roundRisk(ctx, pr, state, r, { bugs: bugFindings, security: vulns })
   const newState: ReviewState = {
     round,
     sha: r.ranges.bug ? pr.headSha : (state?.sha ?? pr.headSha),
     fingerprints: [...r.posted, ...bugFindings.map(fingerprint), ...vulns.map(securityFingerprint)],
     ...(securitySha !== undefined && { securitySha }),
+    ...tierFields(risk),
   }
   const note = securityNote(r.security)
   await postReview(ctx, pr, { bugs: bugFindings, security: vulns }, r.ranges.prFiles, (outside) =>
-    summary({ findings: bugFindings, outOfDiff: outside.bugs, security: vulns, securityOutOfDiff: outside.security, notes: note ? [note] : [], resolved: r.resolved, state: newState, maxRounds: ctx.settings.maxRounds }),
+    summary({ findings: bugFindings, outOfDiff: outside.bugs, security: vulns, securityOutOfDiff: outside.security, notes: note ? [note] : [], risk: riskLine, resolved: r.resolved, state: newState, maxRounds: ctx.settings.maxRounds }),
   )
   const stats = r.bugs?.stats ?? { raw: 0, candidates: 0, confirmed: 0 }
   const sec = r.security?.status === 'done' ? `; security ${r.security.result.stats.confirmed} confirmed (${r.security.depth})` : r.security ? '; security FAILED' : ''
   const message = `Round ${round}: ${stats.raw} raw → ${stats.candidates} voted on → ${stats.confirmed} confirmed (${r.depth.depth})${sec}; ${r.resolved} resolved.`
   const security = r.security?.status === 'done' ? { depth: r.security.depth, findings: vulns, stats: r.security.result.stats } : undefined
-  return { status: 'reviewed', message, round, findings: bugFindings, resolved: r.resolved, stats, security }
+  return { status: 'reviewed', message, round, findings: bugFindings, resolved: r.resolved, stats, security, risk }
 }
 
 /** Nothing left after skip_paths: record both passes as complete (no agents, no API key needed). */
@@ -307,6 +327,7 @@ async function skipOversized(ctx: Context, pr: PullRequest, state: ReviewState |
     sha: pr.headSha,
     fingerprints: state?.fingerprints ?? [],
     ...(state?.securitySha !== undefined && { securitySha: state.securitySha }),
+    ...tierFields(await skippedRisk(ctx, pr, state)),
   }
   await ctx.github.createReview({ headSha: pr.headSha, body: skippedComment(reason, advanced), comments: [] })
   return skipped(`Review skipped: ${reason}`)

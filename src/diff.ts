@@ -84,3 +84,13 @@ export function parseDiff(diff: string): readonly FileDiff[] {
 export function filterDiff(files: readonly FileDiff[], skipGlobs: readonly string[]): readonly FileDiff[] {
   return files.filter((f) => !skipGlobs.some((g) => matchesGlob(f.path, g)))
 }
+
+/**
+ * `path.matchesGlob`, except `*` and `**` also match dot segments (`.env`, `.secrets/`). Use it only where a
+ * match RAISES scrutiny (risk and security globs), never for skip lists, so a dotfile can't slip past a rule.
+ *
+ * @param path - Repo-relative path.
+ * @param glob - Glob pattern (Node `path.matchesGlob` syntax).
+ * @returns True when the path, or the path with each segment's leading dot removed, matches.
+ */
+export const matchesGlobDot = (path: string, glob: string): boolean => matchesGlob(path, glob) || matchesGlob(path.replace(/(^|\/)\./g, '$1'), glob)

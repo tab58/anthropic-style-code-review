@@ -194,7 +194,8 @@ git push && git push origin v1.0.0 && git push -f origin v1   # force only the m
 | `bot_login` | `github-actions[bot]` | Change this if you pass a different `github_token` |
 | `security_review` | `on` | `off` disables the security pass and its check |
 | `security_finder_model` / `security_verifier_model` | `finder_model` / `verifier_model` | Upgrade security models independently (e.g. a stronger verifier) |
-| `check_name` | `anthropic-style-code-review` | Bug gate name; the security gate is `<check_name>/security` |
+| `risk_tiers` | `off` | `on` assesses a risk tier, labels the PR `risk:<tier>`, and publishes the approvals gate. See [Risk-tier approvals](#risk-tier-approvals) |
+| `check_name` | `anthropic-style-code-review` | Bug gate name; the others are `<check_name>/security` and `<check_name>/approvals` |
 
 ## Security review
 
@@ -212,6 +213,42 @@ A second find → vote pass, focused on vulnerabilities an attacker can actually
 
 Like Anthropic's own security-review action, this is **not hardened against a determined attacker**. A malicious diff can try to talk the agents out of flagging it, so keep fork PRs on manual dispatch.
 
+## Risk-tier approvals
+
+Opt-in (`risk_tiers: on`). Each PR gets a tier, and the tier sets how many humans must approve it, so routine changes don't wait on reviewers and risky ones get two:
+
+| Tier | Approvals | When (default rules) |
+|---|---|---|
+| **low** | 0 | Docs and tests only, 200 changed lines or fewer |
+| **medium** | 1 | Any source change, more than 200 changed lines, or an Important bug was found |
+| **high** | 2 | Security-sensitive paths or code (the same signals that trigger the full security pass), `risk_high_paths`, a High/Medium security finding introduced, or the review was skipped (diff too large, round cap) |
+
+- **The rules set a floor; an LLM can only raise it.** One classifier session (on `verifier_model`) can bump a PR up for risks the rules can't see, such as billing logic in an innocently named file. It can never lower the tier, so a diff can't talk itself down to `low`. If the classifier fails, the tier is at least medium.
+- **Tiers never go down within a PR.** The highest tier any push reached sticks, together with its reasons.
+- **What counts as an approval:** each person's latest review is an approval on the current head commit, from someone with write access who isn't the PR author or a bot. A new push resets approvals.
+- **Output:** a `risk:<tier>` label, a `Risk: …` line in the review summary, and the `anthropic-style-code-review/approvals` check listing the reasons and who approved.
+- On each push, the check is published first with the PR's current tier (medium for a new PR), so the PR isn't mergeable while the review runs.
+
+To enforce it:
+
+1. Add `risk_tiers: on` to the action's `with:`.
+2. Add `pull_request_review: { types: [submitted, dismissed] }` to the workflow's `on:`, so an approval or dismissal re-evaluates the check without calling the LLM. Then put every run for a PR in **one** concurrency group, so an approval check never races a review that's still running. Only pushes cancel:
+   ```yaml
+   concurrency:
+     group: review-${{ github.event.pull_request.number || inputs.pr_number }}
+     cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
+   ```
+   An approval given during a review waits for that review to finish, then is counted.
+3. Add `issues: write` to `permissions:` (for the label).
+4. In branch protection, set **Required approvals to 0** and require the `anthropic-style-code-review/approvals` check.
+
+> **Do both parts of step 4.** With 0 required approvals and the approvals check not required, nothing blocks a merge.
+
+Known limits:
+- Only the PR author is excluded. Someone who pushed commits to the branch can still approve it.
+- Fork PRs never get the check until a maintainer dispatches a review, so they stay blocked. That's the safe direction.
+- Approvals are re-counted on review events, not when someone's repo permission changes.
+
 ## REVIEW.md
 
 The action reads `REVIEW.md` from the repo root on the base branch. It is written for code owners: what failure looks like in this repo, and what to ignore.
@@ -223,6 +260,8 @@ skip_paths: ["docs/**", "**/*.lock", "**/__generated__/**"]
 nit_cap: 1
 security_paths: ["src/billing/**"]        # also trigger the full security pass
 security_exclude_paths: ["vendor/**"]     # never report security findings here
+risk_high_paths: ["db/migrations/**"]     # always the high risk tier
+risk_approvals: { low: 0, medium: 1, high: 2 }   # approvals per tier (with risk_tiers: on)
 ---
 - Config files: a wrong value that silently misroutes traffic is Important.
 - Never flag missing comments or naming.
@@ -241,14 +280,14 @@ PROVIDER_API_KEY=... npm run local -- --repo ../my-project --base main
 
 - Reviews `base...HEAD`, **committed changes only**. The agents read the working tree, so commit first for accurate line numbers.
 - Rounds, posted findings and threads persist in `<repo>/.git/anthropic-style-code-review/state.json`. Re-running after new commits behaves like a push (incremental review, auto-resolve, no repeats). Add `--reset` to start over.
-- Options: `--depth quick|standard|deep`, `--title "PR title"`. Env: `PROVIDER_BASE_URL`, `FINDER_MODEL`, `VERIFIER_MODEL`, `CONCURRENCY`.
+- Options: `--depth quick|standard|deep`, `--title "PR title"`, `--no-security`, `--risk` (prints the tier; locally nobody can approve, so the approvals check fails unless the tier needs 0). Env: `PROVIDER_BASE_URL`, `FINDER_MODEL`, `VERIFIER_MODEL`, `CONCURRENCY`.
 - **Fully offline:** run `ollama serve`, `ollama pull <a tool-calling coding model>`, then set `PROVIDER_BASE_URL=http://localhost:11434/v1`, `PROVIDER_API_KEY=ollama` and both model variables to that model.
 
 ## Development
 
 ```sh
 npm run all                       # typecheck + lint (module boundaries) + tests + bundle to dist/
-PROVIDER_API_KEY=... npm run eval # real models against eval/cases, prints recall + false positives
+PROVIDER_API_KEY=... npm run eval # real models against eval/cases: recall, false positives, risk tiers
 ```
 
 Rerun `npm run eval` whenever prompts, models or presets change. Add a case under `eval/cases/` (`before/`, `after/`, `expected.json`) for every bug that slipped past review.

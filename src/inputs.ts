@@ -8,7 +8,7 @@ export interface InputSource {
 
 /** The triggering GitHub event. */
 export type EventInfo = {
-  /** Event name, e.g. `pull_request`, `pull_request_review_thread`, `workflow_dispatch`. */
+  /** Event name, e.g. `pull_request`, `pull_request_review`, `pull_request_review_thread`, `workflow_dispatch`. */
   readonly name: string
   /** PR number from the event payload, when the event carries one. */
   readonly prNumber?: number
@@ -16,7 +16,7 @@ export type EventInfo = {
 
 /** Validated action inputs. */
 export type ActionInputs = {
-  /** `gate` for thread (un)resolution events (no LLM calls), `review` otherwise. */
+  /** `gate` for thread (un)resolution and PR review events (no LLM calls), `review` otherwise. */
   readonly event: 'review' | 'gate'
   /** PR to act on. */
   readonly prNumber: number
@@ -67,6 +67,9 @@ function onOff(source: InputSource, name: string): boolean | undefined {
   throw new Error(`Input ${name} must be on or off, got "${raw}"`)
 }
 
+/** Events that only recompute the merge gates. */
+const GATE_EVENTS = new Set(['pull_request_review_thread', 'pull_request_review'])
+
 /** Workflow tuning inputs, validated. */
 const workflowOptions = (source: InputSource): WorkflowOptions => ({
   depth: source.get('depth') || undefined,
@@ -79,6 +82,7 @@ const workflowOptions = (source: InputSource): WorkflowOptions => ({
   nitCap: intInput(source, 'nit_cap', 0),
   securityReview: onOff(source, 'security_review'),
   checkName: source.get('check_name') || undefined,
+  riskTiers: onOff(source, 'risk_tiers'),
 })
 
 /**
@@ -88,12 +92,12 @@ const workflowOptions = (source: InputSource): WorkflowOptions => ({
  * @param event - The triggering event; its PR number wins over the `pr_number` input.
  * @returns Validated inputs.
  * @throws {@link Error} If there is no PR number, `github_token` is empty, `provider_api_key` is empty on a review
- *   event, a numeric input is not an integer in range, or `security_review` is not on/off.
+ *   event, a numeric input is not an integer in range, or `security_review` / `risk_tiers` is not on/off.
  */
 export function readInputs(source: InputSource, event: EventInfo): ActionInputs {
   const prNumber = event.prNumber ?? intInput(source, 'pr_number', 1)
-  if (prNumber === undefined) throw new Error('No pull request: run on pull_request / pull_request_review_thread, or pass pr_number.')
-  const kind = event.name === 'pull_request_review_thread' ? 'gate' : 'review'
+  if (prNumber === undefined) throw new Error('No pull request: run on pull_request / pull_request_review / pull_request_review_thread, or pass pr_number.')
+  const kind = GATE_EVENTS.has(event.name) ? 'gate' : 'review'
   return {
     event: kind,
     prNumber,

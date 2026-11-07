@@ -1,1 +1,1 @@
-{ "intent": "Fix crash when user has no name", "bugs": [] }
+{"intent": "Fix crash when user has no name", "bugs": [], "risk": "medium"}

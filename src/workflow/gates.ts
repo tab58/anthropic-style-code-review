@@ -1,12 +1,16 @@
-import { countOpenImportant, countOpenSecurity, decodeState } from './markers.js'
-import type { CheckConclusion, GateResult, GitHub } from './workflow.js'
+import { loadGuidance } from '../guidance.js'
+import { approvers, maxTier, requiredApprovals, type RiskApprovals } from '../risk/index.js'
+import { countOpenImportant, countOpenSecurity, decodeState, type ReviewState } from './markers.js'
+import type { ApprovalsResult, CheckConclusion, GateResult, GitHub, PullRequest } from './workflow.js'
 
 /** Which checks to publish. */
 export type GateNames = {
-  /** Bug gate check name; the security gate is `<name>/security`. */
+  /** Bug gate check name; the others are `<name>/security` and `<name>/approvals`. */
   readonly name: string
   /** Also publish the security gate. */
   readonly security: boolean
+  /** Also publish the approvals gate. */
+  readonly approvals: boolean
 }
 
 /** `n open <noun>s`, or the all-clear title. */
@@ -21,28 +25,88 @@ const SECURITY_SUMMARY = [
   'Low and pre-existing findings never block.',
 ].join(' ')
 
-/** Counts blocking threads, checks security coverage of HEAD, and publishes the bug gate (and the security gate when enabled). */
-export async function publishGates(github: GitHub, headSha: string, names: GateNames): Promise<GateResult> {
+const APPROVALS_FOOTER =
+  'Counts the latest review per person: an approval on the current head commit from someone with write access who is not the PR author. ' +
+  'A new push resets approvals. This check only blocks merges when branch protection requires it.'
+
+/** Base-branch `risk_approvals`, or the error that makes REVIEW.md unusable. */
+async function riskApprovals(github: GitHub, pr: PullRequest): Promise<Partial<RiskApprovals> | Error> {
+  try {
+    return (await loadGuidance({ read: (path) => github.readAtRef(pr.baseSha, path) }, [])).review?.config.riskApprovals ?? {}
+  } catch (e) {
+    return e instanceof Error ? e : new Error(String(e))
+  }
+}
+
+/**
+ * Publishes the approvals gate. The stored tier counts only for the head commit a round assessed; on a newer
+ * head it is at least `medium` until the round finishes, so a push after a `low` round never starts green.
+ */
+export async function publishApprovals(github: GitHub, pr: PullRequest, name: string, known?: ReviewState): Promise<ApprovalsResult> {
+  const state = known ?? decodeState(await github.botReviewBodies())
+  const assessed = state?.tier !== undefined && state.sha === pr.headSha
+  const tier = assessed ? (state?.tier ?? 'medium') : maxTier(state?.tier, 'medium')
+  const reasons = assessed ? (state?.tierReasons ?? []) : ['not assessed yet for this commit; assuming at least medium until the review finishes', ...(state?.tierReasons ?? [])]
+  const overrides = await riskApprovals(github, pr)
+  if (overrides instanceof Error) {
+    const summary = `Cannot count approvals: ${overrides.message}. Fix REVIEW.md on the base branch.`
+    await github.setCheck({ name: `${name}/approvals`, headSha: pr.headSha, conclusion: 'failure', title: 'REVIEW.md is invalid', summary })
+    return { conclusion: 'failure', tier, required: requiredApprovals(tier), approved: [], assessed }
+  }
+  const required = requiredApprovals(tier, overrides)
+  const candidates = approvers(await github.pullReviews(), pr)
+  const writable = await Promise.all(candidates.map((login) => github.canApprove(login)))
+  const approved = candidates.filter((_, i) => writable[i])
+  const conclusion = verdict(approved.length < required)
+  await github.setCheck({
+    name: `${name}/approvals`,
+    headSha: pr.headSha,
+    conclusion,
+    title: `Risk ${tier}: ${approved.length} of ${required} approvals`,
+    summary: [
+      `**Risk tier: ${tier}** (${required} approval${required === 1 ? '' : 's'} needed)`,
+      '',
+      ...reasons.map((r) => `- ${r}`),
+      '',
+      `Approved by: ${approved.length ? approved.map((l) => `@${l}`).join(', ') : 'nobody yet'}`,
+      '',
+      APPROVALS_FOOTER,
+    ].join('\n'),
+  })
+  return { conclusion, tier, required, approved, assessed }
+}
+
+/** Counts blocking threads, checks security coverage of HEAD, and publishes the enabled gates. */
+export async function publishGates(github: GitHub, pr: PullRequest, names: GateNames): Promise<GateResult> {
   const threads = await github.botThreads()
   const openImportant = countOpenImportant(threads)
   await github.setCheck({
     name: names.name,
-    headSha,
+    headSha: pr.headSha,
     conclusion: verdict(openImportant > 0),
     title: title(openImportant, 'important finding'),
     summary: 'Fails while any review thread tagged **Important** is unresolved. Fix it or resolve the thread with a reason.',
   })
-  if (!names.security) return { conclusion: verdict(openImportant > 0), openImportant }
+  const state = names.security || names.approvals ? decodeState(await github.botReviewBodies()) : undefined
+  return {
+    conclusion: verdict(openImportant > 0),
+    openImportant,
+    ...(names.security && { security: await publishSecurity(github, pr, names.name, threads, state) }),
+    ...(names.approvals && { approvals: await publishApprovals(github, pr, names.name, state) }),
+  }
+}
 
+/** Publishes the security gate: fails on open blocking threads or when HEAD isn't security-reviewed. */
+async function publishSecurity(github: GitHub, pr: PullRequest, name: string, threads: Parameters<typeof countOpenSecurity>[0], state: ReviewState | undefined) {
   const openBlocking = countOpenSecurity(threads)
-  const reviewed = decodeState(await github.botReviewBodies())?.securitySha === headSha
+  const reviewed = state?.securitySha === pr.headSha
   const conclusion = verdict(openBlocking > 0 || !reviewed)
   await github.setCheck({
-    name: `${names.name}/security`,
-    headSha,
+    name: `${name}/security`,
+    headSha: pr.headSha,
     conclusion,
     title: openBlocking > 0 || reviewed ? title(openBlocking, 'high/medium security finding') : 'Latest commits not security-reviewed',
     summary: SECURITY_SUMMARY,
   })
-  return { conclusion: verdict(openImportant > 0), openImportant, security: { conclusion, openBlocking, reviewed } }
+  return { conclusion, openBlocking, reviewed }
 }

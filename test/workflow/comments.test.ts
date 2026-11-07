@@ -144,3 +144,11 @@ describe('summary with security findings', () => {
     expect(body).toContain('`z.ts:9` **Security · High**: SQL injection')
   })
 })
+
+describe('summary with a risk line', () => {
+  const state = { round: 1, sha: 'abc', fingerprints: [] }
+  it('shows it under the count, escaping comment openers from model text', () => {
+    const body = summary({ findings: [], outOfDiff: [], risk: 'Risk: **high** (2 approvals needed): <!-- x', resolved: 0, state, maxRounds: 3 })
+    expect(body.split('\n').slice(0, 3)).toEqual(['**No issues found.**', '', 'Risk: **high** (2 approvals needed): &lt;!-- x'])
+  })
+})

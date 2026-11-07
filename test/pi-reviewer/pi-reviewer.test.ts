@@ -173,4 +173,13 @@ describe('createPiReviewer security methods (fake server)', () => {
     await r.judgeExploit(vuln, input)
     expect(requests.map((q) => q.body.model)).toEqual(['sf', 'sv'])
   })
+
+  it('classifyRisk uses the verifier model, sees the floor, and returns the tier', async () => {
+    turns = [{ tool: 'submit_risk', args: { tier: 'high', reasons: ['touches billing'] } }]
+    const floor = { tier: 'medium' as const, reasons: ['changes source: src/pay.ts'] }
+    expect(await (await reviewer()).classifyRisk({ diff: 'd', intent: 'i', floor })).toEqual({ tier: 'high', reasons: ['touches billing'] })
+    expect(requests[0]!.body.model).toBe('verifier-m')
+    expect(requests[0]!.tools.sort()).toEqual(['find', 'grep', 'ls', 'read', 'submit_risk'])
+    expect(JSON.stringify(requests[0]!.body.messages)).toContain('changes source: src/pay.ts')
+  })
 })

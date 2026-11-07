@@ -18,7 +18,7 @@ inputs:
     description: Model for bug finders.
     default: glm-5.3
   verifier_model:
-    description: Model for verifier votes (a different model family gives more independent votes).
+    description: Model for verifier votes and the risk classifier (a different model family gives more independent votes).
     default: deepseek-v4.1-flash
   security_review:
     description: "on | off. Runs the security pass and publishes its gate check (<check_name>/security)."
@@ -59,8 +59,11 @@ inputs:
   bot_login:
     description: Login that posts the reviews; used to find this action's own reviews and threads.
     default: github-actions[bot]
+  risk_tiers:
+    description: "on | off. Assesses a risk tier (low/medium/high), labels the PR risk:<tier>, and publishes <check_name>/approvals, which fails until the tier's human approvals (default 0/1/2) are on the head commit. Needs issues: write and the pull_request_review trigger."
+    default: "off"
   check_name:
-    description: Name of the bug merge-gate check run; the security gate is <check_name>/security.
+    description: Name of the bug merge-gate check run; the other gates are <check_name>/security and <check_name>/approvals.
     default: anthropic-style-code-review
 
 runs:

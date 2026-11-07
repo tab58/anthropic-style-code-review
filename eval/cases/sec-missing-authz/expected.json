@@ -1,1 +1,1 @@
-{ "intent": "Let admins delete users", "bugs": [], "security": [{ "file": "src/admin.ts", "line": 11 }] }
+{"intent": "Let admins delete users", "bugs": [], "security": [{"file": "src/admin.ts", "line": 11}], "risk": "high"}

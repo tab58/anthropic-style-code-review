@@ -31,7 +31,7 @@ const make = (printed: string[] = []) =>
 
 describe('createLocalGitHub', () => {
   it('describes HEAD vs base as the PR, titled by the commit subject', async () => {
-    expect(await make().getPull()).toEqual({ number: 0, headSha, baseSha, title: 'Add y', body: '', isFork: false, draft: false })
+    expect(await make().getPull()).toEqual({ number: 0, headSha, baseSha, title: 'Add y', body: '', author: 'local', isFork: false, draft: false })
   })
 
   it('diffs, checks ancestry and reads files at a ref from git', async () => {

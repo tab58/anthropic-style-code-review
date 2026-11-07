@@ -29,12 +29,13 @@ describe('readInputs', () => {
         nitCap: undefined,
         securityReview: undefined,
         checkName: 'c',
+        riskTiers: undefined,
       },
     })
   })
 
   it('reads every tuning input', () => {
-    const all = { ...base, depth: 'deep', voters: '5', votes_needed: '3', max_rounds: '2', max_diff_lines: '100', max_findings_to_verify: '4', max_concurrency: '10', nit_cap: '0', security_review: 'off' }
+    const all = { ...base, depth: 'deep', voters: '5', votes_needed: '3', max_rounds: '2', max_diff_lines: '100', max_findings_to_verify: '4', max_concurrency: '10', nit_cap: '0', security_review: 'off', risk_tiers: 'on' }
     expect(readInputs(source(all), { name: 'pull_request', prNumber: 1 }).workflow).toEqual({
       depth: 'deep',
       voters: 5,
@@ -46,6 +47,7 @@ describe('readInputs', () => {
       nitCap: 0,
       securityReview: false,
       checkName: 'c',
+      riskTiers: true,
     })
   })
 
@@ -63,8 +65,8 @@ describe('readInputs', () => {
     expect(out).toMatchObject({ securityFinderModel: 'sf', securityVerifierModel: 'sv' })
   })
 
-  it('maps thread events to gate runs, which need no API key', () => {
-    const out = readInputs(source({ ...base, provider_api_key: '' }), { name: 'pull_request_review_thread', prNumber: 1 })
+  it.each(['pull_request_review_thread', 'pull_request_review'])('maps %s events to gate runs, which need no API key', (name) => {
+    const out = readInputs(source({ ...base, provider_api_key: '' }), { name, prNumber: 1 })
     expect(out).toMatchObject({ event: 'gate', apiKey: '', allowFork: false })
   })
 
@@ -86,6 +88,7 @@ describe('readInputs', () => {
     [{ ...base, nit_cap: '-1' }, { name: 'pull_request', prNumber: 1 }, /nit_cap/],
     [{ ...base, max_rounds: '1.5' }, { name: 'pull_request', prNumber: 1 }, /max_rounds/],
     [{ ...base, security_review: 'maybe' }, { name: 'pull_request', prNumber: 1 }, /security_review/],
+    [{ ...base, risk_tiers: 'sometimes' }, { name: 'pull_request', prNumber: 1 }, /risk_tiers/],
   ])('rejects invalid inputs %#', (values, event, err) => {
     expect(() => readInputs(source(values), event)).toThrow(err)
   })

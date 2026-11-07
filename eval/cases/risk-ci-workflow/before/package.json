@@ -1,0 +1,5 @@
+{
+  "name": "widgets",
+  "private": true,
+  "scripts": { "test": "node --test" }
+}

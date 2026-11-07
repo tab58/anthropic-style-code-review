@@ -78,7 +78,7 @@ export function createLocalGitHub(c: LocalGitHubConfig): GitHub {
         git(c.repo, 'rev-parse', c.base),
         git(c.repo, 'log', '-1', '--format=%s'),
       ])
-      return { number: 0, headSha: headSha.trim(), baseSha: baseSha.trim(), title: c.title ?? subject.trim(), body: c.body ?? '', isFork: false, draft: false }
+      return { number: 0, headSha: headSha.trim(), baseSha: baseSha.trim(), title: c.title ?? subject.trim(), body: c.body ?? '', author: 'local', isFork: false, draft: false }
     },
     compareDiff: (base, head) => git(c.repo, 'diff', '--no-color', '--no-ext-diff', `${base}...${head}`),
     async isAncestor(ancestor, head) {
@@ -106,6 +106,12 @@ export function createLocalGitHub(c: LocalGitHubConfig): GitHub {
     },
     async setCheck({ name, conclusion, title }: CheckRun) {
       c.print(`\n━━━ ${name}: ${conclusion === 'success' ? '✅ pass' : '❌ fail'} (${title}) ━━━`)
+    },
+    // No humans review locally: no approvals, nobody can approve.
+    pullReviews: async () => [],
+    canApprove: async () => false,
+    async setRiskLabel(tier) {
+      c.print(`\n🏷  risk:${tier}`)
     },
   }
 }

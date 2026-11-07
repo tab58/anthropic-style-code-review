@@ -5,8 +5,9 @@
  *   PROVIDER_API_KEY=... npm run eval            # all cases
  *   EVAL_DEPTH=quick npm run eval -- sec-        # filter by name prefix
  *   EVAL_SECURITY=off npm run eval               # bug review only
+ *   EVAL_RISK=off npm run eval                   # skip the risk-tier classifier
  *
- * A case is eval/cases/<name>/{before/,after/,expected.json}. Add one for every bug or vulnerability that
+ * A case is eval/cases/<name>/{before/,after/,expected.json}; `risk` (low|medium|high) is the expected tier. Add one for every bug or vulnerability that
  * slipped past review in real life, and rerun whenever prompts, models or presets change.
  */
 import { execFileSync } from 'node:child_process'
@@ -20,10 +21,12 @@ import { parseDiff } from '../src/diff.js'
 import { createLimiter } from '../src/limiter.js'
 import { createPiReviewer } from '../src/pi-reviewer/index.js'
 import { type DepthConfig, resolveDepth, runReview } from '../src/review/index.js'
+import { assessRisk, classifyRisk, type RiskTier } from '../src/risk/index.js'
 import { chooseSecurityPlan, runSecurityReview } from '../src/security/index.js'
 
 const Spot = Type.Object({ file: Type.String(), line: Type.Integer() })
-const ExpectedSchema = Type.Object({ intent: Type.String(), bugs: Type.Array(Spot), security: Type.Optional(Type.Array(Spot)) })
+const Tier = Type.Union([Type.Literal('low'), Type.Literal('medium'), Type.Literal('high')])
+const ExpectedSchema = Type.Object({ intent: Type.String(), bugs: Type.Array(Spot), security: Type.Optional(Type.Array(Spot)), risk: Type.Optional(Tier) })
 type Expected = Static<typeof ExpectedSchema>
 type Spot = Static<typeof Spot>
 
@@ -67,8 +70,10 @@ type Tally = { matched: number; expected: number; fps: number }
 const add = (t: Tally, s: ReturnType<typeof score>): Tally => ({ matched: t.matched + s.matched, expected: t.expected + s.expected, fps: t.fps + s.fps.length })
 const line = (label: string, s: ReturnType<typeof score>) => `${label} ${s.matched}/${s.expected} caught, ${s.fps.length} FP`
 
-/** Runs both passes on one case (sharing one concurrency pool) and scores them. */
-async function runCase(name: string, apiKey: string, depth: DepthConfig, security: boolean) {
+type Flags = { readonly security: boolean; readonly risk: boolean }
+
+/** Runs both passes on one case (sharing one concurrency pool), classifies its risk, and scores them. */
+async function runCase(name: string, apiKey: string, depth: DepthConfig, { security, risk }: Flags) {
   const dir = join(CASES, name)
   const expected = await readExpected(dir)
   const { repo, diff } = await materialize(dir)
@@ -91,7 +96,17 @@ async function runCase(name: string, apiKey: string, depth: DepthConfig, securit
     security ? runSecurityReview(reviewer, { input, paths, plan, posted: [], maxFindings: 15, excludePaths: [], limit }) : undefined,
   ])
   const expectedSecurity = expected.security ?? []
+  const floor = assessRisk({
+    files,
+    highPaths: [],
+    securityPaths: [],
+    blockingSecurity: (vulns?.findings ?? []).some((f) => f.introduced && f.severity !== 'low'),
+    importantBug: bugs.findings.some((f) => f.severity === 'important'),
+    skipped: false,
+  })
+  const tier: RiskTier | undefined = risk ? (await classifyRisk(reviewer, { diff, intent: expected.intent, floor })).tier : undefined
   return {
+    risk: tier && expected.risk ? { expected: expected.risk, got: tier } : undefined,
     bug: score(bugs.findings, expected.bugs, expectedSecurity),
     sec: vulns && { ...score(vulns.findings, expectedSecurity, []), plan: plan.depth },
     errors: [...bugs.errors, ...(vulns?.errors ?? [])],
@@ -103,20 +118,25 @@ async function main() {
   if (!apiKey) throw new Error('Set PROVIDER_API_KEY')
   const depth = resolveDepth({ input: { depth: process.env.EVAL_DEPTH } })
   const security = process.env.EVAL_SECURITY !== 'off'
+  const risk = process.env.EVAL_RISK !== 'off'
   const filters = process.argv.slice(2).map((p) => p.replace(/\*$/, ''))
   const names = (await readdir(CASES)).filter((n) => filters.length === 0 || filters.some((p) => n.startsWith(p))).sort()
   console.log(`depth=${depth.depth} security=${security ? 'on' : 'off'} finder=${process.env.FINDER_MODEL ?? 'glm-5.3'} verifier=${process.env.VERIFIER_MODEL ?? 'deepseek-v4.1-flash'}\n`)
 
   let bugTotal: Tally = { matched: 0, expected: 0, fps: 0 }
   let secTotal: Tally = { matched: 0, expected: 0, fps: 0 }
+  let tiers = { right: 0, total: 0 }
   for (const name of names) {
     const started = Date.now()
-    const r = await runCase(name, apiKey, depth, security)
+    const r = await runCase(name, apiKey, depth, { security, risk })
     bugTotal = add(bugTotal, r.bug)
     if (r.sec) secTotal = add(secTotal, r.sec)
-    const ok = [r.bug, ...(r.sec ? [r.sec] : [])].every((s) => s.matched === s.expected && s.fps.length === 0)
+    if (r.risk) tiers = { right: tiers.right + (r.risk.got === r.risk.expected ? 1 : 0), total: tiers.total + 1 }
+    const tierOk = !r.risk || r.risk.got === r.risk.expected
+    const ok = tierOk && [r.bug, ...(r.sec ? [r.sec] : [])].every((s) => s.matched === s.expected && s.fps.length === 0)
     const sec = r.sec ? ` | ${line(`security(${r.sec.plan})`, r.sec)}` : ''
-    console.log(`${ok ? 'PASS' : 'FAIL'} ${name}: ${line('bugs', r.bug)}${sec}, ${((Date.now() - started) / 1000).toFixed(0)}s`)
+    const tier = r.risk ? ` | risk ${r.risk.got}${tierOk ? '' : ` (expected ${r.risk.expected})`}` : ''
+    console.log(`${ok ? 'PASS' : 'FAIL'} ${name}: ${line('bugs', r.bug)}${sec}${tier}, ${((Date.now() - started) / 1000).toFixed(0)}s`)
     for (const f of [...r.bug.fps, ...(r.sec?.fps ?? [])]) console.log(`    FP ${f.file}:${f.line} ${f.title}`)
     for (const e of r.errors) console.log(`    error: ${e}`)
   }
@@ -124,6 +144,7 @@ async function main() {
   const pct = (t: Tally) => (t.expected ? `${((100 * t.matched) / t.expected).toFixed(0)}%` : 'n/a')
   console.log(`\nBugs:     recall ${bugTotal.matched}/${bugTotal.expected} (${pct(bugTotal)}), false positives ${bugTotal.fps}`)
   if (security) console.log(`Security: recall ${secTotal.matched}/${secTotal.expected} (${pct(secTotal)}), false positives ${secTotal.fps}`)
+  if (risk) console.log(`Risk:     ${tiers.right}/${tiers.total} tiers right`)
   console.log(`across ${names.length} cases`)
 }
 

@@ -1,5 +1,6 @@
 import type { TSchema } from 'typebox'
 import type { Reviewer } from '../review/index.js'
+import type { RiskClassifier } from '../risk/index.js'
 import type { SecurityReviewer } from '../security/index.js'
 import {
   exploitPrompt,
@@ -7,6 +8,8 @@ import {
   finderPrompt,
   RECHECK_SYSTEM,
   recheckPrompt,
+  RISK_SYSTEM,
+  riskPrompt,
   SECURITY_FINDER_SYSTEM,
   SECURITY_VERIFIER_SYSTEM,
   securityFinderPrompt,
@@ -17,6 +20,7 @@ import {
   createRuntime,
   ExploitVerdictSchema,
   FindingsSchema,
+  RiskSchema,
   runStructured,
   SecurityFindingsSchema,
   type StructuredTask,
@@ -49,11 +53,11 @@ export type PiReviewerConfig = {
  * submit tool, and loads no configuration from the repo.
  *
  * @param config - Endpoint, models and checkout path.
- * @returns A {@link Reviewer} and {@link SecurityReviewer}. Its methods reject with the model's API error, or
+ * @returns A {@link Reviewer}, {@link SecurityReviewer} and {@link RiskClassifier} (on the verifier model). Its methods reject with the model's API error, or
  *   when an agent never submits after one nudge.
  * @throws {@link Error} If the model registry cannot be created.
  */
-export async function createPiReviewer(config: PiReviewerConfig): Promise<Reviewer & SecurityReviewer> {
+export async function createPiReviewer(config: PiReviewerConfig): Promise<Reviewer & SecurityReviewer & RiskClassifier> {
   const securityFinder = config.securityFinderModel ?? config.finderModel
   const securityVerifier = config.securityVerifierModel ?? config.verifierModel
   const rt = await createRuntime({
@@ -78,5 +82,6 @@ export async function createPiReviewer(config: PiReviewerConfig): Promise<Review
     },
     judgeExploit: (finding, input) =>
       run({ modelId: securityVerifier, system: SECURITY_VERIFIER_SYSTEM, prompt: exploitPrompt(finding, input), toolName: 'submit_exploit_verdict', schema: ExploitVerdictSchema }),
+    classifyRisk: (input) => run({ modelId: config.verifierModel, system: RISK_SYSTEM, prompt: riskPrompt(input), toolName: 'submit_risk', schema: RiskSchema }),
   }
 }

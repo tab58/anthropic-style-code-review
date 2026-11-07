@@ -2,7 +2,7 @@
 // Tests are excluded on purpose (they may test a module's internal files directly).
 import tseslint from 'typescript-eslint'
 
-const MODULES = ['review', 'workflow', 'pi-reviewer']
+const MODULES = ['review', 'workflow', 'pi-reviewer', 'security', 'risk']
 
 export default tseslint.config({ ignores: ['eval/cases/**'] }, {
   files: ['src/**/*.ts', 'eval/**/*.ts', 'local/**/*.ts'],

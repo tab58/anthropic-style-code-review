@@ -88,6 +88,8 @@ export type SummaryInput = {
   readonly securityOutOfDiff?: readonly SecurityFinding[]
   /** Extra lines shown under the count (e.g. a security pass that didn't complete). Default none. */
   readonly notes?: readonly string[]
+  /** Risk-tier line shown under the count. Default none. */
+  readonly risk?: string
   /** Earlier threads auto-resolved this round. */
   readonly resolved: number
   /** State to embed (this round's). */
@@ -97,13 +99,14 @@ export type SummaryInput = {
 }
 
 /** Review summary body: count first, resolved count, out-of-diff findings, round footer, state marker. */
-export function summary({ findings, outOfDiff, security = [], securityOutOfDiff = [], notes = [], resolved, state, maxRounds }: SummaryInput): string {
+export function summary({ findings, outOfDiff, security = [], securityOutOfDiff = [], notes = [], risk, resolved, state, maxRounds }: SummaryInput): string {
   const outside = [
     ...outOfDiff.map((f) => `- ${loc(f)} **${LABEL[f.severity]}**: ${safe(f.title)}. ${safe(f.explanation).trim()}`),
     ...securityOutOfDiff.map((f) => `- ${loc(f)} **${securityLabel(f)}**: ${safe(f.title)}. ${safe(f.exploitScenario).trim()}`),
   ]
   return [
     countLine(findings, security),
+    ...(risk ? ['', safe(risk)] : []),
     ...notes.flatMap((n) => ['', `⚠️ ${n}`]),
     ...(resolved > 0 ? ['', `${resolved} earlier finding${resolved === 1 ? '' : 's'} resolved by new commits.`] : []),
     ...outOfDiffLines(outside),

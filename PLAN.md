@@ -230,3 +230,128 @@ Changes after code review:
 - **Prompt injection is worse here.** A malicious diff can try to talk voters out of a real vulnerability. Mitigations: the finder sees the diff only as untrusted data, voters must cite the sink line, and auto-resolve needs a quorum. Like Anthropic's action, this is **not hardened against a determined attacker**; forks stay manual-dispatch only.
 - **Escalation heuristics miss things.** A vulnerability outside the risky paths gets only the quick pass (2 general finders). Accepted: quick still runs on every PR.
 - **Cost.** Quick adds about 2 + 3×findings sessions per round; full adds about 4 + 3×findings.
+
+---
+
+# Phase 3: Risk-tier approvals
+
+Each PR gets a risk tier, and the tier sets how many human approvals it needs before merge. This is the article's "a classifier decides whether a change needs zero, one or two human approvers". GitHub branch protection only supports a fixed approval count per branch, so the variable count is enforced by a third check run.
+
+## Decisions
+
+| Topic | Decision |
+|---|---|
+| Default | **Off, opt-in** with `risk_tiers: on`. Existing `@v1` users are unaffected |
+| Tiers → approvals | **low 0 · medium 1 · high 2**. Overridable through `risk_approvals: { low, medium, high }` in REVIEW.md frontmatter |
+| Who decides | **The rules set a floor, and the LLM may only raise it.** The deterministic rules compute a minimum tier; one classifier call can raise the tier but never lower it, so prompt injection in a diff can't talk a PR down to `low` |
+| Stickiness | **Never goes down within a PR.** The stored tier is the max of every round's tier, kept in the state marker. A non-deterministic classifier can't flip it, and a scary PR can't be trimmed to `low` and then grown back |
+| Enforcement | New check **`<check_name>/approvals`**. It fails until the PR has N qualifying approvals. The repo sets branch protection to 0 required reviews and requires this check. A `risk:<tier>` label goes on the PR, and the check summary gives the reasons |
+| Qualifying approval | Each user's latest non-comment review is `APPROVED` **and** was given on the **current head SHA** (so a push resets approvals). The user has write, maintain or admin permission, is not the PR author, and is not a bot |
+| Repo overrides | REVIEW.md frontmatter `risk_high_paths: [globs]` forces high. It's read from the base branch, so a PR can't loosen its own rules |
+
+## Rule floor (pure function over the full PR diff plus the round's results)
+
+- **High** if any of these:
+  - the security pass escalated to full (`needsFullPass`: auth, crypto, payments, workflows, infra, dependency manifests, or risky added code);
+  - `risk_high_paths` matches;
+  - a High or Medium security finding was introduced this round;
+  - the review was skipped (diff over `max_diff_lines`) or paused at the round cap.
+- **Medium** if any of these: more than 200 changed lines; any changed file that isn't docs or tests (`*.md`, `docs/**`, test globs); an Important bug finding was posted this round.
+- **Low** otherwise: a small change to docs and tests only.
+
+Notes:
+- The bug and security gates already block on open findings, so `low` doesn't re-check them. Findings raise the tier only because a PR that introduced a vulnerability deserves human eyes even after the fix, and stickiness keeps that.
+- With the defaults, almost every code PR is at least medium. Repos that want a zero-approval path for small code changes can set `risk_approvals: { medium: 0 }`.
+
+## Classifier
+
+- One Pi session using `verifier_model`, with read-only tools confined to the checkout (same sandbox as the reviewers).
+- Input: the PR diff, title and body, the rule floor and its reasons.
+- It submits `{ tier, reasons[] }` through a terminating `submit_risk` tool.
+- Final tier = `max(floor, classifier, stored tier)`.
+- **Failure handling:** if the call fails or returns invalid output, the tier is `max(floor, medium, stored)`, the failure is noted in the check summary, and the run doesn't fail.
+- The prompt states that the diff is untrusted data and that the answer can only raise the floor (code enforces this anyway).
+
+## Pipeline
+
+**Review runs** (`pull_request` opened or synchronize):
+1. Publish the approvals check right away with the stored tier, at least `medium` on the first round. This way a fresh push is never mergeable while the classifier runs.
+2. Run the bug and security passes as today.
+3. Compute the floor from the full PR diff, the escalation result and this round's findings, then run the classifier.
+4. Store `tier` and `tierReasons` in the state marker, set the `risk:<tier>` label (removing other `risk:*` labels), add one line to the summary (`Risk: **high** (2 approvals): touches .github/workflows/…`), and republish the approvals check.
+
+**Gate runs** (`pull_request_review` submitted or dismissed, `pull_request_review_thread`):
+- Read the stored tier, count qualifying approvals and republish the approvals check.
+- No LLM call, and no API key needed.
+- A PR without a stored tier (reviewed before tiers were enabled) is treated as `medium` until the next review run.
+
+## Architecture changes
+
+- **New module `src/risk/`**:
+  - `assessRisk(signals, overrides): RiskFloor`, a pure function;
+  - `classifyRisk(classifier: RiskClassifier, input, floor): Promise<RiskAssessment>`;
+  - `countApprovals(reviews, headSha, author, permissionOf): number`;
+  - `requiredApprovals(tier, overrides)`;
+  - types `RiskTier`, `RiskAssessment`, `RiskClassifier`.
+  - It reuses `needsFullPass` from `security/`.
+- **`pi-reviewer/`:** `createPiReviewer` also implements `RiskClassifier` (adds a prompt, a schema and the `submit_risk` tool).
+- **`GitHub` interface** gains:
+  - `pullReviews()`: paginated `GET /pulls/{n}/reviews`, returning `{ user, userType, state, commitId }`;
+  - `permissionOf(login)`: `GET /collaborators/{login}/permission`, cached per run;
+  - `setLabels(add, removePrefix)`.
+- **`workflow/`:**
+  - the state marker gains optional `tier` and `tierReasons`;
+  - `publishGates` publishes the third check when tiers are on;
+  - `reviewRound` calls the risk step after the passes.
+- **Inputs:** `risk_tiers` (`on` | `off`, default `off`). `inputs.ts` maps the `pull_request_review` event to a `gate` run.
+- **REVIEW.md frontmatter:** `risk_high_paths`, `risk_approvals`.
+- **Workflow permissions:** add `issues: write`, which labels need. README: add `pull_request_review: [submitted, dismissed]` to the triggers.
+
+## Eval
+
+- Extend `expected.json` with an optional `risk: low|medium|high`, and report tier accuracy.
+- Add two cases: a docs-only change (low) and a workflow file edit (high).
+- The existing cases get the expected tier: the bug cases medium, the sec cases high.
+
+## Build order (TDD)
+
+1. `risk/` pure functions: `assessRisk`, `requiredApprovals`, `countApprovals` (stale SHA, author, bot, read-only user, dismissed, latest-review-wins), with exhaustive tests.
+2. `classifyRisk` with a fake classifier: raise-only, failure fallback, invalid tier.
+3. `GitHub` client: `pullReviews`, `permissionOf`, `setLabels`, tested with the fake `GitHubApi`.
+4. `pi-reviewer` risk prompt, schema and tool; extend the fake-SSE integration test.
+5. `workflow`:
+   - state fields;
+   - early check on push;
+   - risk step after the passes;
+   - summary line and label;
+   - the third check in `publishGates`;
+   - gate runs on `pull_request_review`.
+6. `inputs.ts`, `action.yml`, README (setup: branch protection to 0 approvals, the required check, the trigger, the `issues: write` permission), and the local CLI (`--risk`).
+7. Eval cases; live run.
+8. Release `v1.2.0`, together with the pending security release decision.
+
+## Status
+
+Built: 417 tests passing. Live eval (quick depth, Ollama Cloud): 12 of 13 tiers right, with bug and security recall both 100%. The one miss is `sec-clean-parameterized`: the classifier raised a new lookup-by-email query to **high**, where the fixture expects medium.
+
+Changes after code review:
+- **Stale tier on a new head (the bypass):** a stored tier counts only when `state.sha` is the current head. On a newer, unassessed head it is at least medium, so a push after a `low` round never starts with a green approvals check, even if the review run then crashes.
+- **Dotfiles:** `risk_high_paths` and `security_paths` also match dot segments (`config/.prod.env`), through `matchesGlobDot`. It is used only where a match raises scrutiny, never for `skip_paths`.
+- **Invalid base REVIEW.md:** publishes a failing approvals check that names the error, instead of leaving an old verdict in place.
+- **Race between review and approval runs:** the README now puts every run for a PR in one concurrency group, where only pushes and dispatches cancel.
+- **Accepted limits (documented):**
+  - only the PR author is excluded, not other pushers;
+  - fork PRs stay blocked until a maintainer dispatches;
+  - permission changes aren't re-checked until the next review event;
+  - a rename's old path isn't checked against the path rules.
+
+## Risks
+
+- **Misconfiguration silently weakens review.** If a repo sets branch protection to 0 approvals but forgets to require the `/approvals` check, nothing blocks. The README must spell out both steps. The check summary also says "not enforced unless required".
+- **`GITHUB_TOKEN` limits.**
+  - The permission lookup needs `metadata: read`, which `GITHUB_TOKEN` always has.
+  - Reviews on fork PRs run with a read-only token, consistent with same-repo-only.
+  - Checks created by `GITHUB_TOKEN` don't trigger other workflows, which is fine.
+- **Gate race.** An approval submitted while a review run is mid-flight is counted by the gate run. The review run's final republish recounts, so whichever finishes last is correct, because both read live reviews.
+- **Approval reset on every push** adds friction to iterative PRs. It's the safer default and matches the article; a later `risk_keep_approvals` input could relax it.
+- **Classifier cost:** one cheap-model session per round.

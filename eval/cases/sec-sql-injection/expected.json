@@ -1,1 +1,1 @@
-{ "intent": "Add user search endpoint", "bugs": [], "security": [{ "file": "src/users.ts", "line": 11 }] }
+{"intent": "Add user search endpoint", "bugs": [], "security": [{"file": "src/users.ts", "line": 11}], "risk": "high"}

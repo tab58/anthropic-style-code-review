@@ -33,6 +33,7 @@ const pull = (over: Record<string, unknown> = {}) => ({
   title: 'T',
   body: 'B',
   draft: false,
+  user: { login: 'alice' },
   head: { sha: 'h', repo: { full_name: 'o/r' } },
   base: { sha: 'b', repo: { full_name: 'o/r' } },
   ...over,
@@ -41,13 +42,13 @@ const pull = (over: Record<string, unknown> = {}) => ({
 describe('getPull', () => {
   it('maps the PR', async () => {
     const { gh, calls } = client(() => pull())
-    expect(await gh.getPull()).toEqual({ number: 7, headSha: 'h', baseSha: 'b', title: 'T', body: 'B', isFork: false, draft: false })
+    expect(await gh.getPull()).toEqual({ number: 7, headSha: 'h', baseSha: 'b', title: 'T', body: 'B', author: 'alice', isFork: false, draft: false })
     expect(calls[0]?.params).toMatchObject({ owner: 'o', repo: 'r', pull_number: 7 })
   })
 
-  it('defaults a null body and missing draft', async () => {
-    const { draft: _, ...noDraft } = pull({ body: null })
-    expect(await client(() => noDraft).gh.getPull()).toMatchObject({ body: '', draft: false })
+  it('defaults a null body, missing draft and a deleted author', async () => {
+    const { draft: _, ...noDraft } = pull({ body: null, user: null })
+    expect(await client(() => noDraft).gh.getPull()).toMatchObject({ body: '', draft: false, author: '' })
   })
 
   it.each([
@@ -213,5 +214,74 @@ describe('setCheck', () => {
       route: 'POST /repos/{owner}/{repo}/check-runs',
       params: { name: 'gate', head_sha: 'h', status: 'completed', conclusion: 'failure', output: { title: 'T', summary: 'S' } },
     })
+  })
+})
+
+describe('pullReviews', () => {
+  const review = (login: string | null, state: string, over: Record<string, unknown> = {}) => ({ body: '', state, commit_id: 'h', user: login === null ? null : { login, type: 'User' }, ...over })
+
+  it('maps every review, flagging bots and dropping deleted users', async () => {
+    const data = [review('bob', 'APPROVED'), review('ci[bot]', 'APPROVED', { user: { login: 'ci[bot]', type: 'Bot' } }), review(null, 'APPROVED'), review('carol', 'CHANGES_REQUESTED', { commit_id: null })]
+    expect(await client(() => data).gh.pullReviews()).toEqual([
+      { login: 'bob', isBot: false, state: 'APPROVED', commitId: 'h' },
+      { login: 'ci[bot]', isBot: true, state: 'APPROVED', commitId: 'h' },
+      { login: 'carol', isBot: false, state: 'CHANGES_REQUESTED', commitId: '' },
+    ])
+  })
+
+  it('returns [] with no reviews and paginates', async () => {
+    expect(await client(() => []).gh.pullReviews()).toEqual([])
+    const page = (n: number) => Array.from({ length: n }, () => review('bob', 'COMMENTED'))
+    const { gh, calls } = client((_r, p) => (p.page === 1 ? page(100) : page(1)))
+    expect(await gh.pullReviews()).toHaveLength(101)
+    expect(calls.map((c) => c.params.page)).toEqual([1, 2])
+  })
+
+  it('rejects unknown review states', async () => {
+    await expect(client(() => [review('bob', 'WEIRD')]).gh.pullReviews()).rejects.toThrow('Unexpected GitHub response')
+  })
+})
+
+describe('canApprove', () => {
+  it.each([
+    ['admin', true],
+    ['maintain', true],
+    ['write', true],
+    ['triage', false],
+    ['read', false],
+    ['none', false],
+  ])('%s → %s', async (permission, ok) => {
+    const { gh, calls } = client(() => ({ permission }))
+    expect(await gh.canApprove('bob')).toBe(ok)
+    expect(calls[0]?.params).toMatchObject({ owner: 'o', repo: 'r', username: 'bob' })
+  })
+
+  it('caches per login, is false on 404 and rethrows other errors', async () => {
+    const { gh, calls } = client(() => ({ permission: 'write' }))
+    await gh.canApprove('bob')
+    await gh.canApprove('bob')
+    expect(calls).toHaveLength(1)
+    expect(await client(() => { throw httpError(404) }).gh.canApprove('x')).toBe(false)
+    await expect(client(() => { throw httpError(500) }).gh.canApprove('x')).rejects.toThrow('HTTP 500')
+  })
+})
+
+describe('setRiskLabel', () => {
+  it('adds the tier label and removes the others, ignoring missing labels', async () => {
+    const { gh, calls } = client((route) => {
+      if (route.startsWith('DELETE')) throw httpError(404)
+      return []
+    })
+    await gh.setRiskLabel('high')
+    expect(calls.map((c) => [c.route, c.params.name ?? c.params.labels])).toEqual([
+      ['POST /repos/{owner}/{repo}/issues/{issue_number}/labels', ['risk:high']],
+      ['DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}', 'risk:low'],
+      ['DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}', 'risk:medium'],
+    ])
+    expect(calls[0]?.params.issue_number).toBe(7)
+  })
+
+  it('rethrows other errors', async () => {
+    await expect(client(() => { throw httpError(403) }).gh.setRiskLabel('low')).rejects.toThrow('HTTP 403')
   })
 })

@@ -1,1 +1,1 @@
-{ "intent": "Add saveAll to persist many entries; callers rely on ok meaning everything is written", "bugs": [{ "file": "src/store.ts", "line": 12 }] }
+{"intent": "Add saveAll to persist many entries; callers rely on ok meaning everything is written", "bugs": [{"file": "src/store.ts", "line": 12}], "risk": "medium"}

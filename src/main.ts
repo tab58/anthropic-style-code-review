@@ -35,7 +35,8 @@ async function main(): Promise<void> {
   if (inputs.event === 'gate') {
     const gate = await workflow.gate()
     const sec = gate.security ? `; security ${gate.security.conclusion} (${gate.security.openBlocking} open high/medium)` : ''
-    core.info(`Gate: ${gate.conclusion} (${gate.openImportant} open important)${sec}`)
+    const appr = gate.approvals ? `; approvals ${gate.approvals.conclusion} (${gate.approvals.tier}: ${gate.approvals.approved.length}/${gate.approvals.required})` : ''
+    core.info(`Gate: ${gate.conclusion} (${gate.openImportant} open important)${sec}${appr}`)
   } else {
     core.info((await workflow.review({ allowFork: inputs.allowFork })).message)
   }

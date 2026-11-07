@@ -1,1 +1,1 @@
-{ "intent": "Rename variables for readability; no behavior change", "bugs": [] }
+{"intent": "Rename variables for readability; no behavior change", "bugs": [], "risk": "medium"}

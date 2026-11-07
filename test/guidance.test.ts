@@ -98,3 +98,19 @@ describe('security frontmatter', () => {
     },
   )
 })
+
+describe('risk frontmatter', () => {
+  it('parses risk_high_paths and a partial risk_approvals', () => {
+    const md = '---\nrisk_high_paths: ["db/**"]\nrisk_approvals: { medium: 0 }\n---\n'
+    expect(parseReviewMd(md).config).toEqual({ skipPaths: [], riskHighPaths: ['db/**'], riskApprovals: { medium: 0 } })
+  })
+
+  it.each([
+    ['---\nrisk_high_paths: "db/**"\n---\n', /risk_high_paths must be a list of glob strings/],
+    ['---\nrisk_approvals: { high: -1 }\n---\n', /risk_approvals must be a mapping/],
+    ['---\nrisk_approvals: { urgent: 3 }\n---\n', /risk_approvals must be a mapping/],
+    ['---\nrisk_approvals: 2\n---\n', /risk_approvals/],
+  ])('rejects invalid %#', (md, err) => {
+    expect(() => parseReviewMd(md)).toThrow(err)
+  })
+})

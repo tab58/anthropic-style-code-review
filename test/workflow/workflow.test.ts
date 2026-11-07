@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { type Finding, fingerprint, type Reviewer } from '../../src/review/index.js'
+import type { PullReview, RiskClassifier } from '../../src/risk/index.js'
 import { type SecurityFinding, securityFingerprint, type SecurityReviewer } from '../../src/security/index.js'
 import { encodeState, decodeState } from '../../src/workflow/markers.js'
 import { type BotThread, createWorkflow, type GitHub, type WorkflowOptions } from '../../src/workflow/index.js'
@@ -29,16 +30,20 @@ type FakeOpts = {
   draft?: boolean
   ancestor?: boolean
   reviewError?: (comments: number) => unknown
+  pullReviews?: PullReview[]
+  writers?: string[]
+  labelError?: unknown
 }
 
 /** In-memory GitHub: reviews create threads; resolving flips them. */
 function fakeGitHub(opts: FakeOpts = {}) {
   const reviews: { body: string; comments: readonly { path: string; line: number; body: string }[] }[] = []
   const threads: BotThread[] = [...(opts.threads ?? [])]
-  const checks: { name: string; conclusion: string; title: string }[] = []
+  const checks: { name: string; conclusion: string; title: string; summary: string }[] = []
   const compared: string[] = []
+  const labels: string[] = []
   const github: GitHub = {
-    getPull: async () => ({ number: 1, headSha: 'h2', baseSha: 'b0', title: 'Add x', body: 'desc', isFork: opts.fork ?? false, draft: opts.draft ?? false }),
+    getPull: async () => ({ number: 1, headSha: 'h2', baseSha: 'b0', title: 'Add x', body: 'desc', author: 'alice', isFork: opts.fork ?? false, draft: opts.draft ?? false }),
     compareDiff: async (base, head) => {
       compared.push(`${base}...${head}`)
       return opts.diffs?.[base] ?? diffFor('src/a.ts', ['x()', 'y()'])
@@ -61,11 +66,18 @@ function fakeGitHub(opts: FakeOpts = {}) {
     setCheck: async (c) => {
       checks.push(c)
     },
+    pullReviews: async () => opts.pullReviews ?? [],
+    canApprove: async (login) => (opts.writers ?? []).includes(login),
+    setRiskLabel: async (tier) => {
+      if (opts.labelError) throw opts.labelError
+      labels.push(tier)
+    },
   }
-  return { github, reviews, threads, checks, compared }
+  return { github, reviews, threads, checks, compared, labels }
 }
 
-const fakeReviewer = (findings: readonly Finding[], over: Partial<Reviewer & SecurityReviewer> = {}): Reviewer & SecurityReviewer => ({
+const fakeReviewer = (findings: readonly Finding[], over: Partial<Reviewer & SecurityReviewer & RiskClassifier> = {}): Reviewer & SecurityReviewer & RiskClassifier => ({
+  classifyRisk: vi.fn(async () => ({ tier: 'low' as const, reasons: [] })),
   find: vi.fn(async () => findings),
   verify: vi.fn(async () => ({ real: true, reason: '' })),
   recheck: vi.fn(async () => true),
@@ -299,7 +311,7 @@ describe('createWorkflow().gate', () => {
 
 describe('security pass', () => {
   const sec: WorkflowOptions = { ...options, securityReview: true }
-  const run = async (gh: ReturnType<typeof fakeGitHub>, reviewer: Reviewer & SecurityReviewer, opts: WorkflowOptions = sec) =>
+  const run = async (gh: ReturnType<typeof fakeGitHub>, reviewer: Reviewer & SecurityReviewer & RiskClassifier, opts: WorkflowOptions = sec) =>
     createWorkflow({ github: gh.github, createReviewer: async () => reviewer, log: log() }, opts).review()
 
   it('posts vulnerabilities inline, counts them in the summary, and fails only the security gate', async () => {
@@ -480,5 +492,142 @@ describe('security pass', () => {
     const gh = fakeGitHub()
     await run(gh, fakeReviewer([]), { ...sec, checkName: 'review' })
     expect(gh.checks.map((c) => c.name)).toEqual(['review', 'review/security'])
+  })
+})
+
+describe('risk tiers', () => {
+  const risky: WorkflowOptions = { ...options, riskTiers: true }
+  const approvals = (gh: ReturnType<typeof fakeGitHub>) => gh.checks.filter((c) => c.name === 'anthropic-style-code-review/approvals')
+  const approve = (login: string, commitId = 'h2'): PullReview => ({ login, isBot: false, state: 'APPROVED', commitId })
+  const run = (gh: ReturnType<typeof fakeGitHub>, reviewer = fakeReviewer([]), opts = risky) =>
+    createWorkflow({ github: gh.github, createReviewer: async () => reviewer, log: log() }, opts).review()
+
+  it('is off by default: no classifier call, no approvals check, no label', async () => {
+    const gh = fakeGitHub()
+    const reviewer = fakeReviewer([])
+    await run(gh, reviewer, options)
+    expect(reviewer.classifyRisk).not.toHaveBeenCalled()
+    expect(approvals(gh)).toEqual([])
+    expect(gh.labels).toEqual([])
+  })
+
+  it('publishes a failing medium check before reviewing, then stores the tier, labels and rechecks', async () => {
+    const gh = fakeGitHub()
+    const reviewer = fakeReviewer([])
+    const outcome = await run(gh, reviewer)
+    expect(approvals(gh).map((c) => [c.conclusion, c.title])).toEqual([
+      ['failure', 'Risk medium: 0 of 1 approvals'],
+      ['failure', 'Risk medium: 0 of 1 approvals'],
+    ])
+    expect(approvals(gh)[0]?.summary).toContain('not assessed yet')
+    expect(reviewer.classifyRisk).toHaveBeenCalledWith(expect.objectContaining({ intent: 'Add x\n\ndesc', floor: { tier: 'medium', reasons: ['changes source: src/a.ts'] } }))
+    expect(decodeState([gh.reviews[0]?.body ?? ''])).toMatchObject({ tier: 'medium', tierReasons: ['changes source: src/a.ts'] })
+    expect(gh.reviews[0]?.body).toContain('Risk: **medium** (1 approval needed): changes source: src/a.ts')
+    expect(gh.labels).toEqual(['medium'])
+    expect(outcome).toMatchObject({ risk: { tier: 'medium' } })
+  })
+
+  it('lets the classifier raise the tier, with its reasons in the check', async () => {
+    const gh = fakeGitHub()
+    await run(gh, fakeReviewer([], { classifyRisk: vi.fn(async () => ({ tier: 'high' as const, reasons: ['billing math'] })) }))
+    expect(approvals(gh).at(-1)).toMatchObject({ title: 'Risk high: 0 of 2 approvals' })
+    expect(approvals(gh).at(-1)?.summary).toContain('classifier: billing math')
+    expect(gh.labels).toEqual(['high'])
+  })
+
+  it('never lowers a stored tier', async () => {
+    const gh = fakeGitHub({ bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [], tier: 'high', tierReasons: ['auth'] })] })
+    await run(gh)
+    expect(decodeState(gh.reviews.map((r) => r.body))).toMatchObject({ tier: 'high', tierReasons: ['auth'] })
+  })
+
+  it('raises the tier for a blocking security finding', async () => {
+    const gh = fakeGitHub()
+    await run(gh, fakeReviewer([], { findVulnerabilities: vi.fn(async () => [vuln()]) }), { ...risky, securityReview: true })
+    expect(decodeState(gh.reviews.map((r) => r.body))?.tier).toBe('high')
+  })
+
+  it('counts approvals on HEAD from users with write access, excluding the author', async () => {
+    const gh = fakeGitHub({ pullReviews: [approve('bob'), approve('carol'), approve('dave', 'h1'), approve('alice'), approve('eve')], writers: ['bob', 'dave', 'alice'] })
+    await run(gh)
+    expect(approvals(gh).at(-1)).toMatchObject({ conclusion: 'success', title: 'Risk medium: 1 of 1 approvals' })
+    expect(approvals(gh).at(-1)?.summary).toContain('Approved by: @bob')
+  })
+
+  it('honors REVIEW.md risk_approvals and risk_high_paths', async () => {
+    const files = { 'REVIEW.md': '---\nrisk_approvals: { medium: 0 }\n---\n' }
+    const zero = fakeGitHub({ files })
+    await run(zero)
+    expect(approvals(zero).at(-1)).toMatchObject({ conclusion: 'success', title: 'Risk medium: 0 of 0 approvals' })
+
+    const forced = fakeGitHub({ files: { 'REVIEW.md': '---\nrisk_high_paths: ["src/**"]\n---\n' } })
+    await run(forced)
+    expect(approvals(forced).at(-1)?.title).toBe('Risk high: 0 of 2 approvals')
+  })
+
+  it('marks oversized and paused rounds high without calling the classifier', async () => {
+    const big = fakeGitHub()
+    const reviewer = fakeReviewer([])
+    await run(big, reviewer, { ...risky, maxDiffLines: 1 })
+    expect(decodeState(big.reviews.map((r) => r.body))?.tier).toBe('high')
+    expect(reviewer.classifyRisk).not.toHaveBeenCalled()
+
+    const capped = fakeGitHub({ bodies: [encodeState({ round: 3, sha: 'h1', fingerprints: [], tier: 'low', tierReasons: [] })] })
+    await run(capped)
+    expect(decodeState(capped.reviews.map((r) => r.body))?.tier).toBe('high')
+  })
+
+  it('assesses rule-only when nothing is reviewable after skip_paths', async () => {
+    const gh = fakeGitHub({ files: { 'REVIEW.md': '---\nskip_paths: ["src/**"]\n---\n' } })
+    const createReviewer = vi.fn()
+    await createWorkflow({ github: gh.github, createReviewer, log: log() }, { ...risky, securityReview: true }).review()
+    expect(createReviewer).not.toHaveBeenCalled()
+    expect(decodeState(gh.reviews.map((r) => r.body))?.tier).toBe('medium')
+  })
+
+  it('warns but does not fail when labeling is not permitted', async () => {
+    const gh = fakeGitHub({ labelError: Object.assign(new Error('Resource not accessible'), { status: 403 }) })
+    const l = log()
+    await createWorkflow({ github: gh.github, createReviewer: async () => fakeReviewer([]), log: l }, risky).review()
+    expect(l.warning).toHaveBeenCalledWith(expect.stringContaining('risk label'))
+  })
+
+  it('gate runs recount approvals from the stored tier without any reviewer', async () => {
+    const gh = fakeGitHub({ bodies: [encodeState({ round: 1, sha: 'h2', fingerprints: [], tier: 'high', tierReasons: ['auth'] })], pullReviews: [approve('bob'), approve('carol')], writers: ['bob', 'carol'] })
+    const createReviewer = vi.fn()
+    const gate = await createWorkflow({ github: gh.github, createReviewer, log: log() }, risky).gate()
+    expect(createReviewer).not.toHaveBeenCalled()
+    expect(gate.approvals).toEqual({ conclusion: 'success', tier: 'high', required: 2, approved: ['bob', 'carol'], assessed: true })
+    expect(gh.labels).toEqual([])
+  })
+
+  it('gate runs treat a PR without a stored tier as medium', async () => {
+    const gh = fakeGitHub()
+    const gate = await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }, risky).gate()
+    expect(gate.approvals).toMatchObject({ conclusion: 'failure', tier: 'medium', required: 1, assessed: false })
+  })
+
+  it('does not trust a stored low tier on a head no round has assessed yet', async () => {
+    const stale = [encodeState({ round: 1, sha: 'h1', fingerprints: [], tier: 'low', tierReasons: ['docs and tests only'] })]
+    const gh = fakeGitHub({ bodies: stale })
+    await createWorkflow({ github: gh.github, createReviewer: async () => { throw new Error('bad key') }, log: log() }, risky).review().catch(() => undefined)
+    expect(approvals(gh)).toEqual([expect.objectContaining({ conclusion: 'failure', title: 'Risk medium: 0 of 1 approvals' })])
+    expect(approvals(gh)[0]?.summary).toContain('not assessed yet')
+
+    const gate = await createWorkflow({ github: fakeGitHub({ bodies: stale }).github, createReviewer: vi.fn(), log: log() }, risky).gate()
+    expect(gate.approvals).toMatchObject({ tier: 'medium', required: 1, assessed: false })
+  })
+
+  it('keeps a stored high tier on an unassessed head', async () => {
+    const gh = fakeGitHub({ bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [], tier: 'high', tierReasons: ['auth'] })] })
+    const gate = await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }, risky).gate()
+    expect(gate.approvals).toMatchObject({ tier: 'high', required: 2 })
+  })
+
+  it('fails the approvals check, rather than leaving it stale, when base REVIEW.md is invalid', async () => {
+    const gh = fakeGitHub({ files: { 'REVIEW.md': '---\nrisk_approvals: 3\n---\n' } })
+    const gate = await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }, risky).gate()
+    expect(gate.approvals?.conclusion).toBe('failure')
+    expect(approvals(gh).at(-1)).toMatchObject({ conclusion: 'failure', title: 'REVIEW.md is invalid' })
   })
 })

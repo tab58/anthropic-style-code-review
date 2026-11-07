@@ -1,6 +1,7 @@
 import type { Finding, Reviewer, ReviewStats } from '../review/index.js'
+import type { PullReview, RiskAssessment, RiskClassifier, RiskTier } from '../risk/index.js'
 import type { SecurityFinding, SecurityPassDepth, SecurityReviewer } from '../security/index.js'
-import { publishGates } from './gates.js'
+import { publishApprovals, publishGates } from './gates.js'
 import { type Context, reviewRound, type Settings } from './round.js'
 
 /** The pull request under review. */
@@ -15,6 +16,8 @@ export type PullRequest = {
   readonly title: string
   /** PR description; empty string when none. */
   readonly body: string
+  /** Login of the PR author; empty when the account was deleted. */
+  readonly author: string
   /** True when the head branch lives in a fork. */
   readonly isFork: boolean
   /** True for draft PRs. */
@@ -82,6 +85,12 @@ export interface GitHub {
   resolveThread(id: string): Promise<void>
   /** Publishes a merge-gate check run. */
   setCheck(check: CheckRun): Promise<void>
+  /** Every review on the PR (any author), oldest first. */
+  pullReviews(): Promise<readonly PullReview[]>
+  /** True when `login` has write, maintain or admin permission on the repo. */
+  canApprove(login: string): Promise<boolean>
+  /** Labels the PR `risk:<tier>`, removing the other tier labels. */
+  setRiskLabel(tier: RiskTier): Promise<void>
 }
 
 /** Progress and warning sink. */
@@ -92,8 +101,8 @@ export interface Log {
   warning(msg: string): void
 }
 
-/** Builds the bug + security reviewer lazily, so gate-only runs never need an API key. */
-export type ReviewerFactory = () => Promise<Reviewer & SecurityReviewer>
+/** Builds the bug + security reviewer and risk classifier lazily, so gate-only runs never need an API key. */
+export type ReviewerFactory = () => Promise<Reviewer & SecurityReviewer & RiskClassifier>
 
 /** Required collaborators for {@link createWorkflow}. */
 export type WorkflowConfig = {
@@ -125,8 +134,10 @@ export type WorkflowOptions = {
   readonly nitCap?: number
   /** Run the security pass and publish its gate. Default true. */
   readonly securityReview?: boolean
-  /** Bug gate check name; the security gate is `<checkName>/security`. Default `anthropic-style-code-review`. */
+  /** Bug gate check name; the other gates are `<checkName>/security` and `<checkName>/approvals`. Default `anthropic-style-code-review`. */
   readonly checkName?: string
+  /** Assess a risk tier, label the PR and publish the approvals gate. Default false. */
+  readonly riskTiers?: boolean
 }
 
 /** Defaults for the {@link WorkflowOptions} that have a fixed default. */
@@ -138,6 +149,7 @@ export const DEFAULT_WORKFLOW_OPTIONS = {
   nitCap: 3,
   securityReview: true,
   checkName: 'anthropic-style-code-review',
+  riskTiers: false,
 } as const satisfies WorkflowOptions
 
 /** Per-call data for {@link Workflow.review}. */
@@ -160,6 +172,8 @@ export type RoundOutcome =
       readonly stats: ReviewStats
       /** Security pass result; undefined when the security review is off. */
       readonly security: SecurityOutcome | undefined
+      /** The PR's tier after this round; undefined when risk tiers are off. */
+      readonly risk?: RiskAssessment
     }
 
 /** What the security pass found this round. */
@@ -187,6 +201,22 @@ export type GateResult = {
     /** True when the security pass has completed on the current head commit. */
     readonly reviewed: boolean
   }
+  /** The approvals gate; undefined when risk tiers are off. */
+  readonly approvals?: ApprovalsResult
+}
+
+/** The approvals gate's verdict. */
+export type ApprovalsResult = {
+  /** `failure` until enough qualifying approvals are on the head commit. */
+  readonly conclusion: CheckConclusion
+  /** The PR's stored tier (`medium` when not assessed yet). */
+  readonly tier: RiskTier
+  /** Approvals the tier needs. */
+  readonly required: number
+  /** Logins whose approval counts. */
+  readonly approved: readonly string[]
+  /** False when no review round has assessed the tier yet (it defaults to `medium`). */
+  readonly assessed: boolean
 }
 
 /** The review lifecycle for one PR. */
@@ -214,22 +244,31 @@ export function createWorkflow(config: WorkflowConfig, options: WorkflowOptions 
     concurrency: options.concurrency ?? d.concurrency,
     securityReview: options.securityReview ?? d.securityReview,
     checkName: options.checkName ?? d.checkName,
+    riskTiers: options.riskTiers ?? d.riskTiers,
     nitCapDefault: d.nitCap,
   }
   const ctx: Context = { ...config, settings }
-  const gates = { name: settings.checkName, security: settings.securityReview }
+  const gates = { name: settings.checkName, security: settings.securityReview, approvals: settings.riskTiers }
   return {
     async review({ allowFork = false } = {}) {
       const pr = await ctx.github.getPull()
       // Fork PR tokens are read-only, so there is nothing we could post; just stop.
       if (pr.isFork && !allowFork) return { status: 'skipped', message: 'Fork PR: skipped (no secrets). A maintainer can run workflow_dispatch with pr_number.' }
+      // A fresh push must not look mergeable while the review runs: publish the stored tier's verdict first.
+      if (settings.riskTiers) await publishApprovals(ctx.github, pr, settings.checkName)
       const outcome: RoundOutcome = pr.draft ? { status: 'skipped', message: 'Draft PR: review skipped.' } : await reviewRound(ctx, pr)
-      await publishGates(ctx.github, pr.headSha, gates)
+      const gate = await publishGates(ctx.github, pr, gates)
+      if (gate.approvals?.assessed) await labelRisk(ctx, gate.approvals.tier)
       return outcome
     },
     async gate() {
       const pr = await ctx.github.getPull()
-      return publishGates(ctx.github, pr.headSha, gates)
+      return publishGates(ctx.github, pr, gates)
     },
   }
+}
+
+/** Labels the PR with its tier; a missing `issues: write` permission only warns. */
+async function labelRisk(ctx: Context, tier: RiskTier): Promise<void> {
+  await ctx.github.setRiskLabel(tier).catch((e: unknown) => ctx.log.warning(`Could not set the risk label (needs issues: write): ${e instanceof Error ? e.message : String(e)}`))
 }

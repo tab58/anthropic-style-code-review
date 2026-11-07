@@ -1,1 +1,1 @@
-{ "intent": "Generate thumbnails for uploaded images", "bugs": [], "security": [{ "file": "src/thumbs.ts", "line": 10 }] }
+{"intent": "Generate thumbnails for uploaded images", "bugs": [], "security": [{"file": "src/thumbs.ts", "line": 10}], "risk": "high"}

@@ -1,5 +1,7 @@
 import { type Static, type TSchema, Type } from 'typebox'
 import { Check } from 'typebox/value'
+import type { PullReview, RiskTier } from './risk/index.js'
+import { RISK_TIERS } from './risk/index.js'
 import type { BotThread, GitHub } from './workflow/index.js'
 
 /** The two Octokit calls this client uses. `getOctokit(token)` satisfies it via a thin adapter. */
@@ -31,13 +33,19 @@ const PullSchema = Type.Object({
   title: Type.String(),
   body: Type.Union([Type.String(), Type.Null()]),
   draft: Type.Optional(Type.Boolean()),
+  user: Type.Optional(Type.Union([Type.Object({ login: Type.String() }), Type.Null()])),
   head: Type.Object({ sha: Type.String(), repo: Type.Union([Type.Object({ full_name: Type.String() }), Type.Null()]) }),
   base: Type.Object({ sha: Type.String(), repo: Type.Object({ full_name: Type.String() }) }),
 })
 const CompareSchema = Type.Object({ status: Type.String() })
-const ReviewsSchema = Type.Array(
-  Type.Object({ body: Type.Union([Type.String(), Type.Null()]), user: Type.Union([Type.Object({ login: Type.String() }), Type.Null()]) }),
-)
+const ReviewSchema = Type.Object({ body: Type.Union([Type.String(), Type.Null()]), user: Type.Union([Type.Object({ login: Type.String() }), Type.Null()]) })
+const PullReviewSchema = Type.Object({
+  state: Type.Union([Type.Literal('APPROVED'), Type.Literal('CHANGES_REQUESTED'), Type.Literal('COMMENTED'), Type.Literal('DISMISSED'), Type.Literal('PENDING')]),
+  commit_id: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+  user: Type.Union([Type.Object({ login: Type.String(), type: Type.Optional(Type.String()) }), Type.Null()]),
+})
+const PermissionSchema = Type.Object({ permission: Type.String() })
+const WRITE_PERMISSIONS = new Set(['admin', 'maintain', 'write'])
 const ThreadsSchema = Type.Object({
   repository: Type.Object({
     pullRequest: Type.Union([
@@ -102,6 +110,7 @@ async function getPull(c: GitHubClientConfig) {
     baseSha: pr.base.sha,
     title: pr.title,
     body: pr.body ?? '',
+    author: pr.user?.login ?? '',
     isFork: pr.head.repo?.full_name !== pr.base.repo.full_name,
     draft: pr.draft ?? false,
   }
@@ -131,14 +140,46 @@ async function requestText(c: GitHubClientConfig, route: string, params: Record<
   }
 }
 
-/** All review bodies posted by the bot, oldest first (paginated). */
-async function botReviewBodies(c: GitHubClientConfig): Promise<readonly string[]> {
-  const out: string[] = []
+/** Every review on the PR (all pages), each validated against `item`, oldest first. */
+async function listReviews<S extends TSchema>(c: GitHubClientConfig, item: S): Promise<readonly Static<S>[]> {
+  const out: Static<S>[] = []
   for (let page = 1; ; page++) {
     const { data } = await c.api.request('GET /repos/{owner}/{repo}/pulls/{pull_number}/reviews', { owner: c.owner, repo: c.repo, pull_number: c.prNumber, per_page: PAGE_SIZE, page })
-    const reviews = expect(ReviewsSchema, data, 'pulls.listReviews')
-    out.push(...reviews.filter((r) => r.user && sameLogin(r.user.login, c.botLogin)).map((r) => r.body ?? ''))
+    const reviews = expect(Type.Array(item), data, 'pulls.listReviews')
+    out.push(...reviews)
     if (reviews.length < PAGE_SIZE) return out
+  }
+}
+
+/** All review bodies posted by the bot, oldest first (paginated). */
+async function botReviewBodies(c: GitHubClientConfig): Promise<readonly string[]> {
+  return (await listReviews(c, ReviewSchema)).filter((r) => r.user && sameLogin(r.user.login, c.botLogin)).map((r) => r.body ?? '')
+}
+
+/** Every review on the PR, oldest first; reviews by deleted users are dropped. */
+async function pullReviews(c: GitHubClientConfig): Promise<readonly PullReview[]> {
+  return (await listReviews(c, PullReviewSchema)).flatMap((r) => (r.user ? [{ login: r.user.login, isBot: r.user.type === 'Bot', state: r.state, commitId: r.commit_id ?? '' }] : []))
+}
+
+/** True when `login` has write, maintain or admin permission; false for non-collaborators (404). */
+async function canApprove(c: GitHubClientConfig, login: string): Promise<boolean> {
+  try {
+    const { data } = await c.api.request('GET /repos/{owner}/{repo}/collaborators/{username}/permission', { owner: c.owner, repo: c.repo, username: login })
+    return WRITE_PERMISSIONS.has(expect(PermissionSchema, data, 'collaborators.permission').permission)
+  } catch (e) {
+    if (statusOf(e) === 404) return false
+    throw e
+  }
+}
+
+/** Adds `risk:<tier>` and removes the other tier labels (missing ones are fine). */
+async function setRiskLabel(c: GitHubClientConfig, tier: RiskTier): Promise<void> {
+  const issue = { owner: c.owner, repo: c.repo, issue_number: c.prNumber }
+  await c.api.request('POST /repos/{owner}/{repo}/issues/{issue_number}/labels', { ...issue, labels: [`risk:${tier}`] })
+  for (const other of RISK_TIERS.filter((t) => t !== tier)) {
+    await c.api.request('DELETE /repos/{owner}/{repo}/issues/{issue_number}/labels/{name}', { ...issue, name: `risk:${other}` }).catch((e: unknown) => {
+      if (statusOf(e) !== 404) throw e
+    })
   }
 }
 
@@ -177,6 +218,7 @@ async function botThreads(c: GitHubClientConfig): Promise<readonly BotThread[]> 
 export function createGitHubClient(config: GitHubClientConfig): GitHub {
   const { api, owner, repo, prNumber } = config
   const redact = redactor(config.secrets)
+  const permissions = new Map<string, Promise<boolean>>()
   return {
     getPull: () => getPull(config),
     compareDiff: async (base, head) =>
@@ -185,6 +227,13 @@ export function createGitHubClient(config: GitHubClientConfig): GitHub {
     readAtRef: (ref, path) => requestText(config, 'GET /repos/{owner}/{repo}/contents/{path}', { path, ref, mediaType: { format: 'raw' } }, true),
     botReviewBodies: () => botReviewBodies(config),
     botThreads: () => botThreads(config),
+    pullReviews: () => pullReviews(config),
+    canApprove(login) {
+      const hit = permissions.get(login) ?? canApprove(config, login)
+      permissions.set(login, hit)
+      return hit
+    },
+    setRiskLabel: (tier) => setRiskLabel(config, tier),
     async createReview({ headSha, body, comments }) {
       await api.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/reviews', {
         owner,

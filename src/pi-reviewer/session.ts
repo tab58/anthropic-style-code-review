@@ -75,6 +75,12 @@ export const SecurityFindingsSchema = Type.Object({
   ),
 })
 
+/** Risk classifier output schema. */
+export const RiskSchema = Type.Object({
+  tier: Type.Union([Type.Literal('low'), Type.Literal('medium'), Type.Literal('high')]),
+  reasons: Type.Array(Type.String({ description: 'One short reason per risk you found' })),
+})
+
 /** Security verifier output schema. */
 export const ExploitVerdictSchema = Type.Object({ exploitable: Type.Boolean(), severity: Level, reason: Type.String() })
 

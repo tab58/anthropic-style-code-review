@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { FinderFocus, Finding } from '../../src/review/index.js'
-import { exploitPrompt, FOCUS, finderPrompt, recheckPrompt, SECURITY_FOCUS, securityFinderPrompt, verifierPrompt } from '../../src/pi-reviewer/prompts.js'
+import { exploitPrompt, FOCUS, finderPrompt, recheckPrompt, riskPrompt, SECURITY_FOCUS, securityFinderPrompt, verifierPrompt } from '../../src/pi-reviewer/prompts.js'
 import type { SecurityFinding, SecurityFocus } from '../../src/security/index.js'
 
 const input = { diff: 'DIFF', guidance: 'RULES', intent: 'INTENT' }
@@ -52,5 +52,15 @@ describe('exploitPrompt', () => {
     }
     const p = exploitPrompt(f, input)
     for (const part of ['db.ts:4-6', 'Source: SRC', 'Sink: SINK', 'Exploit scenario: EXP', 'Impact: IMP', 'EV']) expect(p).toContain(part)
+  })
+})
+
+describe('riskPrompt', () => {
+  it('includes the floor and its reasons, the intent and the diff, but no guidance block', () => {
+    const p = riskPrompt({ diff: 'DIFF', intent: 'INTENT', floor: { tier: 'medium', reasons: ['changes source: a.ts'] } })
+    expect(p).toContain('Rule floor: medium\n- changes source: a.ts')
+    expect(p).toContain('<intent>\nINTENT')
+    expect(p).toContain('<diff>\nDIFF')
+    expect(p).not.toContain('<guidance>')
   })
 })

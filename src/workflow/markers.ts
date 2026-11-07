@@ -1,6 +1,7 @@
 import { Type } from 'typebox'
 import { Check } from 'typebox/value'
 import type { Severity } from '../review/index.js'
+import type { RiskTier } from '../risk/index.js'
 import type { SecurityLevel } from '../security/index.js'
 
 /** Review progress for one PR, persisted as a hidden marker in the bot's review bodies. */
@@ -13,6 +14,10 @@ export type ReviewState = {
   readonly fingerprints: readonly string[]
   /** Last head SHA the security pass completed on; the security gate fails while it isn't HEAD. Absent before v1.1. */
   readonly securitySha?: string
+  /** Risk tier so far; it never goes down within a PR. Absent until risk tiers assess the PR. */
+  readonly tier?: RiskTier
+  /** Why the PR has that tier. */
+  readonly tierReasons?: readonly string[]
 }
 
 const STATE_RE = /<!-- anthropic-style-code-review:state (.*?) -->/g
@@ -22,6 +27,8 @@ const StateSchema = Type.Object({
   sha: Type.String(),
   fingerprints: Type.Array(Type.String()),
   securitySha: Type.Optional(Type.String()),
+  tier: Type.Optional(Type.Union([Type.Literal('low'), Type.Literal('medium'), Type.Literal('high')])),
+  tierReasons: Type.Optional(Type.Array(Type.String())),
 })
 const SECURITY_RE = /<!-- anthropic-style-code-review:security (high|medium|low) (new|pre) (\S+) -->/g
 const SEVERITIES: readonly Severity[] = ['important', 'pre_existing', 'nit']

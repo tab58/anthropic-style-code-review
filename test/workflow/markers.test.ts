@@ -17,6 +17,12 @@ describe('review state marker', () => {
     expect(decodeState([`**No issues found.**\n\n${encodeState(s)}`])).toEqual(s)
   })
 
+  it('round-trips the risk tier, and drops states with an unknown tier', () => {
+    const tiered = { ...s, tier: 'high' as const, tierReasons: ['auth'] }
+    expect(decodeState([encodeState(tiered)])).toEqual(tiered)
+    expect(decodeState([encodeState(s), '<!-- anthropic-style-code-review:state {"round":3,"sha":"x","fingerprints":[],"tier":"urgent"} -->'])).toEqual(s)
+  })
+
   it('is an invisible HTML comment', () => {
     expect(encodeState(s)).toMatch(/^<!-- anthropic-style-code-review:state .* -->$/)
   })

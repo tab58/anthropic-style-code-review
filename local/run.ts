@@ -15,7 +15,7 @@ import { createPiReviewer } from '../src/pi-reviewer/index.js'
 import { createWorkflow } from '../src/workflow/index.js'
 import { createLocalGitHub } from './local-github.js'
 
-const USAGE = `Usage: npm run local -- [--repo <path>] [--base <ref>] [--depth quick|standard|deep] [--title <text>] [--reset] [--no-security]
+const USAGE = `Usage: npm run local -- [--repo <path>] [--base <ref>] [--depth quick|standard|deep] [--title <text>] [--reset] [--no-security] [--risk]
 
 Env: PROVIDER_API_KEY (or OLLAMA_API_KEY), PROVIDER_BASE_URL (default https://ollama.com/v1),
      FINDER_MODEL (glm-5.3), VERIFIER_MODEL (deepseek-v4.1-flash), SECURITY_FINDER_MODEL, SECURITY_VERIFIER_MODEL, CONCURRENCY (3)`
@@ -29,6 +29,7 @@ async function main() {
       title: { type: 'string' },
       reset: { type: 'boolean', default: false },
       'no-security': { type: 'boolean', default: false },
+      risk: { type: 'boolean', default: false },
       help: { type: 'boolean', default: false },
     },
   })
@@ -52,7 +53,7 @@ async function main() {
       cwd: repo,
     })
   const log = { info: (m: string) => console.error(`· ${m}`), warning: (m: string) => console.error(`⚠ ${m}`) }
-  const workflow = createWorkflow({ github, createReviewer, log }, { depth: values.depth, concurrency: Number(process.env.CONCURRENCY ?? 3), securityReview: !values['no-security'] })
+  const workflow = createWorkflow({ github, createReviewer, log }, { depth: values.depth, concurrency: Number(process.env.CONCURRENCY ?? 3), securityReview: !values['no-security'], riskTiers: values.risk })
 
   console.error(`Reviewing ${repo} (${values.base}...HEAD)…`)
   const outcome = await workflow.review()
