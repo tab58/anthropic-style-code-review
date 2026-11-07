@@ -344944,7 +344944,7 @@ function createGitHubClient(config) {
       await api.graphql(RESOLVE_MUTATION, { id });
     },
     async setCheck({ name, headSha, conclusion, title: title2, summary: summary3 }) {
-      await api.request("POST /repos/{owner}/{repo}/check-runs", { owner, repo, name, head_sha: headSha, status: "completed", conclusion: conclusion === "failure" ? config.gateConclusion ?? "failure" : conclusion, output: { title: title2, summary: summary3 } });
+      await api.request("POST /repos/{owner}/{repo}/check-runs", { owner, repo, name, head_sha: headSha, status: "completed", conclusion, output: { title: title2, summary: summary3 } });
     }
   };
 }
@@ -344968,12 +344968,6 @@ function onOff(source, name) {
   if (raw === "on" || raw === "true") return true;
   if (raw === "off" || raw === "false") return false;
   throw new Error(`Input ${name} must be on or off, got "${raw}"`);
-}
-function gateConclusion(source) {
-  const raw = source.get("gate_conclusion").trim().toLowerCase();
-  if (raw === "" || raw === "failure") return "failure";
-  if (raw === "neutral") return "neutral";
-  throw new Error(`Input gate_conclusion must be failure or neutral, got "${raw}"`);
 }
 var GATE_EVENTS = /* @__PURE__ */ new Set(["pull_request_review", "pull_request_review_comment"]);
 var workflowOptions = (source) => ({
@@ -345005,7 +344999,6 @@ function readInputs(source, event) {
     securityFinderModel: source.get("security_finder_model") || void 0,
     securityVerifierModel: source.get("security_verifier_model") || void 0,
     botLogin: source.get("bot_login"),
-    gateConclusion: gateConclusion(source),
     workflow: workflowOptions(source)
   };
 }
@@ -346249,7 +346242,6 @@ async function main2() {
     ...context2.repo,
     prNumber: inputs.prNumber,
     botLogin: inputs.botLogin,
-    gateConclusion: inputs.gateConclusion,
     secrets: [inputs.apiKey, inputs.githubToken]
   });
   const createReviewer = () => createPiReviewer({

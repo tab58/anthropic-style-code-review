@@ -22,7 +22,6 @@ async function main(): Promise<void> {
     ...context.repo,
     prNumber: inputs.prNumber,
     botLogin: inputs.botLogin,
-    gateConclusion: inputs.gateConclusion,
     secrets: [inputs.apiKey, inputs.githubToken],
   })
   const createReviewer = () =>

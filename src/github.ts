@@ -26,12 +26,7 @@ export type GitHubClientConfig = {
   readonly botLogin: string
   /** Values to redact from anything posted (API key, token); values shorter than 8 characters are ignored. */
   readonly secrets: readonly string[]
-  /** Conclusion published for a blocked gate: `failure` (default) or `neutral` (grey, for non-required checks). */
-  readonly gateConclusion?: GateConclusion
 }
-
-/** How a blocked gate check is reported. */
-export type GateConclusion = 'failure' | 'neutral'
 
 const PullSchema = Type.Object({
   number: Type.Integer(),
@@ -269,7 +264,7 @@ export function createGitHubClient(config: GitHubClientConfig): GitHub {
       await api.graphql(RESOLVE_MUTATION, { id })
     },
     async setCheck({ name, headSha, conclusion, title, summary }) {
-      await api.request('POST /repos/{owner}/{repo}/check-runs', { owner, repo, name, head_sha: headSha, status: 'completed', conclusion: conclusion === 'failure' ? (config.gateConclusion ?? 'failure') : conclusion, output: { title, summary } })
+      await api.request('POST /repos/{owner}/{repo}/check-runs', { owner, repo, name, head_sha: headSha, status: 'completed', conclusion, output: { title, summary } })
     },
   }
 }
