@@ -73,6 +73,30 @@ const MEDIUM_LINES = 200
 const DOCS_AND_TESTS = ['**/*.md', 'docs/**', '**/docs/**', 'test/**', 'tests/**', '**/test/**', '**/tests/**', '**/__tests__/**', '**/*.test.*', '**/*.spec.*', '**/*_test.*']
 const rank = (t: RiskTier) => RISK_TIERS.indexOf(t)
 
+/** Line-comment syntax by file extension. Block-comment bodies (`/** … *\/`, ` * …`) count only for C-style languages. */
+const C_STYLE = /^(\/\/|\/\*|\*\/|\*(\s|\/|$))/
+const HASH = /^#/
+const DASH = /^--/
+const COMMENT_SYNTAX: Readonly<Record<string, RegExp>> = Object.fromEntries([
+  ...['go', 'ts', 'tsx', 'js', 'jsx', 'mjs', 'cjs', 'java', 'kt', 'kts', 'swift', 'rs', 'c', 'h', 'cc', 'cpp', 'hpp', 'cs', 'scala', 'dart', 'php', 'proto'].map((e) => [e, C_STYLE] as const),
+  ...['py', 'rb', 'sh', 'bash', 'zsh', 'r', 'pl'].map((e) => [e, HASH] as const),
+  ...['sql', 'lua', 'hs'].map((e) => [e, DASH] as const),
+])
+
+/**
+ * True when every added and removed line is blank or a comment in a language whose comment syntax is known. Conservative:
+ * unknown extensions, and lines that merely contain a comment after code, count as code.
+ */
+function commentOnly(f: FileDiff): boolean {
+  const syntax = COMMENT_SYNTAX[f.path.slice(f.path.lastIndexOf('.') + 1).toLowerCase()]
+  if (syntax === undefined || f.deleted) return false
+  const changed = f.text.split('\n').filter((l) => /^[+-]/.test(l) && !/^(\+\+\+|---) /.test(l))
+  return changed.every((l) => {
+    const body = l.slice(1).trim()
+    return body === '' || syntax.test(body)
+  })
+}
+
 /**
  * The highest of the given tiers.
  *
@@ -90,7 +114,7 @@ function rules(s: RiskSignals): readonly (readonly [RiskTier, string])[] {
   const paths = s.files.map((f) => f.path)
   const forced = paths.filter((p) => s.highPaths.some((g) => matchesGlobDot(p, g)))
   const workflows = paths.filter((p) => matchesGlobDot(p, '.github/workflows/**'))
-  const code = paths.filter((p) => !DOCS_AND_TESTS.some((g) => matchesGlob(p, g)))
+  const code = s.files.filter((f) => !DOCS_AND_TESTS.some((g) => matchesGlob(f.path, g)) && !commentOnly(f)).map((f) => f.path)
   const changed = s.files.reduce((n, f) => n + f.changed, 0)
   const fired: (readonly [RiskTier, string] | false)[] = [
     workflows.length > 0 && ['high', `changes CI workflows: ${list(workflows)}`],
@@ -111,13 +135,13 @@ function rules(s: RiskSignals): readonly (readonly [RiskTier, string])[] {
  * @param signals - The full PR diff, REVIEW.md globs and this round's results.
  * @returns `high` for CI workflow files, `risk_high_paths`, blocking security findings or a skipped review;
  *   `medium` for security-sensitive paths or code, source changes, more than 200 changed lines or an Important bug; `low` for small docs/test-only
- *   changes. Reasons list every rule that fired at the winning tier.
+ *   changes and source changes that only touch comments. Reasons list every rule that fired at the winning tier.
  */
 export function assessRisk(signals: RiskSignals): RiskAssessment {
   const fired = rules(signals)
   const tier = maxTier(...fired.map(([t]) => t))
   const reasons = fired.filter(([t]) => t === tier).map(([, r]) => r)
-  return { tier, reasons: reasons.length > 0 ? reasons : ['docs and tests only'] }
+  return { tier, reasons: reasons.length > 0 ? reasons : ['docs, tests and comments only'] }
 }
 
 /**

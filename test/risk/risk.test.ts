@@ -35,7 +35,29 @@ describe('maxTier', () => {
 describe('assessRisk', () => {
   it('is low for small docs- and test-only changes', () => {
     const r = assessRisk(signals(diffOf('README.md') + diffOf('docs/guide.txt') + diffOf('test/a.test.ts') + diffOf('src/x.spec.ts')))
-    expect(r).toEqual({ tier: 'low', reasons: ['docs and tests only'] })
+    expect(r).toEqual({ tier: 'low', reasons: ['docs, tests and comments only'] })
+  })
+
+  const edit = (path: string, minus: readonly string[], plus: readonly string[]) =>
+    `diff --git a/${path} b/${path}\n--- a/${path}\n+++ b/${path}\n@@ -1,${minus.length + 1} +1,${plus.length + 1} @@\n ctx\n${[...minus.map((l) => `-${l}`), ...plus.map((l) => `+${l}`)].join('\n')}\n`
+
+  it.each([
+    ['go line comment', 'utils/map.go', ['// Keys returns the keys'], ['// Keys returns the keys, in unspecified order.']],
+    ['ts block comment', 'src/a.ts', [], ['/**', ' * Does a thing.', ' */']],
+    ['python comment and blank line', 'app/x.py', [], ['# note', '']],
+    ['sql comment', 'db/q.sql', ['-- old'], ['-- new']],
+  ])('is low when source changes only touch comments (%s)', (_, path, minus, plus) => {
+    expect(assessRisk(signals(edit(path, minus, plus)))).toEqual({ tier: 'low', reasons: ['docs, tests and comments only'] })
+  })
+
+  it.each([
+    ['code next to a comment', 'a.go', [], ['// note', 'x := 1']],
+    ['a Go pointer write', 'a.go', [], ['*p = 1']],
+    ['a C preprocessor line', 'a.c', [], ['#include <x.h>']],
+    ['a file type without known comment syntax', 'a.yaml', [], ['# note']],
+    ['a comment marker inside a string', 'a.go', [], ['s := "// not a comment"']],
+  ])('is medium when a comment-looking change is really code (%s)', (_, path, minus, plus) => {
+    expect(assessRisk(signals(edit(path, minus, plus))).tier).toBe('medium')
   })
 
   it('is low for an empty diff', () => {

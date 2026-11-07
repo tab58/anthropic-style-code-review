@@ -204987,7 +204987,7 @@ var require_handlebars = __commonJS({
         end: /\)/
         // the "contains" is added below when all necessary sub-modes are defined
       };
-      const HASH = {
+      const HASH2 = {
         // fka "attribute-assignment", parameters of the form 'key=value'
         className: "attr",
         begin: HASH_PARAM_REGEX,
@@ -205026,7 +205026,7 @@ var require_handlebars = __commonJS({
           hljs2.QUOTE_STRING_MODE,
           hljs2.APOS_STRING_MODE,
           BLOCK_PARAMS,
-          HASH,
+          HASH2,
           HELPER_PARAMETER,
           SUB_EXPRESSION
         ],
@@ -205628,7 +205628,7 @@ var require_htmlbars = __commonJS({
         end: /\)/
         // the "contains" is added below when all necessary sub-modes are defined
       };
-      const HASH = {
+      const HASH2 = {
         // fka "attribute-assignment", parameters of the form 'key=value'
         className: "attr",
         begin: HASH_PARAM_REGEX,
@@ -205667,7 +205667,7 @@ var require_htmlbars = __commonJS({
           hljs2.QUOTE_STRING_MODE,
           hljs2.APOS_STRING_MODE,
           BLOCK_PARAMS,
-          HASH,
+          HASH2,
           HELPER_PARAMETER,
           SUB_EXPRESSION
         ],
@@ -344702,13 +344702,30 @@ var DEFAULT_RISK_APPROVALS = { low: 0, medium: 1, high: 2 };
 var MEDIUM_LINES = 200;
 var DOCS_AND_TESTS = ["**/*.md", "docs/**", "**/docs/**", "test/**", "tests/**", "**/test/**", "**/tests/**", "**/__tests__/**", "**/*.test.*", "**/*.spec.*", "**/*_test.*"];
 var rank = (t2) => RISK_TIERS.indexOf(t2);
+var C_STYLE = /^(\/\/|\/\*|\*\/|\*(\s|\/|$))/;
+var HASH = /^#/;
+var DASH = /^--/;
+var COMMENT_SYNTAX = Object.fromEntries([
+  ...["go", "ts", "tsx", "js", "jsx", "mjs", "cjs", "java", "kt", "kts", "swift", "rs", "c", "h", "cc", "cpp", "hpp", "cs", "scala", "dart", "php", "proto"].map((e2) => [e2, C_STYLE]),
+  ...["py", "rb", "sh", "bash", "zsh", "r", "pl"].map((e2) => [e2, HASH]),
+  ...["sql", "lua", "hs"].map((e2) => [e2, DASH])
+]);
+function commentOnly(f4) {
+  const syntax = COMMENT_SYNTAX[f4.path.slice(f4.path.lastIndexOf(".") + 1).toLowerCase()];
+  if (syntax === void 0 || f4.deleted) return false;
+  const changed = f4.text.split("\n").filter((l3) => /^[+-]/.test(l3) && !/^(\+\+\+|---) /.test(l3));
+  return changed.every((l3) => {
+    const body = l3.slice(1).trim();
+    return body === "" || syntax.test(body);
+  });
+}
 var maxTier = (...tiers) => tiers.reduce((a, t2) => t2 !== void 0 && rank(t2) > rank(a) ? t2 : a, "low");
 var list = (paths) => paths.slice(0, 3).join(", ") + (paths.length > 3 ? ` and ${paths.length - 3} more` : "");
 function rules(s2) {
   const paths = s2.files.map((f4) => f4.path);
   const forced = paths.filter((p) => s2.highPaths.some((g) => matchesGlobDot(p, g)));
   const workflows = paths.filter((p) => matchesGlobDot(p, ".github/workflows/**"));
-  const code = paths.filter((p) => !DOCS_AND_TESTS.some((g) => matchesGlob3(p, g)));
+  const code = s2.files.filter((f4) => !DOCS_AND_TESTS.some((g) => matchesGlob3(f4.path, g)) && !commentOnly(f4)).map((f4) => f4.path);
   const changed = s2.files.reduce((n, f4) => n + f4.changed, 0);
   const fired = [
     workflows.length > 0 && ["high", `changes CI workflows: ${list(workflows)}`],
@@ -344726,7 +344743,7 @@ function assessRisk(signals) {
   const fired = rules(signals);
   const tier = maxTier(...fired.map(([t2]) => t2));
   const reasons = fired.filter(([t2]) => t2 === tier).map(([, r2]) => r2);
-  return { tier, reasons: reasons.length > 0 ? reasons : ["docs and tests only"] };
+  return { tier, reasons: reasons.length > 0 ? reasons : ["docs, tests and comments only"] };
 }
 async function classifyRisk(classifier, input2) {
   const { floor } = input2;

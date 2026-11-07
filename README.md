@@ -258,8 +258,8 @@ Opt-in (`risk_tiers: on`). Each PR gets a tier, and the tier sets how many human
 
 | Tier | Approvals | When (default rules) |
 |---|---|---|
-| **low** | 0 | Docs and tests only, 200 changed lines or fewer |
-| **medium** | 1 | Any source change, security-sensitive paths or code (the signals that trigger the full security pass), more than 200 changed lines, or an Important bug was found |
+| **low** | 0 | Docs, tests, or source changes that only touch comments (Go, TS/JS, Python, SQL and other common languages), 200 changed lines or fewer |
+| **medium** | 1 | Any other source change, security-sensitive paths or code (the signals that trigger the full security pass), more than 200 changed lines, or an Important bug was found |
 | **high** | 2 | CI workflow files, `risk_high_paths` (list the paths your owners always want two people on), a High/Medium security finding introduced, or the review was skipped (diff too large, round cap) |
 
 - **The rules set a floor; an LLM can only raise it.** One classifier session (on `verifier_model`) can bump a PR up for risks the rules can't see, such as billing logic in an innocently named file. It can never lower the tier, so a diff can't talk itself down to `low`. If the classifier fails, the tier is at least medium.
