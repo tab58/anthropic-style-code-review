@@ -154,19 +154,19 @@ describe('botThreads', () => {
     const { gh } = client(() =>
       page([node('1', 'github-actions'), node('2', 'human'), node('3', null), node('4', 'github-actions', { comments: { nodes: [] } })]),
     )
-    expect(await gh.botThreads()).toEqual([{ id: '1', isResolved: false, path: 'a.ts', line: 3, body: 'body 1', replies: [], dismissVotes: [] }])
+    expect(await gh.botThreads()).toEqual([{ id: '1', isResolved: false, path: 'a.ts', line: 3, body: 'body 1', replies: [] }])
   })
 
-  it('maps replies (skipping deleted authors) and 👎 reactions on the first comment', async () => {
+  it('maps replies, skipping deleted authors', async () => {
     const comments = {
       nodes: [
-        { body: 'finding', author: { login: 'github-actions' }, reactions: { nodes: [{ user: { login: 'bob' } }, { user: null }] } },
+        { body: 'finding', author: { login: 'github-actions' } },
         { body: '/resolve false positive', author: { login: 'alice' } },
         { body: 'ghost', author: null },
       ],
     }
     const [t] = await client(() => page([node('1', 'github-actions', { comments })])).gh.botThreads()
-    expect(t).toMatchObject({ body: 'finding', replies: [{ login: 'alice', body: '/resolve false positive' }], dismissVotes: ['bob'] })
+    expect(t).toEqual({ id: '1', isResolved: false, path: 'a.ts', line: 3, body: 'finding', replies: [{ login: 'alice', body: '/resolve false positive' }] })
   })
 
   it('keeps outdated threads (line null)', async () => {

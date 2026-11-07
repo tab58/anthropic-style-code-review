@@ -76,19 +76,19 @@ export async function publishApprovals(github: GitHub, pr: PullRequest, name: st
   return { conclusion, tier, required, approved, assessed }
 }
 
-/** A reply that dismisses a finding: `/resolve` followed by the reason. */
-const RESOLVE_COMMAND = /^\s*\/resolve\b/i
+/** A reply that dismisses a finding: `/resolve` followed by a reason (a bare `/resolve` doesn't count). */
+const RESOLVE_COMMAND = /^\s*\/resolve\s+\S/i
 
-/** True when a non-bot user with write access replied `/resolve …` or reacted 👎 to the finding. */
+/** True when a non-bot user with write access replied `/resolve <reason>` to the finding. */
 async function dismissedByHuman(github: GitHub, t: BotThread): Promise<boolean> {
-  const logins = [...(t.replies ?? []).filter((r) => RESOLVE_COMMAND.test(r.body)).map((r) => r.login), ...(t.dismissVotes ?? [])]
+  const logins = (t.replies ?? []).filter((r) => RESOLVE_COMMAND.test(r.body)).map((r) => r.login)
   for (const login of new Set(logins.filter((l) => !l.endsWith('[bot]')))) if (await github.canApprove(login)) return true
   return false
 }
 
 /**
  * Unresolved bot threads that still count: not resolved on GitHub, not recorded as fixed in the state, and not
- * dismissed by a write-access human (`/resolve <reason>` reply or 👎 on the finding).
+ * dismissed by a write-access human with a `/resolve <reason>` reply.
  */
 export async function openThreads(github: GitHub, state: ReviewState | undefined): Promise<readonly BotThread[]> {
   const fixed = new Set(state?.fixedThreads ?? [])
@@ -107,7 +107,7 @@ export async function publishGates(github: GitHub, pr: PullRequest, names: GateN
     headSha: pr.headSha,
     conclusion: verdict(openImportant > 0),
     title: title(openImportant, 'important finding'),
-    summary: 'Fails while any review thread tagged **Important** is open. Fix it (the next push auto-resolves it), or reply `/resolve <reason>` or react 👎 to dismiss it (write access needed).',
+    summary: 'Fails while any review thread tagged **Important** is open. Fix it (the next push auto-resolves it), or reply `/resolve <reason>` to dismiss it (write access needed).',
   })
   return {
     conclusion: verdict(openImportant > 0),

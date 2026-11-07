@@ -128,8 +128,7 @@ The action posts findings; the merge block comes from GitHub:
 From then on, a PR can't merge while any **Important** finding or any **Security · High/Medium** finding it introduced is open. Nits and pre-existing findings never block. A finding stops blocking when:
 
 - **You fix it.** The next push re-checks open findings, and a verifier quorum marks fixed ones resolved.
-- **Someone with write access replies `/resolve <reason>`** in the thread, e.g. `/resolve false positive: the id is validated by the router`. The checks recount within seconds.
-- **Someone with write access reacts 👎** to the finding. GitHub has no workflow event for reactions, so this counts on the next run (a push, a review, a `/resolve` reply, or a job re-run).
+- **Someone with write access replies `/resolve <reason>`** in the thread, e.g. `/resolve false positive: the id is validated by the router`. The reason is required. The checks recount within seconds.
 - **The thread is resolved on GitHub.** Clicking **Resolve conversation** has no workflow event either, so it also counts on the next run.
 
 The default `GITHUB_TOKEN` usually can't resolve threads. When a fix is confirmed but the bot can't close the thread, the action records it as fixed (it stops blocking) and the summary asks a human to click resolve.
@@ -172,8 +171,8 @@ gh workflow run review.yml --repo YOUR_ORG/your-project -f pr_number=123
 | `Input required and not supplied: provider_api_key` | The `PROVIDER_API_KEY` secret is missing or not available to this repo |
 | `model error: …` in the warnings | The model ID or `base_url` is wrong, or the provider rejected the request. Check them against your provider's model list |
 | Reviews are slow or requests are rejected | `max_concurrency` is above your provider's limit; lower it |
-| Check stays red after resolving a thread or reacting 👎 | Neither has a workflow event. Reply `/resolve <reason>` instead (instant), or re-run the latest job |
-| `/resolve` didn't count | The replier needs write access, the reply must start with `/resolve`, and the workflow needs the `pull_request_review_comment` trigger |
+| Check stays red after resolving a thread | Thread resolution has no workflow event. Reply `/resolve <reason>` instead (instant), or re-run the latest job |
+| `/resolve` didn't count | The replier needs write access, the reply must start with `/resolve` followed by a reason (a bare `/resolve` doesn't count), and the workflow needs the `pull_request_review_comment` trigger |
 | Reviews posted as a different user aren't recognized | You passed a custom `github_token`; set `bot_login` to that identity's login |
 
 ## Releasing
@@ -231,8 +230,8 @@ Opt-in (`risk_tiers: on`). Each PR gets a tier, and the tier sets how many human
 | Tier | Approvals | When (default rules) |
 |---|---|---|
 | **low** | 0 | Docs and tests only, 200 changed lines or fewer |
-| **medium** | 1 | Any source change, more than 200 changed lines, or an Important bug was found |
-| **high** | 2 | Security-sensitive paths or code (the same signals that trigger the full security pass), `risk_high_paths`, a High/Medium security finding introduced, or the review was skipped (diff too large, round cap) |
+| **medium** | 1 | Any source change, security-sensitive paths or code (the signals that trigger the full security pass), more than 200 changed lines, or an Important bug was found |
+| **high** | 2 | CI workflow files, `risk_high_paths` (list the paths your owners always want two people on), a High/Medium security finding introduced, or the review was skipped (diff too large, round cap) |
 
 - **The rules set a floor; an LLM can only raise it.** One classifier session (on `verifier_model`) can bump a PR up for risks the rules can't see, such as billing logic in an innocently named file. It can never lower the tier, so a diff can't talk itself down to `low`. If the classifier fails, the tier is at least medium.
 - **Tiers never go down within a PR.** The highest tier any push reached sticks, together with its reasons.

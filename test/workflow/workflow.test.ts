@@ -188,27 +188,28 @@ describe('createWorkflow().review', () => {
     expect(gh.checks.at(-1)?.conclusion).toBe('success')
   })
 
-  it('gate runs ignore threads dismissed by a write-access human (/resolve reply or 👎), but not by others', async () => {
+  it('gate runs ignore threads dismissed by a write-access /resolve reply with a reason, and nothing else', async () => {
     const t = (id: string, over: Partial<BotThread>) => ({ ...important(id, 'src/a.ts'), ...over })
     const gh = fakeGitHub({
       bodies: [encodeState({ round: 1, sha: 'h2', fingerprints: [] })],
       writers: ['alice'],
       threads: [
         t('reply', { replies: [{ login: 'alice', body: '  /RESOLVE false positive: validated upstream' }] }),
-        t('vote', { dismissVotes: ['alice'] }),
-        t('outsider', { replies: [{ login: 'mallory', body: '/resolve trust me' }], dismissVotes: ['mallory'] }),
+        t('no-reason', { replies: [{ login: 'alice', body: '/resolve   ' }] }),
+        t('glued', { replies: [{ login: 'alice', body: '/resolved it' }] }),
+        t('outsider', { replies: [{ login: 'mallory', body: '/resolve trust me' }] }),
         t('chatter', { replies: [{ login: 'alice', body: 'will /resolve later' }] }),
-        t('bot', { dismissVotes: ['alice[bot]'] }),
+        t('bot', { replies: [{ login: 'alice[bot]', body: '/resolve automated' }] }),
       ],
     })
-    expect(await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }, options).gate()).toMatchObject({ openImportant: 3 })
+    expect(await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }, options).gate()).toMatchObject({ openImportant: 5 })
   })
 
   it('does not recheck threads a human already dismissed', async () => {
     const gh = fakeGitHub({
       bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [] })],
       writers: ['alice'],
-      threads: [{ ...important('t1', 'src/a.ts'), dismissVotes: ['alice'] }],
+      threads: [{ ...important('t1', 'src/a.ts'), replies: [{ login: 'alice', body: '/resolve intentional' }] }],
     })
     const reviewer = fakeReviewer([], { recheck: vi.fn(async () => false) })
     await createWorkflow({ github: gh.github, createReviewer: async () => reviewer, log: log() }, options).review()

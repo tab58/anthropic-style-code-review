@@ -252,15 +252,16 @@ Each PR gets a risk tier, and the tier sets how many human approvals it needs be
 ## Rule floor (pure function over the full PR diff plus the round's results)
 
 - **High** if any of these:
-  - the security pass escalated to full (`needsFullPass`: auth, crypto, payments, workflows, infra, dependency manifests, or risky added code);
+  - a CI workflow file (`.github/workflows/**`) changed;
   - `risk_high_paths` matches;
   - a High or Medium security finding was introduced this round;
   - the review was skipped (diff over `max_diff_lines`) or paused at the round cap.
-- **Medium** if any of these: more than 200 changed lines; any changed file that isn't docs or tests (`*.md`, `docs/**`, test globs); an Important bug finding was posted this round.
+- **Medium** if any of these: the security pass escalated to full (`needsFullPass`: auth, crypto, payments, infra, dependency manifests, or risky added code); more than 200 changed lines; any changed file that isn't docs or tests (`*.md`, `docs/**`, test globs); an Important bug finding was posted this round.
 - **Low** otherwise: a small change to docs and tests only.
 
 Notes:
 - The bug and security gates already block on open findings, so `low` doesn't re-check them. Findings raise the tier only because a PR that introduced a vulnerability deserves human eyes even after the fix, and stickiness keeps that.
+- Security-sensitive paths were originally high. Following the article (sensitive areas are medium; high is "a small set of paths"), they are now medium, and the classifier can still raise a genuinely risky change. Owners list their own always-two-people paths in `risk_high_paths`.
 - With the defaults, almost every code PR is at least medium. Repos that want a zero-approval path for small code changes can set `risk_approvals: { medium: 0 }`.
 
 ## Classifier

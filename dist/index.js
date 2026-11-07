@@ -344707,13 +344707,15 @@ var list = (paths) => paths.slice(0, 3).join(", ") + (paths.length > 3 ? ` and $
 function rules(s2) {
   const paths = s2.files.map((f4) => f4.path);
   const forced = paths.filter((p) => s2.highPaths.some((g) => matchesGlobDot(p, g)));
+  const workflows = paths.filter((p) => matchesGlobDot(p, ".github/workflows/**"));
   const code = paths.filter((p) => !DOCS_AND_TESTS.some((g) => matchesGlob3(p, g)));
   const changed = s2.files.reduce((n, f4) => n + f4.changed, 0);
   const fired = [
-    chooseSecurityPlan(s2.files, { extraPaths: s2.securityPaths }).depth === "full" && ["high", "security-sensitive paths or code"],
+    workflows.length > 0 && ["high", `changes CI workflows: ${list(workflows)}`],
     forced.length > 0 && ["high", `matches risk_high_paths: ${list(forced)}`],
     s2.blockingSecurity && ["high", "a High/Medium security finding was introduced"],
     s2.skipped && ["high", "automated review did not run on these commits"],
+    chooseSecurityPlan(s2.files, { extraPaths: s2.securityPaths }).depth === "full" && ["medium", "security-sensitive paths or code"],
     changed > MEDIUM_LINES && ["medium", `${changed} changed lines (> ${MEDIUM_LINES})`],
     code.length > 0 && ["medium", `changes source: ${list(code)}`],
     s2.importantBug && ["medium", "an Important bug was found"]
@@ -344780,8 +344782,7 @@ var ThreadsSchema = typebox_exports.Object({
                 nodes: typebox_exports.Array(
                   typebox_exports.Object({
                     body: typebox_exports.String(),
-                    author: typebox_exports.Union([typebox_exports.Object({ login: typebox_exports.String() }), typebox_exports.Null()]),
-                    reactions: typebox_exports.Optional(typebox_exports.Object({ nodes: typebox_exports.Array(typebox_exports.Object({ user: typebox_exports.Union([typebox_exports.Object({ login: typebox_exports.String() }), typebox_exports.Null()]) })) }))
+                    author: typebox_exports.Union([typebox_exports.Object({ login: typebox_exports.String() }), typebox_exports.Null()])
                   })
                 )
               })
@@ -344799,7 +344800,7 @@ var THREADS_QUERY = `query($owner: String!, $repo: String!, $pr: Int!, $after: S
         pageInfo { hasNextPage endCursor }
         nodes {
           id isResolved path line
-          comments(first: 50) { nodes { body author { login } reactions(content: THUMBS_DOWN, first: 50) { nodes { user { login } } } } }
+          comments(first: 50) { nodes { body author { login } } }
         }
       }
     }
@@ -344901,8 +344902,7 @@ async function botThreads(c2) {
           path: t2.path,
           line: t2.line,
           body: first.body,
-          replies: rest.flatMap((r2) => r2.author ? [{ login: r2.author.login, body: r2.body }] : []),
-          dismissVotes: (first.reactions?.nodes ?? []).flatMap((r2) => r2.user ? [r2.user.login] : [])
+          replies: rest.flatMap((r2) => r2.author ? [{ login: r2.author.login, body: r2.body }] : [])
         });
       }
     }
@@ -345622,9 +345622,9 @@ async function publishApprovals(github, pr, name, known) {
   });
   return { conclusion, tier, required: required2, approved, assessed };
 }
-var RESOLVE_COMMAND = /^\s*\/resolve\b/i;
+var RESOLVE_COMMAND = /^\s*\/resolve\s+\S/i;
 async function dismissedByHuman(github, t2) {
-  const logins = [...(t2.replies ?? []).filter((r2) => RESOLVE_COMMAND.test(r2.body)).map((r2) => r2.login), ...t2.dismissVotes ?? []];
+  const logins = (t2.replies ?? []).filter((r2) => RESOLVE_COMMAND.test(r2.body)).map((r2) => r2.login);
   for (const login2 of new Set(logins.filter((l3) => !l3.endsWith("[bot]")))) if (await github.canApprove(login2)) return true;
   return false;
 }
@@ -345643,7 +345643,7 @@ async function publishGates(github, pr, names2) {
     headSha: pr.headSha,
     conclusion: verdict(openImportant > 0),
     title: title(openImportant, "important finding"),
-    summary: "Fails while any review thread tagged **Important** is open. Fix it (the next push auto-resolves it), or reply `/resolve <reason>` or react \u{1F44E} to dismiss it (write access needed)."
+    summary: "Fails while any review thread tagged **Important** is open. Fix it (the next push auto-resolves it), or reply `/resolve <reason>` to dismiss it (write access needed)."
   });
   return {
     conclusion: verdict(openImportant > 0),

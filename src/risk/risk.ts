@@ -89,13 +89,15 @@ const list = (paths: readonly string[]) => paths.slice(0, 3).join(', ') + (paths
 function rules(s: RiskSignals): readonly (readonly [RiskTier, string])[] {
   const paths = s.files.map((f) => f.path)
   const forced = paths.filter((p) => s.highPaths.some((g) => matchesGlobDot(p, g)))
+  const workflows = paths.filter((p) => matchesGlobDot(p, '.github/workflows/**'))
   const code = paths.filter((p) => !DOCS_AND_TESTS.some((g) => matchesGlob(p, g)))
   const changed = s.files.reduce((n, f) => n + f.changed, 0)
   const fired: (readonly [RiskTier, string] | false)[] = [
-    chooseSecurityPlan(s.files, { extraPaths: s.securityPaths }).depth === 'full' && ['high', 'security-sensitive paths or code'],
+    workflows.length > 0 && ['high', `changes CI workflows: ${list(workflows)}`],
     forced.length > 0 && ['high', `matches risk_high_paths: ${list(forced)}`],
     s.blockingSecurity && ['high', 'a High/Medium security finding was introduced'],
     s.skipped && ['high', 'automated review did not run on these commits'],
+    chooseSecurityPlan(s.files, { extraPaths: s.securityPaths }).depth === 'full' && ['medium', 'security-sensitive paths or code'],
     changed > MEDIUM_LINES && ['medium', `${changed} changed lines (> ${MEDIUM_LINES})`],
     code.length > 0 && ['medium', `changes source: ${list(code)}`],
     s.importantBug && ['medium', 'an Important bug was found'],
@@ -107,8 +109,8 @@ function rules(s: RiskSignals): readonly (readonly [RiskTier, string])[] {
  * The rule floor: the minimum tier the deterministic signals justify.
  *
  * @param signals - The full PR diff, REVIEW.md globs and this round's results.
- * @returns `high` for security-sensitive or forced paths, blocking security findings or a skipped review;
- *   `medium` for source changes, more than 200 changed lines or an Important bug; `low` for small docs/test-only
+ * @returns `high` for CI workflow files, `risk_high_paths`, blocking security findings or a skipped review;
+ *   `medium` for security-sensitive paths or code, source changes, more than 200 changed lines or an Important bug; `low` for small docs/test-only
  *   changes. Reasons list every rule that fired at the winning tier.
  */
 export function assessRisk(signals: RiskSignals): RiskAssessment {

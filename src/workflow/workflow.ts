@@ -38,8 +38,6 @@ export type BotThread = {
   readonly body: string
   /** Replies after the first comment, oldest first. A write-access `/resolve <reason>` reply dismisses the finding. */
   readonly replies?: readonly { readonly login: string; readonly body: string }[]
-  /** Logins that reacted 👎 to the first comment; a write-access 👎 dismisses the finding. */
-  readonly dismissVotes?: readonly string[]
 }
 
 /** One inline review comment to post. */

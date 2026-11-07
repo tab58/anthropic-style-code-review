@@ -64,7 +64,6 @@ const ThreadsSchema = Type.Object({
                   Type.Object({
                     body: Type.String(),
                     author: Type.Union([Type.Object({ login: Type.String() }), Type.Null()]),
-                    reactions: Type.Optional(Type.Object({ nodes: Type.Array(Type.Object({ user: Type.Union([Type.Object({ login: Type.String() }), Type.Null()]) })) })),
                   }),
                 ),
               }),
@@ -83,7 +82,7 @@ const THREADS_QUERY = `query($owner: String!, $repo: String!, $pr: Int!, $after:
         pageInfo { hasNextPage endCursor }
         nodes {
           id isResolved path line
-          comments(first: 50) { nodes { body author { login } reactions(content: THUMBS_DOWN, first: 50) { nodes { user { login } } } } }
+          comments(first: 50) { nodes { body author { login } } }
         }
       }
     }
@@ -216,7 +215,6 @@ async function botThreads(c: GitHubClientConfig): Promise<readonly BotThread[]> 
           line: t.line,
           body: first.body,
           replies: rest.flatMap((r) => (r.author ? [{ login: r.author.login, body: r.body }] : [])),
-          dismissVotes: (first.reactions?.nodes ?? []).flatMap((r) => (r.user ? [r.user.login] : [])),
         })
       }
     }

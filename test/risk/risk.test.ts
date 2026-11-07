@@ -58,16 +58,22 @@ describe('assessRisk', () => {
     expect(assessRisk(signals(diffOf('README.md'), { importantBug: true }))).toEqual({ tier: 'medium', reasons: ['an Important bug was found'] })
   })
 
-  it('is high for paths or code that escalate the security pass', () => {
-    expect(assessRisk(signals(diffOf('src/auth/login.ts'))).tier).toBe('high')
-    expect(assessRisk(signals(diffOf('.github/workflows/ci.yml'))).tier).toBe('high')
-    expect(assessRisk(signals(diffOf('src/run.ts', 1, 'child_process.exec(cmd)'))).tier).toBe('high')
+  it('is medium (not high) for paths or code that escalate the security pass, even docs-like ones', () => {
+    expect(assessRisk(signals(diffOf('src/auth/login.ts')))).toEqual({ tier: 'medium', reasons: ['security-sensitive paths or code', 'changes source: src/auth/login.ts'] })
+    expect(assessRisk(signals(diffOf('src/run.ts', 1, 'child_process.exec(cmd)'))).tier).toBe('medium')
+    expect(assessRisk(signals(diffOf('docs/session.md'))).reasons).toContain('security-sensitive paths or code')
     expect(assessRisk(signals(diffOf('src/pay.ts'), { securityPaths: ['src/pay.ts'] })).reasons).toContain('security-sensitive paths or code')
+  })
+
+  it('is high for CI workflow files', () => {
+    expect(assessRisk(signals(diffOf('.github/workflows/ci.yml')))).toEqual({ tier: 'high', reasons: ['changes CI workflows: .github/workflows/ci.yml'] })
+    expect(assessRisk(signals(diffOf('.github/workflows/release.yaml'))).tier).toBe('high')
+    expect(assessRisk(signals(diffOf('.github/dependabot.yml'))).tier).toBe('medium')
   })
 
   it('matches risk_high_paths and security_paths against dotfiles and dot-directories', () => {
     expect(assessRisk(signals(diffOf('config/.prod.env'), { highPaths: ['config/**'] })).tier).toBe('high')
-    expect(assessRisk(signals(diffOf('src/.secrets/x.ts'), { securityPaths: ['src/**'] })).tier).toBe('high')
+    expect(assessRisk(signals(diffOf('src/.secrets/x.ts'), { securityPaths: ['src/**'] })).reasons).toContain('security-sensitive paths or code')
   })
 
   it('is high for risk_high_paths, blocking security findings, or a skipped review', () => {
@@ -77,9 +83,9 @@ describe('assessRisk', () => {
   })
 
   it('lists every reason at the winning tier only', () => {
-    const r = assessRisk(signals(diffOf('src/auth.ts'), { blockingSecurity: true, importantBug: true }))
+    const r = assessRisk(signals(diffOf('.github/workflows/ci.yml'), { blockingSecurity: true, importantBug: true }))
     expect(r.tier).toBe('high')
-    expect(r.reasons).toEqual(['security-sensitive paths or code', 'a High/Medium security finding was introduced'])
+    expect(r.reasons).toEqual(['changes CI workflows: .github/workflows/ci.yml', 'a High/Medium security finding was introduced'])
   })
 
   it('names at most 3 files per reason', () => {
