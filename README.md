@@ -21,9 +21,28 @@ Agents run on the [Pi](https://github.com/earendil-works/pi) SDK against any Ope
 - **No repo config:** Pi does not load the repo's `.pi/` config, extensions or skills.
 - **Trusted guidance:** REVIEW.md, AGENTS.md and CLAUDE.md are read from the **base** branch, so a PR can't rewrite its own review rules.
 
-## Usage
+## Using it in your project
 
-`.github/workflows/review.yml`:
+Setup takes about five minutes. The examples assume this action is published at `YOUR_ORG/anthropic-style-code-review` with a `v1` tag (see [Releasing](#releasing)). Replace `YOUR_ORG` with the real owner.
+
+### 1. Make the action reachable
+
+- **Public action repo:** nothing to do.
+- **Private action repo:** in the *action's* repo, open **Settings → Actions → General → Access**. Allow access from repositories in your organization (or your user account).
+
+### 2. Add your provider API key as a secret
+
+In the project that should get reviews, open **Settings → Secrets and variables → Actions → New repository secret**. Create `PROVIDER_API_KEY` holding your OpenAI-compatible API key (for example an Ollama Cloud key from ollama.com/settings/keys). Or use the CLI:
+
+```sh
+gh secret set PROVIDER_API_KEY --repo YOUR_ORG/your-project
+```
+
+Use an organization secret to share one key across many repos.
+
+### 3. Add the workflow
+
+Create `.github/workflows/review.yml` in your project:
 
 ```yaml
 name: Code review
@@ -65,9 +84,96 @@ jobs:
           pr_number: ${{ inputs.pr_number }}
 ```
 
-Then make the `anthropic-style-code-review` check required in branch protection.
+What each part does:
 
-**Concurrency:** each agent session sends one request at a time, so `max_concurrency` equals the number of concurrent LLM requests. Set it to whatever your provider allows. A Standard review runs about 4 + 3×findings sessions.
+| Part | Why |
+|---|---|
+| `pull_request` | Reviews new PRs. Each later push gets a review of only the new commits |
+| `pull_request_review_thread` | Re-evaluates the merge gate when someone resolves or reopens a thread. No LLM calls, takes seconds |
+| `workflow_dispatch` | Manual run with a PR number, used for fork PRs (see below) |
+| `permissions` | The minimum the action needs: read code, post reviews, create the check run |
+| `concurrency` | A new push cancels a review that's still running, so you never pay for a stale one |
+| `if:` | Fork PRs don't get secrets, so the job is skipped for them instead of failing |
+| `actions/checkout` with the head SHA | The agents read the PR's code from disk. `persist-credentials: false` keeps the token off disk |
+
+### 4. Pick your provider and models (optional)
+
+The defaults use Ollama Cloud with `glm-5.3` for finders and `deepseek-v4.1-flash` for verifiers. Any OpenAI-compatible endpoint that supports tool calling works:
+
+```yaml
+      - uses: YOUR_ORG/anthropic-style-code-review@v1
+        with:
+          provider_api_key: ${{ secrets.PROVIDER_API_KEY }}
+          pr_number: ${{ inputs.pr_number }}
+          base_url: https://your-provider.example.com/v1
+          finder_model: your-strong-coding-model
+          verifier_model: a-cheaper-model-from-another-family
+          max_concurrency: 10   # set to your provider's concurrent-request limit
+```
+
+Each agent session sends one request at a time, so `max_concurrency` equals the number of concurrent LLM requests. A Standard review runs about 4 + 3×findings sessions per round. If you set the limit higher than your provider allows, rejected requests are retried with backoff, so reviews get slower but don't fail.
+
+### 5. Make the check block merges
+
+The action posts findings; the merge block comes from GitHub:
+
+1. Open a test PR once, so the `anthropic-style-code-review` check exists.
+2. Go to **Settings → Rules → Rulesets** (or **Settings → Branches** for classic branch protection) for your default branch.
+3. Enable **Require status checks to pass** and add `anthropic-style-code-review`.
+
+From then on, a PR can't merge while any **Important** finding is unresolved. Resolve a thread by fixing the issue (the next push auto-resolves it) or by replying with a reason and clicking **Resolve conversation**. Nits and pre-existing findings never block.
+
+### 6. Tune it with REVIEW.md (optional)
+
+Add a `REVIEW.md` at the repo root to tell the reviewer what matters in your codebase, which paths to skip, and how deep to go. See [REVIEW.md](#reviewmd) below. Changes take effect only after they're merged, because the action reads it from the base branch.
+
+### 7. Try it
+
+Open a PR. Within a few minutes you should see:
+
+- a review from `github-actions[bot]` whose summary starts with a count (`**2 issues found** (1 important, 1 nit)` or `**No issues found.**`)
+- inline comments tagged **Important**, **Nit** or **Pre-existing**
+- the `anthropic-style-code-review` check, red while Important threads are open
+
+Push a fix and the next review covers only the new commits. Threads it confirms are fixed get resolved automatically.
+
+### Fork PRs
+
+Fork PRs are skipped automatically, because they get no secrets and can't post. To review one, read the diff first: the review runs the fork's code checkout with your API key available. Then run:
+
+```sh
+gh workflow run review.yml --repo YOUR_ORG/your-project -f pr_number=123
+```
+
+### Pinning a version
+
+- `@v1` follows compatible releases.
+- For supply-chain safety, pin a full commit SHA instead: `uses: YOUR_ORG/anthropic-style-code-review@<sha> # v1.0.0`.
+
+### Troubleshooting
+
+| Symptom | Cause / fix |
+|---|---|
+| Job skipped | The PR is from a fork (use `workflow_dispatch`), or the `if:` line was changed |
+| Run succeeded but no review | The log says why: draft PR, `HEAD already reviewed`, `No reviewable changes` (everything matched `skip_paths`), or the round cap was reached |
+| "Review skipped: diff too large" | Raise `max_diff_lines`, or add generated/vendored paths to `skip_paths` |
+| `Resource not accessible by integration` (403) | The `permissions:` block is missing, or your org restricts workflow permissions (**Settings → Actions → General → Workflow permissions**) |
+| `Input required and not supplied: provider_api_key` | The `PROVIDER_API_KEY` secret is missing or not available to this repo |
+| `model error: …` in the warnings | The model ID or `base_url` is wrong, or the provider rejected the request. Check them against your provider's model list |
+| Reviews are slow or requests are rejected | `max_concurrency` is above your provider's limit; lower it |
+| Check never turns green after resolving | Make sure the `pull_request_review_thread` trigger is in the workflow |
+| Reviews posted as a different user aren't recognized | You passed a custom `github_token`; set `bot_login` to that identity's login |
+
+## Releasing
+
+Consumers need a tagged release whose `dist/` is committed:
+
+```sh
+npm run all                          # typecheck, lint, test, rebuild dist/
+git add -A && git commit -m "release: v1.0.0"
+git tag v1.0.0 && git tag -f v1      # move the major tag to the new release
+git push && git push origin v1.0.0 && git push -f origin v1   # force only the moving v1 tag
+```
 
 ## Inputs
 
