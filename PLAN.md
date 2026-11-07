@@ -332,7 +332,11 @@ Notes:
 
 ## Status
 
-Built: 417 tests passing. Live eval (quick depth, Ollama Cloud): 12 of 13 tiers right, with bug and security recall both 100%. The one miss is `sec-clean-parameterized`: the classifier raised a new lookup-by-email query to **high**, where the fixture expects medium.
+Built: 417 tests passing. Live eval (quick depth, Ollama Cloud): 13 of 13 tiers right, with bug and security recall both 100%.
+
+Classifier tuning:
+- **Database reads:** the first prompt raised a parameterized lookup-by-email to high. The prompt now says database reads and new endpoints that reuse existing auth are medium, and high needs a specific costly or irreversible failure.
+- **Defects:** that rule then pushed a buggy-but-ordinary change (a missing await) to high. The prompt now says to judge the kind of change, not its defects, because bugs have their own gate.
 
 Changes after code review:
 - **Stale tier on a new head (the bypass):** a stored tier counts only when `state.sha` is the current head. On a newer, unassessed head it is at least medium, so a push after a `low` round never starts with a green approvals check, even if the review run then crashes.
