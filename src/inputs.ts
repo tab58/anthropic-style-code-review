@@ -8,7 +8,7 @@ export interface InputSource {
 
 /** The triggering GitHub event. */
 export type EventInfo = {
-  /** Event name, e.g. `pull_request`, `pull_request_review`, `pull_request_review_thread`, `workflow_dispatch`. */
+  /** Event name, e.g. `pull_request`, `pull_request_review`, `workflow_dispatch`. */
   readonly name: string
   /** PR number from the event payload, when the event carries one. */
   readonly prNumber?: number
@@ -16,7 +16,7 @@ export type EventInfo = {
 
 /** Validated action inputs. */
 export type ActionInputs = {
-  /** `gate` for thread (un)resolution and PR review events (no LLM calls), `review` otherwise. */
+  /** `gate` for PR review events (no LLM calls), `review` otherwise. */
   readonly event: 'review' | 'gate'
   /** PR to act on. */
   readonly prNumber: number
@@ -68,7 +68,7 @@ function onOff(source: InputSource, name: string): boolean | undefined {
 }
 
 /** Events that only recompute the merge gates. */
-const GATE_EVENTS = new Set(['pull_request_review_thread', 'pull_request_review'])
+const GATE_EVENTS = new Set(['pull_request_review'])
 
 /** Workflow tuning inputs, validated. */
 const workflowOptions = (source: InputSource): WorkflowOptions => ({
@@ -96,7 +96,7 @@ const workflowOptions = (source: InputSource): WorkflowOptions => ({
  */
 export function readInputs(source: InputSource, event: EventInfo): ActionInputs {
   const prNumber = event.prNumber ?? intInput(source, 'pr_number', 1)
-  if (prNumber === undefined) throw new Error('No pull request: run on pull_request / pull_request_review / pull_request_review_thread, or pass pr_number.')
+  if (prNumber === undefined) throw new Error('No pull request: run on pull_request / pull_request_review, or pass pr_number.')
   const kind = GATE_EVENTS.has(event.name) ? 'gate' : 'review'
   return {
     event: kind,

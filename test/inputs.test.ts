@@ -65,9 +65,13 @@ describe('readInputs', () => {
     expect(out).toMatchObject({ securityFinderModel: 'sf', securityVerifierModel: 'sv' })
   })
 
-  it.each(['pull_request_review_thread', 'pull_request_review'])('maps %s events to gate runs, which need no API key', (name) => {
-    const out = readInputs(source({ ...base, provider_api_key: '' }), { name, prNumber: 1 })
+  it('maps pull_request_review events to gate runs, which need no API key', () => {
+    const out = readInputs(source({ ...base, provider_api_key: '' }), { name: 'pull_request_review', prNumber: 1 })
     expect(out).toMatchObject({ event: 'gate', apiKey: '', allowFork: false })
+  })
+
+  it('treats any other event (e.g. a re-run pull_request) as a review run', () => {
+    expect(readInputs(source(base), { name: 'pull_request_review_thread', prNumber: 1 }).event).toBe('review')
   })
 
   it('allows forks only for workflow_dispatch, which takes pr_number from inputs', () => {

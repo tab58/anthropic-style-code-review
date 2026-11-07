@@ -50,8 +50,8 @@ name: Code review
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-  pull_request_review_thread:
-    types: [resolved, unresolved]
+  pull_request_review:
+    types: [submitted, dismissed]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -64,9 +64,9 @@ permissions:
   checks: write
 
 concurrency:
-  # A new push cancels an in-flight review; resolving a thread never does.
-  group: review-${{ github.event_name == 'pull_request_review_thread' && 'gate' || 'run' }}-${{ github.event.pull_request.number || inputs.pr_number }}
-  cancel-in-progress: true
+  # One queue per PR. A new push (or dispatch) cancels an in-flight review; review events never do.
+  group: review-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
 
 jobs:
   review:
@@ -90,10 +90,10 @@ What each part does:
 | Part | Why |
 |---|---|
 | `pull_request` | Reviews new PRs. Each later push gets a review of only the new commits |
-| `pull_request_review_thread` | Re-evaluates the merge gate when someone resolves or reopens a thread. No LLM calls, takes seconds |
+| `pull_request_review` | Recounts the checks when someone submits or dismisses a review. No LLM calls, takes seconds |
 | `workflow_dispatch` | Manual run with a PR number, used for fork PRs (see below) |
 | `permissions` | The minimum the action needs: read code, post reviews, create the check run |
-| `concurrency` | A new push cancels a review that's still running, so you never pay for a stale one |
+| `concurrency` | A new push cancels a review that's still running, so you never pay for a stale one. Review events queue behind a running review instead of racing it |
 | `if:` | Fork PRs don't get secrets, so the job is skipped for them instead of failing |
 | `actions/checkout` with the head SHA | The agents read the PR's code from disk. `persist-credentials: false` keeps the token off disk |
 
@@ -123,6 +123,8 @@ The action posts findings; the merge block comes from GitHub:
 3. Enable **Require status checks to pass** and add `anthropic-style-code-review` and `anthropic-style-code-review/security`.
 
 From then on, a PR can't merge while any **Important** finding or any **Security · High/Medium** finding it introduced is unresolved. Resolve a thread by fixing the issue (the next push auto-resolves it) or by replying with a reason and clicking **Resolve conversation**. Nits and pre-existing findings never block.
+
+**After resolving a thread by hand, re-run the latest job** (or push). GitHub Actions has no event for resolving a review thread, so the check can't update by itself. A re-run makes no LLM calls when HEAD was already reviewed; it just recounts. If you'd rather have resolution enforced instantly, also enable GitHub's **Require conversation resolution before merging**. GitHub enforces that natively, but it blocks on every open thread, nits included.
 
 ### 6. Tune it with REVIEW.md (optional)
 
@@ -162,7 +164,7 @@ gh workflow run review.yml --repo YOUR_ORG/your-project -f pr_number=123
 | `Input required and not supplied: provider_api_key` | The `PROVIDER_API_KEY` secret is missing or not available to this repo |
 | `model error: …` in the warnings | The model ID or `base_url` is wrong, or the provider rejected the request. Check them against your provider's model list |
 | Reviews are slow or requests are rejected | `max_concurrency` is above your provider's limit; lower it |
-| Check never turns green after resolving | Make sure the `pull_request_review_thread` trigger is in the workflow |
+| Check stays red after resolving a thread | Expected: GitHub has no workflow event for thread resolution. Re-run the latest job or push |
 | Reviews posted as a different user aren't recognized | You passed a custom `github_token`; set `bot_login` to that identity's login |
 
 ## Releasing
@@ -232,13 +234,7 @@ Opt-in (`risk_tiers: on`). Each PR gets a tier, and the tier sets how many human
 To enforce it:
 
 1. Add `risk_tiers: on` to the action's `with:`.
-2. Add `pull_request_review: { types: [submitted, dismissed] }` to the workflow's `on:`, so an approval or dismissal re-evaluates the check without calling the LLM. Then put every run for a PR in **one** concurrency group, so an approval check never races a review that's still running. Only pushes cancel:
-   ```yaml
-   concurrency:
-     group: review-${{ github.event.pull_request.number || inputs.pr_number }}
-     cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' }}
-   ```
-   An approval given during a review waits for that review to finish, then is counted.
+2. Keep the `pull_request_review` trigger and the per-PR `concurrency` group from the workflow above. Approvals then recount the check in seconds, without calling the LLM, and never race a review that's still running.
 3. Add `issues: write` to `permissions:` (for the label).
 4. In branch protection, set **Required approvals to 0** and require the `anthropic-style-code-review/approvals` check.
 

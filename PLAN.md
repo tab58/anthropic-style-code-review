@@ -15,7 +15,7 @@ with convergence rules so agent authors and the agent reviewer don't loop foreve
 | Agent tools | `read, grep, find, ls` only (no bash, edit, write, or MCP) + a terminating `submit_*` tool with a schema |
 | Models | `finder_model` default `glm-5.3`; `verifier_model` default `deepseek-v4.1-flash` (a different family, for independent votes) |
 | Concurrency | `max_concurrency` input, default 3, user-tuned to the provider. Semaphore over agent sessions; Pi's built-in agent retry (4×, exponential from 2s) handles queue-full/429/5xx |
-| Triggers | `pull_request` (opened, synchronize, ready_for_review, reopened), `pull_request_review_thread` (resolved, unresolved), `workflow_dispatch` (pr_number) |
+| Triggers | `pull_request` (opened, synchronize, ready_for_review, reopened), `pull_request_review` (submitted, dismissed: recount only), `workflow_dispatch` (pr_number). GitHub Actions has no `pull_request_review_thread` trigger, so resolving a thread needs a job re-run or a push to recount |
 | Forks | Skipped with a notice. Maintainers can run `workflow_dispatch` manually |
 | Output | One PR review, always `COMMENT` (never approve), with inline comments tagged **Important** / **Nit** / **Pre-existing**. The summary starts with a count |
 | Gate | Check run `anthropic-style-code-review` fails while any unresolved bot thread is tagged Important. Nits and pre-existing findings never block |
@@ -43,8 +43,8 @@ instructs the agent to call it; if the session ends without the call, retry once
    or `**No issues found.**`
 7. **Auto-clear**: on rounds ≥ 2, for each unresolved bot thread whose file changed in the new range, ask one
    verifier "is this still present at HEAD?" and resolve the thread if not.
-8. **Check run**: compute the conclusion from the unresolved bot threads. A `pull_request_review_thread` event
-   only recomputes the check (no LLM calls).
+8. **Check run**: compute the conclusion from the unresolved bot threads. A `pull_request_review` event
+   only recomputes the check (no LLM calls); thread resolution has no Actions event, so it waits for a re-run or push.
 
 ## Depth presets
 
@@ -280,7 +280,7 @@ Notes:
 3. Compute the floor from the full PR diff, the escalation result and this round's findings, then run the classifier.
 4. Store `tier` and `tierReasons` in the state marker, set the `risk:<tier>` label (removing other `risk:*` labels), add one line to the summary (`Risk: **high** (2 approvals): touches .github/workflows/…`), and republish the approvals check.
 
-**Gate runs** (`pull_request_review` submitted or dismissed, `pull_request_review_thread`):
+**Gate runs** (`pull_request_review` submitted or dismissed):
 - Read the stored tier, count qualifying approvals and republish the approvals check.
 - No LLM call, and no API key needed.
 - A PR without a stored tier (reviewed before tiers were enabled) is treated as `medium` until the next review run.

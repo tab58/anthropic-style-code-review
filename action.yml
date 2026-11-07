@@ -6,7 +6,7 @@ branding:
 
 inputs:
   provider_api_key:
-    description: API key for the OpenAI-compatible endpoint at base_url (sent as Bearer token). Required for review runs; not needed for thread-resolution (gate) runs.
+    description: API key for the OpenAI-compatible endpoint at base_url (sent as Bearer token). Required for review runs; not needed for pull_request_review (gate) runs.
     required: false
   github_token:
     description: Token with contents:read, pull-requests:write, checks:write.

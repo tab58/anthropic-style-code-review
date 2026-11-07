@@ -344941,7 +344941,7 @@ function onOff(source, name) {
   if (raw === "off" || raw === "false") return false;
   throw new Error(`Input ${name} must be on or off, got "${raw}"`);
 }
-var GATE_EVENTS = /* @__PURE__ */ new Set(["pull_request_review_thread", "pull_request_review"]);
+var GATE_EVENTS = /* @__PURE__ */ new Set(["pull_request_review"]);
 var workflowOptions = (source) => ({
   depth: source.get("depth") || void 0,
   voters: intInput(source, "voters", 1),
@@ -344957,7 +344957,7 @@ var workflowOptions = (source) => ({
 });
 function readInputs(source, event) {
   const prNumber = event.prNumber ?? intInput(source, "pr_number", 1);
-  if (prNumber === void 0) throw new Error("No pull request: run on pull_request / pull_request_review / pull_request_review_thread, or pass pr_number.");
+  if (prNumber === void 0) throw new Error("No pull request: run on pull_request / pull_request_review, or pass pr_number.");
   const kind = GATE_EVENTS.has(event.name) ? "gate" : "review";
   return {
     event: kind,
