@@ -52,6 +52,8 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
   pull_request_review:
     types: [submitted, dismissed]
+  pull_request_review_comment:
+    types: [created, edited]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -90,7 +92,8 @@ What each part does:
 | Part | Why |
 |---|---|
 | `pull_request` | Reviews new PRs. Each later push gets a review of only the new commits |
-| `pull_request_review` | Recounts the checks when someone submits or dismisses a review. No LLM calls, takes seconds |
+| `pull_request_review` | Recounts the checks when someone submits or dismisses a review (approvals). No LLM calls, takes seconds |
+| `pull_request_review_comment` | Recounts the checks when someone replies `/resolve <reason>` to a finding. No LLM calls |
 | `workflow_dispatch` | Manual run with a PR number, used for fork PRs (see below) |
 | `permissions` | The minimum the action needs: read code, post reviews, create the check run |
 | `concurrency` | A new push cancels a review that's still running, so you never pay for a stale one. Review events queue behind a running review instead of racing it |
@@ -122,9 +125,14 @@ The action posts findings; the merge block comes from GitHub:
 2. Go to **Settings → Rules → Rulesets** (or **Settings → Branches** for classic branch protection) for your default branch.
 3. Enable **Require status checks to pass** and add `anthropic-style-code-review` and `anthropic-style-code-review/security`.
 
-From then on, a PR can't merge while any **Important** finding or any **Security · High/Medium** finding it introduced is unresolved. Resolve a thread by fixing the issue (the next push auto-resolves it) or by replying with a reason and clicking **Resolve conversation**. Nits and pre-existing findings never block.
+From then on, a PR can't merge while any **Important** finding or any **Security · High/Medium** finding it introduced is open. Nits and pre-existing findings never block. A finding stops blocking when:
 
-**After resolving a thread by hand, re-run the latest job** (or push). GitHub Actions has no event for resolving a review thread, so the check can't update by itself. A re-run makes no LLM calls when HEAD was already reviewed; it just recounts. If you'd rather have resolution enforced instantly, also enable GitHub's **Require conversation resolution before merging**. GitHub enforces that natively, but it blocks on every open thread, nits included.
+- **You fix it.** The next push re-checks open findings, and a verifier quorum marks fixed ones resolved.
+- **Someone with write access replies `/resolve <reason>`** in the thread, e.g. `/resolve false positive: the id is validated by the router`. The checks recount within seconds.
+- **Someone with write access reacts 👎** to the finding. GitHub has no workflow event for reactions, so this counts on the next run (a push, a review, a `/resolve` reply, or a job re-run).
+- **The thread is resolved on GitHub.** Clicking **Resolve conversation** has no workflow event either, so it also counts on the next run.
+
+The default `GITHUB_TOKEN` usually can't resolve threads. When a fix is confirmed but the bot can't close the thread, the action records it as fixed (it stops blocking) and the summary asks a human to click resolve.
 
 ### 6. Tune it with REVIEW.md (optional)
 
@@ -164,7 +172,8 @@ gh workflow run review.yml --repo YOUR_ORG/your-project -f pr_number=123
 | `Input required and not supplied: provider_api_key` | The `PROVIDER_API_KEY` secret is missing or not available to this repo |
 | `model error: …` in the warnings | The model ID or `base_url` is wrong, or the provider rejected the request. Check them against your provider's model list |
 | Reviews are slow or requests are rejected | `max_concurrency` is above your provider's limit; lower it |
-| Check stays red after resolving a thread | Expected: GitHub has no workflow event for thread resolution. Re-run the latest job or push |
+| Check stays red after resolving a thread or reacting 👎 | Neither has a workflow event. Reply `/resolve <reason>` instead (instant), or re-run the latest job |
+| `/resolve` didn't count | The replier needs write access, the reply must start with `/resolve`, and the workflow needs the `pull_request_review_comment` trigger |
 | Reviews posted as a different user aren't recognized | You passed a custom `github_token`; set `bot_login` to that identity's login |
 
 ## Releasing

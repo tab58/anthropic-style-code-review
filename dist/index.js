@@ -3680,8 +3680,8 @@ var require_webidl = __commonJS({
       return new TypeError(`${message3.header}: ${message3.message}`);
     };
     webidl.errors.conversionFailed = function(context4) {
-      const plural = context4.types.length === 1 ? "" : " one of";
-      const message3 = `${context4.argument} could not be converted to${plural}: ${context4.types.join(", ")}.`;
+      const plural2 = context4.types.length === 1 ? "" : " one of";
+      const message3 = `${context4.argument} could not be converted to${plural2}: ${context4.types.join(", ")}.`;
       return webidl.errors.exception({
         header: context4.prefix,
         message: message3
@@ -11244,9 +11244,9 @@ var require_pluralizer = __commonJS({
       this: "these"
     };
     module.exports = class Pluralizer {
-      constructor(singular, plural) {
+      constructor(singular, plural2) {
         this.singular = singular;
-        this.plural = plural;
+        this.plural = plural2;
       }
       pluralize(count) {
         const one = count === 1;
@@ -41132,8 +41132,8 @@ var require_webidl2 = __commonJS({
       return new TypeError(`${message3.header}: ${message3.message}`);
     };
     webidl.errors.conversionFailed = function(opts) {
-      const plural = opts.types.length === 1 ? "" : " one of";
-      const message3 = `${opts.argument} could not be converted to${plural}: ${opts.types.join(", ")}.`;
+      const plural2 = opts.types.length === 1 ? "" : " one of";
+      const message3 = `${opts.argument} could not be converted to${plural2}: ${opts.types.join(", ")}.`;
       return webidl.errors.exception({
         header: opts.prefix,
         message: message3
@@ -120687,20 +120687,20 @@ var require_ms = __commonJS({
     function fmtLong(ms) {
       var msAbs = Math.abs(ms);
       if (msAbs >= d) {
-        return plural(ms, msAbs, d, "day");
+        return plural2(ms, msAbs, d, "day");
       }
       if (msAbs >= h2) {
-        return plural(ms, msAbs, h2, "hour");
+        return plural2(ms, msAbs, h2, "hour");
       }
       if (msAbs >= m3) {
-        return plural(ms, msAbs, m3, "minute");
+        return plural2(ms, msAbs, m3, "minute");
       }
       if (msAbs >= s2) {
-        return plural(ms, msAbs, s2, "second");
+        return plural2(ms, msAbs, s2, "second");
       }
       return ms + " ms";
     }
-    function plural(ms, msAbs, n, name) {
+    function plural2(ms, msAbs, n, name) {
       var isPlural = msAbs >= n * 1.5;
       return Math.round(ms / n) + " " + name + (isPlural ? "s" : "");
     }
@@ -184225,7 +184225,7 @@ var init_latex = __esm({
         return body;
       }
       renderCases(body) {
-        const rows = this.splitEnvironmentRows(body).map((row) => row.split("&").map((cell) => this.renderNested(cell, false).trim())).filter((row) => row.some(Boolean));
+        const rows = this.splitEnvironmentRows(body).map((row) => row.split("&").map((cell2) => this.renderNested(cell2, false).trim())).filter((row) => row.some(Boolean));
         const valueWidth = Math.max(0, ...rows.map((row) => visibleWidth((row[0] ?? "").replace(/,\s*$/, ""))));
         const contents = rows.map((row) => {
           const value2 = (row[0] ?? "").replace(/,\s*$/, "");
@@ -184252,12 +184252,12 @@ var init_latex = __esm({
         return `${LAYOUT_MARKER_START}${index3}${LAYOUT_MARKER_END}`;
       }
       renderMatrix(environment, body) {
-        const matrix = this.splitEnvironmentRows(body).map((row) => row.split("&").map((cell) => this.renderNested(cell, false).trim())).filter((row) => row.some(Boolean));
+        const matrix = this.splitEnvironmentRows(body).map((row) => row.split("&").map((cell2) => this.renderNested(cell2, false).trim())).filter((row) => row.some(Boolean));
         const columnCount = Math.max(0, ...matrix.map((row) => row.length));
         const columnWidths = Array.from({ length: columnCount }, (_2, column) => Math.max(0, ...matrix.map((row) => visibleWidth(row[column] ?? ""))));
         const rows = matrix.map((row) => Array.from({ length: columnCount }, (_2, column) => {
-          const cell = row[column] ?? "";
-          return `${cell}${PROTECTED_SPACE.repeat(Math.max(0, (columnWidths[column] ?? 0) - visibleWidth(cell)))}`;
+          const cell2 = row[column] ?? "";
+          return `${cell2}${PROTECTED_SPACE.repeat(Math.max(0, (columnWidths[column] ?? 0) - visibleWidth(cell2)))}`;
         }).join(" \u2502 "));
         let lines;
         if (environment === "array" || environment === "matrix" || environment === "smallmatrix") {
@@ -185063,8 +185063,8 @@ var init_markdown = __esm({
         }
         const topBorderCells = columnWidths.map((w) => "\u2500".repeat(w));
         lines.push(`\u250C\u2500${topBorderCells.join("\u2500\u252C\u2500")}\u2500\u2510`);
-        const headerCellLines = token.header.map((cell, i2) => {
-          const text = this.renderInlineTokens(cell.tokens || [], styleContext);
+        const headerCellLines = token.header.map((cell2, i2) => {
+          const text = this.renderInlineTokens(cell2.tokens || [], styleContext);
           return this.wrapCellText(text, columnWidths[i2], styleContext?.stylePrefix);
         });
         const headerLineCount = Math.max(...headerCellLines.map((c2) => c2.length));
@@ -185081,8 +185081,8 @@ var init_markdown = __esm({
         lines.push(separatorLine);
         for (let rowIndex = 0; rowIndex < token.rows.length; rowIndex++) {
           const row = token.rows[rowIndex];
-          const rowCellLines = row.map((cell, i2) => {
-            const text = this.renderInlineTokens(cell.tokens || [], styleContext);
+          const rowCellLines = row.map((cell2, i2) => {
+            const text = this.renderInlineTokens(cell2.tokens || [], styleContext);
             return this.wrapCellText(text, columnWidths[i2], styleContext?.stylePrefix);
           });
           const rowLineCount = Math.max(...rowCellLines.map((c2) => c2.length));
@@ -245095,7 +245095,7 @@ Did you specify these with the most recent transformation maps first?`);
         webpackEmptyAsyncContext.keys = () => [], webpackEmptyAsyncContext.resolve = webpackEmptyAsyncContext, webpackEmptyAsyncContext.id = "./node_modules/.pnpm/mlly@1.8.2/node_modules/mlly/dist lazy recursive", e3.exports = webpackEmptyAsyncContext;
       }, "./node_modules/.pnpm/ms@2.1.3/node_modules/ms/index.js"(e3) {
         var t3 = 1e3, r3 = 60 * t3, n = 60 * r3, s2 = 24 * n, i2 = 7 * s2, o = 365.25 * s2;
-        function plural(e4, t4, r4, n2) {
+        function plural2(e4, t4, r4, n2) {
           var s3 = t4 >= 1.5 * r4;
           return Math.round(e4 / r4) + " " + n2 + (s3 ? "s" : "");
         }
@@ -245152,10 +245152,10 @@ Did you specify these with the most recent transformation maps first?`);
           })(e4);
           if ("number" === l3 && isFinite(e4)) return a.long ? (function(e5) {
             var i3 = Math.abs(e5);
-            if (i3 >= s2) return plural(e5, i3, s2, "day");
-            if (i3 >= n) return plural(e5, i3, n, "hour");
-            if (i3 >= r3) return plural(e5, i3, r3, "minute");
-            if (i3 >= t3) return plural(e5, i3, t3, "second");
+            if (i3 >= s2) return plural2(e5, i3, s2, "day");
+            if (i3 >= n) return plural2(e5, i3, n, "hour");
+            if (i3 >= r3) return plural2(e5, i3, r3, "minute");
+            if (i3 >= t3) return plural2(e5, i3, t3, "second");
             return e5 + " ms";
           })(e4) : (function(e5) {
             var i3 = Math.abs(e5);
@@ -313554,10 +313554,10 @@ function parseScreen(lines, width, foreground, background) {
         }
         if (dim)
           cellFg = mix(cellFg, cellBg ?? background, 0.4);
-        const cell = { text: segment2, width: glyphWidth, fg: cellFg, bg: cellBg, delay: 0, ink: 0, seed: 0 };
-        cells.push(cell);
+        const cell2 = { text: segment2, width: glyphWidth, fg: cellFg, bg: cellBg, delay: 0, ink: 0, seed: 0 };
+        cells.push(cell2);
         if (glyphWidth === 2)
-          cells.push({ ...cell, text: "", width: 0 });
+          cells.push({ ...cell2, text: "", width: 0 });
       }
     };
     let i2 = 0;
@@ -313851,12 +313851,12 @@ var init_easter_egg_3d = __esm({
             depth[index3] = Infinity;
             const cellX = dotX >> 1;
             const cellY = dotY >> 2;
-            const cell = cellY * width + cellX;
-            bits[cell] |= DOT_BITS[(dotY & 3) * 2 + (dotX & 1)];
-            counts[cell]++;
-            rgb[cell * 3] += face.red + (background[0] - face.red) * fog;
-            rgb[cell * 3 + 1] += face.green + (background[1] - face.green) * fog;
-            rgb[cell * 3 + 2] += face.blue + (background[2] - face.blue) * fog;
+            const cell2 = cellY * width + cellX;
+            bits[cell2] |= DOT_BITS[(dotY & 3) * 2 + (dotX & 1)];
+            counts[cell2]++;
+            rgb[cell2 * 3] += face.red + (background[0] - face.red) * fog;
+            rgb[cell2 * 3 + 1] += face.green + (background[1] - face.green) * fog;
+            rgb[cell2 * 3 + 2] += face.blue + (background[2] - face.blue) * fog;
             if (cellX < cellMinX)
               cellMinX = cellX;
             if (cellX > cellMaxX)
@@ -314191,8 +314191,8 @@ var init_easter_egg_3d = __esm({
           };
           for (let column = 0; column < width; column++) {
             const index3 = row * width + column;
-            const cell = textActive ? cells[column] : void 0;
-            const cellBg = halo(index3, cell?.bg && backgroundFade < 1 ? mix(cell.bg, background, backgroundFade) : void 0);
+            const cell2 = textActive ? cells[column] : void 0;
+            const cellBg = halo(index3, cell2?.bg && backgroundFade < 1 ? mix(cell2.bg, background, backgroundFade) : void 0);
             if (hint && row === hint.row && column >= hint.start && column < hint.start + hint.text.length) {
               const offset = column - hint.start;
               emit(hint.text[offset], offset < hint.keyLength ? hint.keyColor : hint.color, cellBg);
@@ -314210,22 +314210,22 @@ var init_easter_egg_3d = __esm({
               emit(BRAILLE[dots], color, cellBg);
               continue;
             }
-            if (!cell) {
+            if (!cell2) {
               const star = starfield(index3);
               emit(star?.text ?? " ", star?.fg, cellBg);
               continue;
             }
-            const dust = (dissolveTime - cell.delay) / DUST_DURATION;
-            if (dust < 0 && cell.width === 2 && !raster.bits[index3 + 1]) {
-              emit(cell.text, mix(cell.fg, background, textFade), cellBg);
+            const dust = (dissolveTime - cell2.delay) / DUST_DURATION;
+            if (dust < 0 && cell2.width === 2 && !raster.bits[index3 + 1]) {
+              emit(cell2.text, mix(cell2.fg, background, textFade), cellBg);
               column++;
               continue;
             }
-            if (dust < 0 && cell.width === 1) {
-              emit(cell.text, mix(cell.fg, background, textFade), cellBg);
+            if (dust < 0 && cell2.width === 1) {
+              emit(cell2.text, mix(cell2.fg, background, textFade), cellBg);
               continue;
             }
-            const dotCount = dust < 0 ? cell.ink : Math.round(cell.ink * (1 - clamp01(dust)));
+            const dotCount = dust < 0 ? cell2.ink : Math.round(cell2.ink * (1 - clamp01(dust)));
             if (dotCount <= 0) {
               const star = starfield(index3);
               emit(star?.text ?? " ", star?.fg, cellBg);
@@ -314234,14 +314234,14 @@ var init_easter_egg_3d = __esm({
             let bits = 0;
             let placed = 0;
             for (let attempt2 = 0; placed < dotCount && attempt2 < 32; attempt2++) {
-              const bit = DOT_BITS[Math.floor(hash(cell.seed * 7919 + frame3 * 131 + attempt2) * 8)];
+              const bit = DOT_BITS[Math.floor(hash(cell2.seed * 7919 + frame3 * 131 + attempt2) * 8)];
               if (bits & bit)
                 continue;
               bits |= bit;
               placed++;
             }
             const fade = textFade + (1 - textFade) * clamp01(dust) ** 0.8;
-            emit(BRAILLE[bits], mix(cell.fg, background, fade), cellBg);
+            emit(BRAILLE[bits], mix(cell2.fg, background, fade), cellBg);
           }
           lines.push(`${line}\x1B[0m`);
         }
@@ -314368,17 +314368,17 @@ var init_easter_egg_3d = __esm({
         for (let row = 0; row < cells.length; row++) {
           const line = cells[row];
           for (let column = 0; column < line.length; column++) {
-            const cell = line[column];
-            const owner = cell.width === 0 ? line[column - 1] : cell;
+            const cell2 = line[column];
+            const owner = cell2.width === 0 ? line[column - 1] : cell2;
             const seed = hash(row * 65537 + column);
-            if (cell.width !== 0) {
+            if (cell2.width !== 0) {
               const distance = Math.hypot(column - centerX, (row - centerY) * 2) / farthest;
-              cell.delay = FLY_START + distance * WAVE_SPREAD + seed * WAVE_JITTER;
+              cell2.delay = FLY_START + distance * WAVE_SPREAD + seed * WAVE_JITTER;
             } else {
-              cell.delay = owner.delay;
+              cell2.delay = owner.delay;
             }
-            cell.seed = row * 65537 + column;
-            cell.ink = glyphInk(owner.text, seed);
+            cell2.seed = row * 65537 + column;
+            cell2.ink = glyphInk(owner.text, seed);
           }
         }
         if (origin) {
@@ -314387,12 +314387,12 @@ var init_easter_egg_3d = __esm({
             if (!line)
               continue;
             for (let column = origin.column; column < origin.column + columns; column++) {
-              const cell = line[column];
-              if (cell) {
-                cell.text = " ";
-                cell.width = 1;
-                cell.ink = 0;
-                cell.bg = void 0;
+              const cell2 = line[column];
+              if (cell2) {
+                cell2.text = " ";
+                cell2.width = 1;
+                cell2.ink = 0;
+                cell2.bg = void 0;
               }
             }
           }
@@ -340182,11 +340182,11 @@ var Summary = class {
    */
   addTable(rows) {
     const tableBody = rows.map((row) => {
-      const cells = row.map((cell) => {
-        if (typeof cell === "string") {
-          return this.wrap("td", cell);
+      const cells = row.map((cell2) => {
+        if (typeof cell2 === "string") {
+          return this.wrap("td", cell2);
         }
-        const { header, data, colspan, rowspan } = cell;
+        const { header, data, colspan, rowspan } = cell2;
         const tag = header ? "th" : "td";
         const attrs = Object.assign(Object.assign({}, colspan && { colspan }), rowspan && { rowspan });
         return this.wrap(tag, data, attrs);
@@ -344766,7 +344766,13 @@ var ThreadsSchema = typebox_exports.Object({
               path: typebox_exports.String(),
               line: typebox_exports.Union([typebox_exports.Integer(), typebox_exports.Null()]),
               comments: typebox_exports.Object({
-                nodes: typebox_exports.Array(typebox_exports.Object({ body: typebox_exports.String(), author: typebox_exports.Union([typebox_exports.Object({ login: typebox_exports.String() }), typebox_exports.Null()]) }))
+                nodes: typebox_exports.Array(
+                  typebox_exports.Object({
+                    body: typebox_exports.String(),
+                    author: typebox_exports.Union([typebox_exports.Object({ login: typebox_exports.String() }), typebox_exports.Null()]),
+                    reactions: typebox_exports.Optional(typebox_exports.Object({ nodes: typebox_exports.Array(typebox_exports.Object({ user: typebox_exports.Union([typebox_exports.Object({ login: typebox_exports.String() }), typebox_exports.Null()]) })) }))
+                  })
+                )
               })
             })
           )
@@ -344780,7 +344786,10 @@ var THREADS_QUERY = `query($owner: String!, $repo: String!, $pr: Int!, $after: S
     pullRequest(number: $pr) {
       reviewThreads(first: 100, after: $after) {
         pageInfo { hasNextPage endCursor }
-        nodes { id isResolved path line comments(first: 1) { nodes { body author { login } } } }
+        nodes {
+          id isResolved path line
+          comments(first: 50) { nodes { body author { login } reactions(content: THUMBS_DOWN, first: 50) { nodes { user { login } } } } }
+        }
       }
     }
   }
@@ -344873,9 +344882,17 @@ async function botThreads(c2) {
   do {
     const { nodes, pageInfo } = await threadsPage(c2, after);
     for (const t2 of nodes) {
-      const author = t2.comments.nodes[0]?.author;
-      if (author && sameLogin(author.login, c2.botLogin)) {
-        out.push({ id: t2.id, isResolved: t2.isResolved, path: t2.path, line: t2.line, body: t2.comments.nodes[0]?.body ?? "" });
+      const [first, ...rest] = t2.comments.nodes;
+      if (first?.author && sameLogin(first.author.login, c2.botLogin)) {
+        out.push({
+          id: t2.id,
+          isResolved: t2.isResolved,
+          path: t2.path,
+          line: t2.line,
+          body: first.body,
+          replies: rest.flatMap((r2) => r2.author ? [{ login: r2.author.login, body: r2.body }] : []),
+          dismissVotes: (first.reactions?.nodes ?? []).flatMap((r2) => r2.user ? [r2.user.login] : [])
+        });
       }
     }
     after = pageInfo.hasNextPage ? pageInfo.endCursor : null;
@@ -344941,7 +344958,7 @@ function onOff(source, name) {
   if (raw === "off" || raw === "false") return false;
   throw new Error(`Input ${name} must be on or off, got "${raw}"`);
 }
-var GATE_EVENTS = /* @__PURE__ */ new Set(["pull_request_review"]);
+var GATE_EVENTS = /* @__PURE__ */ new Set(["pull_request_review", "pull_request_review_comment"]);
 var workflowOptions = (source) => ({
   depth: source.get("depth") || void 0,
   voters: intInput(source, "voters", 1),
@@ -345547,17 +345564,28 @@ async function publishApprovals(github, pr, name, known) {
   });
   return { conclusion, tier, required: required2, approved, assessed };
 }
+var RESOLVE_COMMAND = /^\s*\/resolve\b/i;
+async function dismissedByHuman(github, t2) {
+  const logins = [...(t2.replies ?? []).filter((r2) => RESOLVE_COMMAND.test(r2.body)).map((r2) => r2.login), ...t2.dismissVotes ?? []];
+  for (const login2 of new Set(logins.filter((l3) => !l3.endsWith("[bot]")))) if (await github.canApprove(login2)) return true;
+  return false;
+}
+async function openThreads(github, state3) {
+  const fixed2 = new Set(state3?.fixedThreads ?? []);
+  const candidates = (await github.botThreads()).filter((t2) => !t2.isResolved && !fixed2.has(t2.id));
+  const dismissed = await Promise.all(candidates.map((t2) => dismissedByHuman(github, t2)));
+  return candidates.filter((_2, i2) => !dismissed[i2]);
+}
 async function publishGates(github, pr, names2) {
   const state3 = decodeState(await github.botReviewBodies());
-  const fixed2 = new Set(state3?.fixedThreads ?? []);
-  const threads = (await github.botThreads()).filter((t2) => !fixed2.has(t2.id));
+  const threads = await openThreads(github, state3);
   const openImportant = countOpenImportant(threads);
   await github.setCheck({
     name: names2.name,
     headSha: pr.headSha,
     conclusion: verdict(openImportant > 0),
     title: title(openImportant, "important finding"),
-    summary: "Fails while any review thread tagged **Important** is unresolved. Fix it or resolve the thread with a reason."
+    summary: "Fails while any review thread tagged **Important** is open. Fix it (the next push auto-resolves it), or reply `/resolve <reason>` or react \u{1F44E} to dismiss it (write access needed)."
   });
   return {
     conclusion: verdict(openImportant > 0),
@@ -345724,14 +345752,16 @@ function outOfDiffLines(items) {
   if (items.length === 0) return [];
   return ["", "Outside the diff:", ...items.slice(0, OUT_OF_DIFF_CAP), ...items.length > OUT_OF_DIFF_CAP ? [`- \u2026and ${items.length - OUT_OF_DIFF_CAP} more`] : []];
 }
-function summary2({ findings, outOfDiff, security = [], securityOutOfDiff = [], notes = [], risk, resolved, state: state3, maxRounds }) {
+var cell = (t2) => safe(t2).replace(/\|/g, "\\|").replace(/\s*\n\s*/g, " ");
+var passesTable = (rows) => rows.length === 0 ? [] : ["", "| Pass | Result |", "|---|---|", ...rows.map(([label, result]) => `| ${cell(label)} | ${cell(result)} |`)];
+function summary2({ findings, outOfDiff, security = [], securityOutOfDiff = [], notes = [], passes = [], resolved, state: state3, maxRounds }) {
   const outside = [
     ...outOfDiff.map((f4) => `- ${loc(f4)} **${LABEL4[f4.severity]}**: ${safe(f4.title)}. ${safe(f4.explanation).trim()}`),
     ...securityOutOfDiff.map((f4) => `- ${loc(f4)} **${securityLabel(f4)}**: ${safe(f4.title)}. ${safe(f4.exploitScenario).trim()}`)
   ];
   return [
     countLine(findings, security),
-    ...risk ? ["", safe(risk)] : [],
+    ...passesTable(passes),
     ...notes.flatMap((n) => ["", `\u26A0\uFE0F ${n}`]),
     ...resolved > 0 ? ["", `${resolved} earlier finding${resolved === 1 ? "" : "s"} resolved by new commits.`] : [],
     ...outOfDiffLines(outside),
@@ -345843,9 +345873,9 @@ async function tryResolve(ctx, t2) {
     return false;
   }
 }
-async function autoResolve(ctx, reviewer, limit3, touched, input2, depth) {
-  const recorded = new Set(decodeState(await ctx.github.botReviewBodies())?.fixedThreads ?? []);
-  const open5 = (await ctx.github.botThreads()).filter((t2) => !t2.isResolved && touched.has(t2.path) && !recorded.has(t2.id));
+async function autoResolve(ctx, state3, a) {
+  const { reviewer, limit: limit3, input: input2, depth } = a;
+  const open5 = (await openThreads(ctx.github, state3)).filter((t2) => a.touched.has(t2.path));
   const results = await Promise.all(
     open5.map(async (t2) => {
       if (!await isFixed(ctx, reviewer, limit3, t2, input2, depth)) return void 0;
@@ -345939,7 +345969,7 @@ async function reviewRanges(ctx, pr, state3, round, ranges) {
   const limit3 = createLimiter2(settings2.concurrency);
   const touched = new Set([...ranges.bug?.files ?? [], ...ranges.security?.files ?? []].map((f4) => f4.path));
   const anyRange = ranges.bug ?? ranges.security;
-  const auto = state3 && anyRange ? await autoResolve(ctx, reviewer, limit3, touched, buildInput(pr, anyRange, ranges.guidance), depth) : { count: 0, unresolvable: [] };
+  const auto = state3 && anyRange ? await autoResolve(ctx, state3, { reviewer, limit: limit3, touched, input: buildInput(pr, anyRange, ranges.guidance), depth }) : { count: 0, unresolvable: [] };
   const posted = state3?.fingerprints ?? [];
   const args = { reviewer, limit: limit3, ranges, pr, depth, posted };
   const [bugs, security] = await Promise.all([runBugPass(ctx, args), runSecurityPass(ctx, args)]);
@@ -345951,7 +345981,29 @@ async function roundRisk(ctx, pr, state3, r2, found) {
   if (!ctx.settings.riskTiers) return { risk: void 0, line: void 0 };
   const risk = await assessRound(pr, state3, { prFiles: r2.ranges.prFiles, guidance: r2.ranges.guidance, ...found, skipped: false }, r2.classifier);
   const n = requiredApprovals(risk.tier, r2.ranges.guidance.review?.config.riskApprovals);
-  return { risk, line: `Risk: **${risk.tier}** (${n} approval${n === 1 ? "" : "s"} needed): ${risk.reasons.join("; ")}` };
+  const tier = `${TIER_ICON[risk.tier]} ${risk.tier[0]?.toUpperCase()}${risk.tier.slice(1)}`;
+  return { risk, line: `${tier}: ${plural(n, "approval")} needed (${risk.reasons.join("; ")})` };
+}
+var TIER_ICON = { low: "\u{1F7E2}", medium: "\u{1F7E1}", high: "\u{1F534}" };
+var plural = (n, noun) => `${n} ${noun}${n === 1 ? "" : "s"}`;
+function codeRow(r2) {
+  const d = r2.depth;
+  const label = `Code review (${d.depth}: ${plural(d.finders.length, "finder")}, ${d.needed} of ${d.voters} votes)`;
+  if (!r2.bugs) return [label, r2.ranges.bug ? "\u2705 Nothing to review (all changes match skip_paths)" : "\u2014 Not due (no new commits)"];
+  const { findings, stats } = r2.bugs;
+  const important = findings.filter((f4) => f4.severity === "important").length;
+  const verdict2 = findings.length === 0 ? "\u2705 No issues" : `\u26A0\uFE0F ${plural(findings.length, "issue")} (${important} important)`;
+  return [label, `${verdict2} \xB7 ${stats.raw} raw \u2192 ${stats.candidates} voted on \u2192 ${stats.confirmed} confirmed`];
+}
+function securityRow(ctx, r2) {
+  if (!ctx.settings.securityReview) return [];
+  if (!r2.security) return [["Security", "\u2014 Not due (no new commits)"]];
+  if (r2.security.status === "failed") return [["Security", "\u26A0\uFE0F Did not complete; retries on the next run"]];
+  const { findings, inconclusive } = r2.security.result;
+  const label = `Security (${r2.security.depth}: ${plural(SECURITY_PLANS[r2.security.depth].finders.length, "finder")})`;
+  const blockingCount = findings.filter(blocking).length;
+  const verdict2 = findings.length === 0 ? "\u2705 No findings" : `\u{1F534} ${plural(findings.length, "finding")} (${blockingCount} blocking)`;
+  return [[label, inconclusive > 0 ? `${verdict2} \xB7 \u26A0\uFE0F ${inconclusive} undecided, retries next run` : verdict2]];
 }
 async function finishRound(ctx, pr, state3, round, r2) {
   const bugFindings = r2.bugs?.findings ?? [];
@@ -345976,7 +346028,7 @@ async function finishRound(ctx, pr, state3, round, r2) {
     pr,
     { bugs: bugFindings, security: vulns },
     r2.ranges.prFiles,
-    (outside) => summary2({ findings: bugFindings, outOfDiff: outside.bugs, security: vulns, securityOutOfDiff: outside.security, notes, risk: riskLine, resolved: r2.resolved, state: newState, maxRounds: ctx.settings.maxRounds })
+    (outside) => summary2({ findings: bugFindings, outOfDiff: outside.bugs, security: vulns, securityOutOfDiff: outside.security, notes, passes: [codeRow(r2), ...securityRow(ctx, r2), ...riskLine ? [["Risk", riskLine]] : []], resolved: r2.resolved, state: newState, maxRounds: ctx.settings.maxRounds })
   );
   const stats = r2.bugs?.stats ?? { raw: 0, candidates: 0, confirmed: 0 };
   const sec = r2.security?.status === "done" ? `; security ${r2.security.result.stats.confirmed} confirmed (${r2.security.depth})` : r2.security ? "; security FAILED" : "";

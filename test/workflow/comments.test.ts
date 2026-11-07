@@ -145,10 +145,14 @@ describe('summary with security findings', () => {
   })
 })
 
-describe('summary with a risk line', () => {
+describe('summary with a passes table', () => {
   const state = { round: 1, sha: 'abc', fingerprints: [] }
-  it('shows it under the count, escaping comment openers from model text', () => {
-    const body = summary({ findings: [], outOfDiff: [], risk: 'Risk: **high** (2 approvals needed): <!-- x', resolved: 0, state, maxRounds: 3 })
-    expect(body.split('\n').slice(0, 3)).toEqual(['**No issues found.**', '', 'Risk: **high** (2 approvals needed): &lt;!-- x'])
+  it('renders under the count, escaping comment openers, pipes and newlines in cells', () => {
+    const body = summary({ findings: [], outOfDiff: [], passes: [['Code review', '✅ No issues'], ['Risk', 'high: <!-- x | y\nz']], resolved: 0, state, maxRounds: 3 })
+    expect(body.split('\n').slice(0, 6)).toEqual(['**No issues found.**', '', '| Pass | Result |', '|---|---|', '| Code review | ✅ No issues |', '| Risk | high: &lt;!-- x \\| y z |'])
+  })
+
+  it('omits the table when there are no rows', () => {
+    expect(summary({ findings: [], outOfDiff: [], passes: [], resolved: 0, state, maxRounds: 3 })).not.toContain('| Pass |')
   })
 })

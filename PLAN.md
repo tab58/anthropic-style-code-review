@@ -15,7 +15,7 @@ with convergence rules so agent authors and the agent reviewer don't loop foreve
 | Agent tools | `read, grep, find, ls` only (no bash, edit, write, or MCP) + a terminating `submit_*` tool with a schema |
 | Models | `finder_model` default `glm-5.3`; `verifier_model` default `deepseek-v4.1-flash` (a different family, for independent votes) |
 | Concurrency | `max_concurrency` input, default 3, user-tuned to the provider. Semaphore over agent sessions; Pi's built-in agent retry (4×, exponential from 2s) handles queue-full/429/5xx |
-| Triggers | `pull_request` (opened, synchronize, ready_for_review, reopened), `pull_request_review` (submitted, dismissed: recount only), `workflow_dispatch` (pr_number). GitHub Actions has no `pull_request_review_thread` trigger, so resolving a thread needs a job re-run or a push to recount |
+| Triggers | `pull_request` (opened, synchronize, ready_for_review, reopened), `pull_request_review` (submitted, dismissed) and `pull_request_review_comment` (created, edited) recount only; `workflow_dispatch` (pr_number). GitHub Actions has no trigger for resolving a thread or reacting, so those count on the next run; a `/resolve <reason>` reply recounts instantly |
 | Forks | Skipped with a notice. Maintainers can run `workflow_dispatch` manually |
 | Output | One PR review, always `COMMENT` (never approve), with inline comments tagged **Important** / **Nit** / **Pre-existing**. The summary starts with a count |
 | Gate | Check run `anthropic-style-code-review` fails while any unresolved bot thread is tagged Important. Nits and pre-existing findings never block |

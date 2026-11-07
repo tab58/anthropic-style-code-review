@@ -108,6 +108,8 @@ describe('createWorkflow().review', () => {
   it('first round: inline comment, count-first summary, state, failing check, reviewed outcome', async () => {
     const gh = fakeGitHub()
     const outcome = await createWorkflow({ github: gh.github, createReviewer: async () => fakeReviewer([finding()]), log: log() }, options).review()
+    expect(gh.reviews[0]?.body).toContain('| Code review (quick: 2 finders, 1 of 1 votes) | ⚠️ 1 issue (1 important) · 2 raw → 1 voted on → 1 confirmed |')
+    expect(gh.reviews[0]?.body).not.toContain('| Security')
 
     expect(gh.compared).toEqual(['b0...h2'])
     expect(gh.reviews).toHaveLength(1)
@@ -167,6 +169,33 @@ describe('createWorkflow().review', () => {
     expect(gh.reviews[0]?.body).toContain('could not be marked resolved')
     expect(outcome).toMatchObject({ status: 'reviewed', resolved: 1 })
     expect(gh.checks.at(-1)?.conclusion).toBe('success')
+  })
+
+  it('gate runs ignore threads dismissed by a write-access human (/resolve reply or 👎), but not by others', async () => {
+    const t = (id: string, over: Partial<BotThread>) => ({ ...important(id, 'src/a.ts'), ...over })
+    const gh = fakeGitHub({
+      bodies: [encodeState({ round: 1, sha: 'h2', fingerprints: [] })],
+      writers: ['alice'],
+      threads: [
+        t('reply', { replies: [{ login: 'alice', body: '  /RESOLVE false positive: validated upstream' }] }),
+        t('vote', { dismissVotes: ['alice'] }),
+        t('outsider', { replies: [{ login: 'mallory', body: '/resolve trust me' }], dismissVotes: ['mallory'] }),
+        t('chatter', { replies: [{ login: 'alice', body: 'will /resolve later' }] }),
+        t('bot', { dismissVotes: ['alice[bot]'] }),
+      ],
+    })
+    expect(await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }, options).gate()).toMatchObject({ openImportant: 3 })
+  })
+
+  it('does not recheck threads a human already dismissed', async () => {
+    const gh = fakeGitHub({
+      bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [] })],
+      writers: ['alice'],
+      threads: [{ ...important('t1', 'src/a.ts'), dismissVotes: ['alice'] }],
+    })
+    const reviewer = fakeReviewer([], { recheck: vi.fn(async () => false) })
+    await createWorkflow({ github: gh.github, createReviewer: async () => reviewer, log: log() }, options).review()
+    expect(reviewer.recheck).not.toHaveBeenCalled()
   })
 
   it('gate runs ignore threads the state records as fixed', async () => {
@@ -512,6 +541,18 @@ describe('security pass', () => {
     expect(outcome).toMatchObject({ security: undefined })
   })
 
+  it('adds a security row to the summary table: findings, clean, or did not complete', async () => {
+    const found = fakeGitHub()
+    await run(found, fakeReviewer([], { findVulnerabilities: vi.fn(async () => [vuln()]) }))
+    expect(found.reviews[0]?.body).toContain('| Security (quick: 2 finders) | 🔴 1 finding (1 blocking) |')
+    const clean = fakeGitHub()
+    await run(clean, fakeReviewer([]))
+    expect(clean.reviews[0]?.body).toContain('| Security (quick: 2 finders) | ✅ No findings |')
+    const failed = fakeGitHub()
+    await run(failed, fakeReviewer([], { findVulnerabilities: vi.fn(async () => { throw new Error('down') }) }))
+    expect(failed.reviews[0]?.body).toContain('| Security | ⚠️ Did not complete; retries on the next run |')
+  })
+
   it('uses a custom check name for both gates', async () => {
     const gh = fakeGitHub()
     await run(gh, fakeReviewer([]), { ...sec, checkName: 'review' })
@@ -546,7 +587,7 @@ describe('risk tiers', () => {
     expect(approvals(gh)[0]?.summary).toContain('not assessed yet')
     expect(reviewer.classifyRisk).toHaveBeenCalledWith(expect.objectContaining({ intent: 'Add x\n\ndesc', floor: { tier: 'medium', reasons: ['changes source: src/a.ts'] } }))
     expect(decodeState([gh.reviews[0]?.body ?? ''])).toMatchObject({ tier: 'medium', tierReasons: ['changes source: src/a.ts'] })
-    expect(gh.reviews[0]?.body).toContain('Risk: **medium** (1 approval needed): changes source: src/a.ts')
+    expect(gh.reviews[0]?.body).toContain('| Risk | 🟡 Medium: 1 approval needed (changes source: src/a.ts) |')
     expect(gh.labels).toEqual(['medium'])
     expect(outcome).toMatchObject({ risk: { tier: 'medium' } })
   })

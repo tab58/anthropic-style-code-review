@@ -14,6 +14,7 @@ import {
 } from '../review/index.js'
 import {
   chooseSecurityPlan,
+  SECURITY_PLANS,
   runSecurityReview,
   type SecurityFinding,
   securityFingerprint,
@@ -24,6 +25,7 @@ import {
 import { requiredApprovals, type RiskAssessment, type RiskClassifier } from '../risk/index.js'
 import { findingComment, securityComment, skippedComment, stepBackComment, summary } from './comments.js'
 import { decodeState, type ReviewState } from './markers.js'
+import { openThreads } from './gates.js'
 import { assessRound, tierFields } from './risk.js'
 import type { BotThread, PullRequest, RoundOutcome, WorkflowConfig, WorkflowOptions } from './workflow.js'
 
@@ -150,9 +152,9 @@ async function tryResolve(ctx: Context, t: BotThread): Promise<boolean> {
 }
 
 /** Resolves open bot threads in touched files that a verifier quorum says are fixed. */
-async function autoResolve(ctx: Context, reviewer: Reviewer, limit: Limiter, touched: ReadonlySet<string>, input: ReviewInput, depth: DepthConfig): Promise<AutoResolved> {
-  const recorded = new Set(decodeState(await ctx.github.botReviewBodies())?.fixedThreads ?? [])
-  const open = (await ctx.github.botThreads()).filter((t) => !t.isResolved && touched.has(t.path) && !recorded.has(t.id))
+async function autoResolve(ctx: Context, state: ReviewState, a: { reviewer: Reviewer; limit: Limiter; touched: ReadonlySet<string>; input: ReviewInput; depth: DepthConfig }): Promise<AutoResolved> {
+  const { reviewer, limit, input, depth } = a
+  const open = (await openThreads(ctx.github, state)).filter((t) => a.touched.has(t.path))
   const results = await Promise.all(
     open.map(async (t) => {
       if (!(await isFixed(ctx, reviewer, limit, t, input, depth))) return undefined
@@ -278,7 +280,7 @@ async function reviewRanges(ctx: Context, pr: PullRequest, state: ReviewState | 
   const limit = createLimiter(settings.concurrency) // one pool for every agent session this round
   const touched = new Set([...(ranges.bug?.files ?? []), ...(ranges.security?.files ?? [])].map((f) => f.path))
   const anyRange = ranges.bug ?? ranges.security
-  const auto = state && anyRange ? await autoResolve(ctx, reviewer, limit, touched, buildInput(pr, anyRange, ranges.guidance), depth) : { count: 0, unresolvable: [] }
+  const auto = state && anyRange ? await autoResolve(ctx, state, { reviewer, limit, touched, input: buildInput(pr, anyRange, ranges.guidance), depth }) : { count: 0, unresolvable: [] }
   const posted = state?.fingerprints ?? []
   const args = { reviewer, limit, ranges, pr, depth, posted }
   const [bugs, security] = await Promise.all([runBugPass(ctx, args), runSecurityPass(ctx, args)])
@@ -306,7 +308,35 @@ async function roundRisk(ctx: Context, pr: PullRequest, state: ReviewState | und
   if (!ctx.settings.riskTiers) return { risk: undefined, line: undefined }
   const risk: RiskAssessment = await assessRound(pr, state, { prFiles: r.ranges.prFiles, guidance: r.ranges.guidance, ...found, skipped: false }, r.classifier)
   const n = requiredApprovals(risk.tier, r.ranges.guidance.review?.config.riskApprovals)
-  return { risk, line: `Risk: **${risk.tier}** (${n} approval${n === 1 ? '' : 's'} needed): ${risk.reasons.join('; ')}` }
+  const tier = `${TIER_ICON[risk.tier]} ${risk.tier[0]?.toUpperCase()}${risk.tier.slice(1)}`
+  return { risk, line: `${tier}: ${plural(n, 'approval')} needed (${risk.reasons.join('; ')})` }
+}
+
+const TIER_ICON = { low: '🟢', medium: '🟡', high: '🔴' } as const
+/** `1 issue`, `2 issues`. */
+const plural = (n: number, noun: string) => `${n} ${noun}${n === 1 ? '' : 's'}`
+
+/** The code-review row: what ran and what it found, or why it didn't run. */
+function codeRow(r: RoundResult): readonly [string, string] {
+  const d = r.depth
+  const label = `Code review (${d.depth}: ${plural(d.finders.length, 'finder')}, ${d.needed} of ${d.voters} votes)`
+  if (!r.bugs) return [label, r.ranges.bug ? '✅ Nothing to review (all changes match skip_paths)' : '— Not due (no new commits)']
+  const { findings, stats } = r.bugs
+  const important = findings.filter((f) => f.severity === 'important').length
+  const verdict = findings.length === 0 ? '✅ No issues' : `⚠️ ${plural(findings.length, 'issue')} (${important} important)`
+  return [label, `${verdict} · ${stats.raw} raw → ${stats.candidates} voted on → ${stats.confirmed} confirmed`]
+}
+
+/** The security row, or none when the security review is off. */
+function securityRow(ctx: Context, r: RoundResult): readonly (readonly [string, string])[] {
+  if (!ctx.settings.securityReview) return []
+  if (!r.security) return [['Security', '— Not due (no new commits)']]
+  if (r.security.status === 'failed') return [['Security', '⚠️ Did not complete; retries on the next run']]
+  const { findings, inconclusive } = r.security.result
+  const label = `Security (${r.security.depth}: ${plural(SECURITY_PLANS[r.security.depth].finders.length, 'finder')})`
+  const blockingCount = findings.filter(blocking).length
+  const verdict = findings.length === 0 ? '✅ No findings' : `🔴 ${plural(findings.length, 'finding')} (${blockingCount} blocking)`
+  return [[label, inconclusive > 0 ? `${verdict} · ⚠️ ${inconclusive} undecided, retries next run` : verdict]]
 }
 
 /** Posts the round's review with the advanced state, and builds the outcome. */
@@ -329,7 +359,7 @@ async function finishRound(ctx: Context, pr: PullRequest, state: ReviewState | u
     unresolvable > 0 ? `${unresolvable} fixed thread${unresolvable === 1 ? '' : 's'} could not be marked resolved (the token lacks permission); they no longer block merge, but please resolve them by hand.` : undefined,
   ].filter((n) => n !== undefined)
   await postReview(ctx, pr, { bugs: bugFindings, security: vulns }, r.ranges.prFiles, (outside) =>
-    summary({ findings: bugFindings, outOfDiff: outside.bugs, security: vulns, securityOutOfDiff: outside.security, notes, risk: riskLine, resolved: r.resolved, state: newState, maxRounds: ctx.settings.maxRounds }),
+    summary({ findings: bugFindings, outOfDiff: outside.bugs, security: vulns, securityOutOfDiff: outside.security, notes, passes: [codeRow(r), ...securityRow(ctx, r), ...(riskLine ? [['Risk', riskLine] as const] : [])], resolved: r.resolved, state: newState, maxRounds: ctx.settings.maxRounds }),
   )
   const stats = r.bugs?.stats ?? { raw: 0, candidates: 0, confirmed: 0 }
   const sec = r.security?.status === 'done' ? `; security ${r.security.result.stats.confirmed} confirmed (${r.security.depth})` : r.security ? '; security FAILED' : ''

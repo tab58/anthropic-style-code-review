@@ -65,8 +65,8 @@ describe('readInputs', () => {
     expect(out).toMatchObject({ securityFinderModel: 'sf', securityVerifierModel: 'sv' })
   })
 
-  it('maps pull_request_review events to gate runs, which need no API key', () => {
-    const out = readInputs(source({ ...base, provider_api_key: '' }), { name: 'pull_request_review', prNumber: 1 })
+  it.each(['pull_request_review', 'pull_request_review_comment'])('maps %s events to gate runs, which need no API key', (name) => {
+    const out = readInputs(source({ ...base, provider_api_key: '' }), { name, prNumber: 1 })
     expect(out).toMatchObject({ event: 'gate', apiKey: '', allowFork: false })
   })
 

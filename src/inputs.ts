@@ -8,7 +8,7 @@ export interface InputSource {
 
 /** The triggering GitHub event. */
 export type EventInfo = {
-  /** Event name, e.g. `pull_request`, `pull_request_review`, `workflow_dispatch`. */
+  /** Event name, e.g. `pull_request`, `pull_request_review`, `pull_request_review_comment`, `workflow_dispatch`. */
   readonly name: string
   /** PR number from the event payload, when the event carries one. */
   readonly prNumber?: number
@@ -16,7 +16,7 @@ export type EventInfo = {
 
 /** Validated action inputs. */
 export type ActionInputs = {
-  /** `gate` for PR review events (no LLM calls), `review` otherwise. */
+  /** `gate` for PR review and review-comment events (no LLM calls), `review` otherwise. */
   readonly event: 'review' | 'gate'
   /** PR to act on. */
   readonly prNumber: number
@@ -68,7 +68,7 @@ function onOff(source: InputSource, name: string): boolean | undefined {
 }
 
 /** Events that only recompute the merge gates. */
-const GATE_EVENTS = new Set(['pull_request_review'])
+const GATE_EVENTS = new Set(['pull_request_review', 'pull_request_review_comment'])
 
 /** Workflow tuning inputs, validated. */
 const workflowOptions = (source: InputSource): WorkflowOptions => ({

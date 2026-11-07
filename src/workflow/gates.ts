@@ -1,7 +1,7 @@
 import { loadGuidance } from '../guidance.js'
 import { approvers, maxTier, requiredApprovals, type RiskApprovals } from '../risk/index.js'
 import { countOpenImportant, countOpenSecurity, decodeState, type ReviewState } from './markers.js'
-import type { ApprovalsResult, CheckConclusion, GateResult, GitHub, PullRequest } from './workflow.js'
+import type { ApprovalsResult, BotThread, CheckConclusion, GateResult, GitHub, PullRequest } from './workflow.js'
 
 /** Which checks to publish. */
 export type GateNames = {
@@ -76,18 +76,38 @@ export async function publishApprovals(github: GitHub, pr: PullRequest, name: st
   return { conclusion, tier, required, approved, assessed }
 }
 
+/** A reply that dismisses a finding: `/resolve` followed by the reason. */
+const RESOLVE_COMMAND = /^\s*\/resolve\b/i
+
+/** True when a non-bot user with write access replied `/resolve …` or reacted 👎 to the finding. */
+async function dismissedByHuman(github: GitHub, t: BotThread): Promise<boolean> {
+  const logins = [...(t.replies ?? []).filter((r) => RESOLVE_COMMAND.test(r.body)).map((r) => r.login), ...(t.dismissVotes ?? [])]
+  for (const login of new Set(logins.filter((l) => !l.endsWith('[bot]')))) if (await github.canApprove(login)) return true
+  return false
+}
+
+/**
+ * Unresolved bot threads that still count: not resolved on GitHub, not recorded as fixed in the state, and not
+ * dismissed by a write-access human (`/resolve <reason>` reply or 👎 on the finding).
+ */
+export async function openThreads(github: GitHub, state: ReviewState | undefined): Promise<readonly BotThread[]> {
+  const fixed = new Set(state?.fixedThreads ?? [])
+  const candidates = (await github.botThreads()).filter((t) => !t.isResolved && !fixed.has(t.id))
+  const dismissed = await Promise.all(candidates.map((t) => dismissedByHuman(github, t)))
+  return candidates.filter((_, i) => !dismissed[i])
+}
+
 /** Counts blocking threads, checks security coverage of HEAD, and publishes the enabled gates. */
 export async function publishGates(github: GitHub, pr: PullRequest, names: GateNames): Promise<GateResult> {
   const state = decodeState(await github.botReviewBodies())
-  const fixed = new Set(state?.fixedThreads ?? [])
-  const threads = (await github.botThreads()).filter((t) => !fixed.has(t.id))
+  const threads = await openThreads(github, state)
   const openImportant = countOpenImportant(threads)
   await github.setCheck({
     name: names.name,
     headSha: pr.headSha,
     conclusion: verdict(openImportant > 0),
     title: title(openImportant, 'important finding'),
-    summary: 'Fails while any review thread tagged **Important** is unresolved. Fix it or resolve the thread with a reason.',
+    summary: 'Fails while any review thread tagged **Important** is open. Fix it (the next push auto-resolves it), or reply `/resolve <reason>` or react 👎 to dismiss it (write access needed).',
   })
   return {
     conclusion: verdict(openImportant > 0),

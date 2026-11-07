@@ -60,7 +60,13 @@ const ThreadsSchema = Type.Object({
               path: Type.String(),
               line: Type.Union([Type.Integer(), Type.Null()]),
               comments: Type.Object({
-                nodes: Type.Array(Type.Object({ body: Type.String(), author: Type.Union([Type.Object({ login: Type.String() }), Type.Null()]) })),
+                nodes: Type.Array(
+                  Type.Object({
+                    body: Type.String(),
+                    author: Type.Union([Type.Object({ login: Type.String() }), Type.Null()]),
+                    reactions: Type.Optional(Type.Object({ nodes: Type.Array(Type.Object({ user: Type.Union([Type.Object({ login: Type.String() }), Type.Null()]) })) })),
+                  }),
+                ),
               }),
             }),
           ),
@@ -75,7 +81,10 @@ const THREADS_QUERY = `query($owner: String!, $repo: String!, $pr: Int!, $after:
     pullRequest(number: $pr) {
       reviewThreads(first: 100, after: $after) {
         pageInfo { hasNextPage endCursor }
-        nodes { id isResolved path line comments(first: 1) { nodes { body author { login } } } }
+        nodes {
+          id isResolved path line
+          comments(first: 50) { nodes { body author { login } reactions(content: THUMBS_DOWN, first: 50) { nodes { user { login } } } } }
+        }
       }
     }
   }
@@ -198,9 +207,17 @@ async function botThreads(c: GitHubClientConfig): Promise<readonly BotThread[]> 
   do {
     const { nodes, pageInfo } = await threadsPage(c, after)
     for (const t of nodes) {
-      const author = t.comments.nodes[0]?.author
-      if (author && sameLogin(author.login, c.botLogin)) {
-        out.push({ id: t.id, isResolved: t.isResolved, path: t.path, line: t.line, body: t.comments.nodes[0]?.body ?? '' })
+      const [first, ...rest] = t.comments.nodes
+      if (first?.author && sameLogin(first.author.login, c.botLogin)) {
+        out.push({
+          id: t.id,
+          isResolved: t.isResolved,
+          path: t.path,
+          line: t.line,
+          body: first.body,
+          replies: rest.flatMap((r) => (r.author ? [{ login: r.author.login, body: r.body }] : [])),
+          dismissVotes: (first.reactions?.nodes ?? []).flatMap((r) => (r.user ? [r.user.login] : [])),
+        })
       }
     }
     after = pageInfo.hasNextPage ? pageInfo.endCursor : null
