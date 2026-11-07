@@ -1,6 +1,9 @@
 import { createHash } from 'node:crypto'
-import { createLimiter, type Limiter } from '../limiter.js'
-import { dedupe, normClass, rank, tally } from './voting.js'
+import { dedupe, type Location, normClass, sortByRank, tally } from '../consensus.js'
+import type { Limiter } from '../limiter.js'
+
+/** A line range in a file (shared with the security review). */
+export type { Location }
 
 /** How bad a finding is. Only `important` blocks merge. */
 export type Severity = 'important' | 'pre_existing' | 'nit'
@@ -10,16 +13,6 @@ export type Category = 'bug' | 'style' | 'cleanup' | 'diagnostic'
 
 /** The area a finder agent concentrates on. `general` means any real defect. */
 export type FinderFocus = 'logic' | 'edge-cases' | 'concurrency-state' | 'api-contract' | 'general'
-
-/** A line range in a file. */
-export type Location = {
-  /** Repo-relative path. */
-  readonly file: string
-  /** First line, in the new version of the file (1-based). */
-  readonly line: number
-  /** Last line; `>= line`. */
-  readonly endLine: number
-}
 
 /** A reported defect with evidence. */
 export type Finding = Location & {
@@ -124,8 +117,8 @@ export type ReviewRequest = {
   readonly maxFindings: number
   /** Maximum nits returned; non-negative integer. */
   readonly nitCap: number
-  /** Maximum agent sessions at once; positive integer. */
-  readonly concurrency: number
+  /** Shared concurrency pool for agent sessions (share one across passes to cap total load). */
+  readonly limit: Limiter
 }
 
 /** Counts at each stage of a review. */
@@ -158,6 +151,15 @@ export const DEPTH_PRESETS = {
 } as const satisfies Record<Depth, { finders: readonly FinderFocus[]; voters: number; needed: number }>
 
 /** Narrows a string to a preset name. */
+const RANK: Record<Severity, number> = { important: 0, pre_existing: 1, nit: 2 }
+const SEVERITY_KEYS = { classOf: (f: Finding) => f.bugClass, rankOf: (f: Finding) => RANK[f.severity] }
+
+/** Ranks important > pre_existing > nit (stable within a severity) and keeps at most `nitCap` nits. */
+function rank(findings: readonly Finding[], nitCap: number): readonly Finding[] {
+  const ranked = sortByRank(findings, SEVERITY_KEYS.rankOf)
+  return [...ranked.filter((f) => f.severity !== 'nit'), ...ranked.filter((f) => f.severity === 'nit').slice(0, nitCap)]
+}
+
 const isDepth = (d: string): d is Depth => Object.hasOwn(DEPTH_PRESETS, d)
 /** Error message of any thrown value. */
 const message = (e: unknown) => (e instanceof Error ? e.message : String(e))
@@ -214,7 +216,7 @@ function selectCandidates(raw: readonly Finding[], r: ReviewRequest): readonly F
   const plausible = raw.filter(
     (f) => f.category === 'bug' && inDiff.has(f.file) && f.evidence.trim() !== '' && !posted.has(fingerprint(f)),
   )
-  return rank(dedupe(plausible), Infinity).slice(0, r.maxFindings)
+  return rank(dedupe(plausible, SEVERITY_KEYS), Infinity).slice(0, r.maxFindings)
 }
 
 /** Collects `voters` votes on one finding; an errored vote counts as "no". */
@@ -227,7 +229,7 @@ async function voteOn(reviewer: Reviewer, f: Finding, r: ReviewRequest, limit: L
       ),
     ),
   )
-  return { finding: f, kept: tally(votes.map((v) => v.vote), r.depth.needed), errors: votes.flatMap((v) => (v.error ? [v.error] : [])) }
+  return { finding: f, kept: tally(votes.map((v) => v.vote.real), r.depth.needed), errors: votes.flatMap((v) => (v.error ? [v.error] : [])) }
 }
 
 /**
@@ -239,7 +241,7 @@ async function voteOn(reviewer: Reviewer, f: Finding, r: ReviewRequest, limit: L
  * @throws {@link Error} If every finder fails.
  */
 export async function runReview(reviewer: Reviewer, request: ReviewRequest): Promise<ReviewResult> {
-  const limit = createLimiter(request.concurrency)
+  const { limit } = request
   const finders = await runFinders(reviewer, request, limit)
   const candidates = selectCandidates(finders.findings, request)
   const votes = await Promise.all(candidates.map((f) => voteOn(reviewer, f, request, limit)))

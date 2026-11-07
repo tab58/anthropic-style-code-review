@@ -11,6 +11,10 @@ export type ReviewConfig = {
   readonly skipPaths: readonly string[]
   /** Maximum nits per review; a non-negative integer. */
   readonly nitCap?: number
+  /** Extra globs that trigger the full security pass. */
+  readonly securityPaths?: readonly string[]
+  /** Extra globs whose security findings are dropped. */
+  readonly securityExcludePaths?: readonly string[]
 }
 
 /** A parsed REVIEW.md. */
@@ -48,6 +52,8 @@ const FrontmatterSchema = Type.Object({
   depth: Type.Optional(Type.String()),
   skip_paths: Type.Optional(Type.Array(Type.String())),
   nit_cap: Type.Optional(Type.Integer({ minimum: 0 })),
+  security_paths: Type.Optional(Type.Array(Type.String())),
+  security_exclude_paths: Type.Optional(Type.Array(Type.String())),
 })
 
 /** Parses YAML, rethrowing errors with a REVIEW.md-specific message. */
@@ -62,11 +68,12 @@ function parseFrontmatterYaml(yaml: string): unknown {
 /** Explains which frontmatter field is invalid. */
 function frontmatterError(raw: unknown): Error {
   if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return new Error('REVIEW.md frontmatter must be a mapping')
-  const field = (['depth', 'skip_paths', 'nit_cap'] as const).find((k) => {
+  const field = (['depth', 'skip_paths', 'nit_cap', 'security_paths', 'security_exclude_paths'] as const).find((k) => {
     const v: unknown = Reflect.get(raw, k)
     return v !== undefined && !Check(FrontmatterSchema.properties[k], v)
   })
-  const expected = { depth: 'a string', skip_paths: 'a list of glob strings', nit_cap: 'a non-negative integer' } as const
+  const globs = 'a list of glob strings'
+  const expected = { depth: 'a string', skip_paths: globs, nit_cap: 'a non-negative integer', security_paths: globs, security_exclude_paths: globs } as const
   return new Error(field ? `REVIEW.md ${field} must be ${expected[field]}` : 'REVIEW.md frontmatter is invalid')
 }
 
@@ -88,6 +95,8 @@ export function parseReviewMd(text: string): ReviewMd {
       skipPaths: raw.skip_paths ?? [],
       ...(raw.depth !== undefined && { depth: raw.depth }),
       ...(raw.nit_cap !== undefined && { nitCap: raw.nit_cap }),
+      ...(raw.security_paths !== undefined && { securityPaths: raw.security_paths }),
+      ...(raw.security_exclude_paths !== undefined && { securityExcludePaths: raw.security_exclude_paths }),
     },
     body: text.slice(match[0].length),
   }

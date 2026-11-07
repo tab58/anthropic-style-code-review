@@ -1,18 +1,7 @@
-import { type FileDiff, filterDiff, parseDiff } from '../diff.js'
-import { type Guidance, loadGuidance, renderGuidance } from '../guidance.js'
-import { createLimiter, type Limiter } from '../limiter.js'
-import {
-  type DepthConfig,
-  type Finding,
-  fingerprint,
-  type Reviewer,
-  type ReviewInput,
-  type ReviewStats,
-  resolveDepth,
-  runReview,
-} from '../review/index.js'
-import { findingComment, skippedComment, stepBackComment, summary } from './comments.js'
-import { countOpenImportant, decodeState, type ReviewState } from './markers.js'
+import type { Finding, Reviewer, ReviewStats } from '../review/index.js'
+import type { SecurityFinding, SecurityPassDepth, SecurityReviewer } from '../security/index.js'
+import { publishGates } from './gates.js'
+import { type Context, reviewRound, type Settings } from './round.js'
 
 /** The pull request under review. */
 export type PullRequest = {
@@ -61,6 +50,8 @@ export type CheckConclusion = 'success' | 'failure'
 
 /** A completed check run to publish on a commit. */
 export type CheckRun = {
+  /** Check name, e.g. `anthropic-style-code-review` or `anthropic-style-code-review/security`. */
+  readonly name: string
   /** Commit to attach the check to. */
   readonly headSha: string
   /** Pass or fail. */
@@ -89,7 +80,7 @@ export interface GitHub {
   createReview(review: { readonly headSha: string; readonly body: string; readonly comments: readonly ReviewComment[] }): Promise<void>
   /** Resolves a review thread. */
   resolveThread(id: string): Promise<void>
-  /** Publishes the merge-gate check run. */
+  /** Publishes a merge-gate check run. */
   setCheck(check: CheckRun): Promise<void>
 }
 
@@ -101,8 +92,8 @@ export interface Log {
   warning(msg: string): void
 }
 
-/** Builds the reviewer lazily, so gate-only runs never need an API key. */
-export type ReviewerFactory = () => Promise<Reviewer>
+/** Builds the bug + security reviewer lazily, so gate-only runs never need an API key. */
+export type ReviewerFactory = () => Promise<Reviewer & SecurityReviewer>
 
 /** Required collaborators for {@link createWorkflow}. */
 export type WorkflowConfig = {
@@ -132,6 +123,10 @@ export type WorkflowOptions = {
   readonly concurrency?: number
   /** Max nits per review; non-negative integer. Overrides REVIEW.md; default 3. */
   readonly nitCap?: number
+  /** Run the security pass and publish its gate. Default true. */
+  readonly securityReview?: boolean
+  /** Bug gate check name; the security gate is `<checkName>/security`. Default `anthropic-style-code-review`. */
+  readonly checkName?: string
 }
 
 /** Defaults for the {@link WorkflowOptions} that have a fixed default. */
@@ -141,6 +136,8 @@ export const DEFAULT_WORKFLOW_OPTIONS = {
   maxFindings: 15,
   concurrency: 3,
   nitCap: 3,
+  securityReview: true,
+  checkName: 'anthropic-style-code-review',
 } as const satisfies WorkflowOptions
 
 /** Per-call data for {@link Workflow.review}. */
@@ -161,7 +158,19 @@ export type RoundOutcome =
       readonly findings: readonly Finding[]
       readonly resolved: number
       readonly stats: ReviewStats
+      /** Security pass result; undefined when the security review is off. */
+      readonly security: SecurityOutcome | undefined
     }
+
+/** What the security pass found this round. */
+export type SecurityOutcome = {
+  /** Pass depth that ran. */
+  readonly depth: SecurityPassDepth
+  /** Confirmed vulnerabilities posted. */
+  readonly findings: readonly SecurityFinding[]
+  /** Stage counts. */
+  readonly stats: ReviewStats
+}
 
 /** The merge gate's verdict. */
 export type GateResult = {
@@ -169,6 +178,15 @@ export type GateResult = {
   readonly conclusion: CheckConclusion
   /** Unresolved Important threads. */
   readonly openImportant: number
+  /** The security gate; undefined when the security review is off. */
+  readonly security?: {
+    /** `failure` while any introduced High/Medium security thread is unresolved. */
+    readonly conclusion: CheckConclusion
+    /** Unresolved introduced High/Medium security threads. */
+    readonly openBlocking: number
+    /** True when the security pass has completed on the current head commit. */
+    readonly reviewed: boolean
+  }
 }
 
 /** The review lifecycle for one PR. */
@@ -177,154 +195,6 @@ export interface Workflow {
   review(trigger?: ReviewTrigger): Promise<RoundOutcome>
   /** Recomputes and publishes the merge-gate check only. */
   gate(): Promise<GateResult>
-}
-
-/** Options with fixed defaults applied. */
-type Settings = WorkflowOptions & { readonly maxRounds: number; readonly maxDiffLines: number; readonly maxFindings: number; readonly concurrency: number }
-/** Everything a round's helpers need. */
-type Context = WorkflowConfig & { readonly settings: Settings }
-
-/** The diff range this round reviews, after skip_paths. */
-type Range = { readonly incremental: boolean; readonly allFiles: readonly FileDiff[]; readonly files: readonly FileDiff[]; readonly guidance: Guidance }
-
-/** HTTP status of an Octokit-style error, if any. */
-const statusOf = (e: unknown): number | undefined =>
-  typeof e === 'object' && e !== null && 'status' in e && typeof e.status === 'number' ? e.status : undefined
-/** Error message of any thrown value. */
-const errMsg = (e: unknown) => (e instanceof Error ? e.message : String(e))
-/** A `skipped` outcome. */
-const skipped = (message: string): RoundOutcome => ({ status: 'skipped', message })
-
-/** Counts open Important threads and publishes the check. */
-async function updateCheck(github: GitHub, headSha: string): Promise<GateResult> {
-  const openImportant = countOpenImportant(await github.botThreads())
-  const conclusion: CheckConclusion = openImportant > 0 ? 'failure' : 'success'
-  const title = openImportant === 0 ? 'No open important findings' : `${openImportant} open important finding${openImportant === 1 ? '' : 's'}`
-  const text = 'Fails while any review thread tagged **Important** is unresolved. Fix it or resolve the thread with a reason.'
-  await github.setCheck({ headSha, conclusion, title, summary: text })
-  return { conclusion, openImportant }
-}
-
-/** Past the round cap: post the step-back note once (when first exceeded), then stay quiet. */
-async function pauseRound(ctx: Context, pr: PullRequest, state: ReviewState | undefined, round: number): Promise<RoundOutcome> {
-  const { maxRounds } = ctx.settings
-  if (state?.round === maxRounds) {
-    await ctx.github.createReview({ headSha: pr.headSha, body: stepBackComment(maxRounds, { ...state, round, sha: pr.headSha }), comments: [] })
-  }
-  return { status: 'paused', round, message: `Round cap (${maxRounds}) reached; not reviewing.` }
-}
-
-/** After round 1, the diff since the last reviewed commit (unless history was rewritten); guidance from the base ref. */
-async function loadRange(ctx: Context, pr: PullRequest, state: ReviewState | undefined): Promise<Range> {
-  const incremental = state !== undefined && (await ctx.github.isAncestor(state.sha, pr.headSha))
-  if (state && !incremental) ctx.log.info(`Last reviewed ${state.sha} is not an ancestor of HEAD (force push?); reviewing the full PR.`)
-  const allFiles = parseDiff(await ctx.github.compareDiff(incremental ? state.sha : pr.baseSha, pr.headSha))
-  const repo = { read: (path: string) => ctx.github.readAtRef(pr.baseSha, path) }
-  const guidance = await loadGuidance(repo, allFiles.map((f) => f.path))
-  return { incremental, allFiles, guidance, files: filterDiff(allFiles, guidance.review?.config.skipPaths ?? []) }
-}
-
-/** What the agents see for this range. */
-const buildInput = (pr: PullRequest, range: Range): ReviewInput => ({
-  diff: range.files.map((f) => f.text).join(''),
-  guidance: renderGuidance(range.guidance),
-  intent: `${pr.title}\n\n${pr.body}`.trim(),
-})
-
-/** Asks `depth.voters` verifiers whether one thread's issue is still present; true if a quorum says fixed. */
-async function isFixed(ctx: Context, reviewer: Reviewer, limit: Limiter, t: BotThread, input: ReviewInput, depth: DepthConfig): Promise<boolean> {
-  const answers = await Promise.all(
-    Array.from({ length: depth.voters }, () =>
-      limit(() => reviewer.recheck({ file: t.path, line: t.line ?? 0, text: t.body }, input)).catch((e: unknown) => {
-        ctx.log.warning(`recheck ${t.path}: ${errMsg(e)}`)
-        return true // unsure → still present
-      }),
-    ),
-  )
-  return answers.filter((still) => !still).length >= depth.needed
-}
-
-/** Resolves open bot threads in touched files that a verifier quorum says are fixed; returns how many. */
-async function autoResolve(ctx: Context, reviewer: Reviewer, range: Range, input: ReviewInput, depth: DepthConfig): Promise<number> {
-  const touched = new Set(range.files.map((f) => f.path))
-  const open = (await ctx.github.botThreads()).filter((t) => !t.isResolved && touched.has(t.path))
-  const limit = createLimiter(ctx.settings.concurrency) // one pool across every thread
-  const fixed = await Promise.all(
-    open.map(async (t) => {
-      const yes = await isFixed(ctx, reviewer, limit, t, input, depth)
-      if (yes) await ctx.github.resolveThread(t.id)
-      return yes
-    }),
-  )
-  return fixed.filter(Boolean).length
-}
-
-/** Posts the review; if GitHub rejects an inline line (422), reposts with every finding in the summary. */
-async function postReview(ctx: Context, pr: PullRequest, findings: readonly Finding[], isInline: (f: Finding) => boolean, body: (outOfDiff: readonly Finding[]) => string) {
-  const inline = findings.filter(isInline)
-  const comments = inline.map((f) => ({ path: f.file, line: f.line, body: findingComment(f) }))
-  try {
-    await ctx.github.createReview({ headSha: pr.headSha, body: body(findings.filter((f) => !isInline(f))), comments })
-  } catch (e) {
-    if (statusOf(e) !== 422 || inline.length === 0) throw e
-    ctx.log.warning(`GitHub rejected inline comments (${errMsg(e)}); posting all findings in the summary.`)
-    await ctx.github.createReview({ headSha: pr.headSha, body: body(findings), comments: [] })
-  }
-}
-
-/** Inline-commentable lines come from the FULL PR diff, which is what GitHub validates against. */
-async function commentableCheck(ctx: Context, pr: PullRequest, range: Range): Promise<(f: Finding) => boolean> {
-  const prFiles = range.incremental ? parseDiff(await ctx.github.compareDiff(pr.baseSha, pr.headSha)) : range.allFiles
-  const commentable = new Map(prFiles.map((f) => [f.path, f.rightLines]))
-  return (f) => commentable.get(f.file)?.has(f.line) ?? false
-}
-
-/** Runs agents over the range, posts the review, and reports the outcome. */
-async function reviewRange(ctx: Context, pr: PullRequest, state: ReviewState | undefined, round: number, range: Range): Promise<RoundOutcome> {
-  const { settings } = ctx
-  const depth = resolveDepth({
-    input: { depth: settings.depth, voters: settings.voters, votesNeeded: settings.votesNeeded },
-    frontmatterDepth: range.guidance.review?.config.depth,
-  })
-  const input = buildInput(pr, range)
-  const reviewer = await ctx.createReviewer()
-  const resolved = state ? await autoResolve(ctx, reviewer, range, input, depth) : 0
-  const nitCap = settings.nitCap ?? range.guidance.review?.config.nitCap ?? DEFAULT_WORKFLOW_OPTIONS.nitCap
-  const paths = range.files.filter((f) => !f.deleted).map((f) => f.path)
-  const posted = state?.fingerprints ?? []
-  const result = await runReview(reviewer, { input, paths, depth, posted, nitCap, maxFindings: settings.maxFindings, concurrency: settings.concurrency })
-  result.errors.forEach((e) => ctx.log.warning(e))
-
-  const newState: ReviewState = { round, sha: pr.headSha, fingerprints: [...posted, ...result.findings.map(fingerprint)] }
-  const isInline = await commentableCheck(ctx, pr, range)
-  await postReview(ctx, pr, result.findings, isInline, (outOfDiff) =>
-    summary({ findings: result.findings, outOfDiff, resolved, state: newState, maxRounds: settings.maxRounds }),
-  )
-  const { raw, candidates, confirmed } = result.stats
-  const message = `Round ${round}: ${raw} raw → ${candidates} voted on → ${confirmed} confirmed (${depth.depth}); ${resolved} resolved.`
-  return { status: 'reviewed', message, round, findings: result.findings, resolved, stats: result.stats }
-}
-
-/** One review round: state → round cap → range → size check → agents → post. */
-async function reviewRound(ctx: Context, pr: PullRequest): Promise<RoundOutcome> {
-  const state = decodeState(await ctx.github.botReviewBodies())
-  if (state?.sha === pr.headSha) return { status: 'up-to-date', message: 'HEAD already reviewed.' }
-
-  const round = (state?.round ?? 0) + 1
-  if (round > ctx.settings.maxRounds) return pauseRound(ctx, pr, state, round)
-
-  const range = await loadRange(ctx, pr, state)
-  if (range.files.length === 0) return skipped('No reviewable changes.')
-
-  const changed = range.files.reduce((n, f) => n + f.changed, 0)
-  if (changed > ctx.settings.maxDiffLines) {
-    const reason = `diff too large (${changed} changed lines > max_diff_lines ${ctx.settings.maxDiffLines}).`
-    ctx.log.warning(`Review skipped: ${reason}`)
-    const advanced: ReviewState = { round, sha: pr.headSha, fingerprints: state?.fingerprints ?? [] }
-    await ctx.github.createReview({ headSha: pr.headSha, body: skippedComment(reason, advanced), comments: [] })
-    return skipped(`Review skipped: ${reason}`)
-  }
-  return reviewRange(ctx, pr, state, round, range)
 }
 
 /**
@@ -342,20 +212,24 @@ export function createWorkflow(config: WorkflowConfig, options: WorkflowOptions 
     maxDiffLines: options.maxDiffLines ?? d.maxDiffLines,
     maxFindings: options.maxFindings ?? d.maxFindings,
     concurrency: options.concurrency ?? d.concurrency,
+    securityReview: options.securityReview ?? d.securityReview,
+    checkName: options.checkName ?? d.checkName,
+    nitCapDefault: d.nitCap,
   }
   const ctx: Context = { ...config, settings }
+  const gates = { name: settings.checkName, security: settings.securityReview }
   return {
     async review({ allowFork = false } = {}) {
       const pr = await ctx.github.getPull()
       // Fork PR tokens are read-only, so there is nothing we could post; just stop.
-      if (pr.isFork && !allowFork) return skipped('Fork PR: skipped (no secrets). A maintainer can run workflow_dispatch with pr_number.')
-      const outcome = pr.draft ? skipped('Draft PR: review skipped.') : await reviewRound(ctx, pr)
-      await updateCheck(ctx.github, pr.headSha)
+      if (pr.isFork && !allowFork) return { status: 'skipped', message: 'Fork PR: skipped (no secrets). A maintainer can run workflow_dispatch with pr_number.' }
+      const outcome: RoundOutcome = pr.draft ? { status: 'skipped', message: 'Draft PR: review skipped.' } : await reviewRound(ctx, pr)
+      await publishGates(ctx.github, pr.headSha, gates)
       return outcome
     },
     async gate() {
       const pr = await ctx.github.getPull()
-      return updateCheck(ctx.github, pr.headSha)
+      return publishGates(ctx.github, pr.headSha, gates)
     },
   }
 }

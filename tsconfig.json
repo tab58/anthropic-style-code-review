@@ -9,5 +9,13 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src", "test", "eval", "local"]
+  "include": [
+    "src",
+    "test",
+    "eval",
+    "local"
+  ],
+  "exclude": [
+    "eval/cases"
+  ]
 }

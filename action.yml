@@ -1,5 +1,5 @@
 name: Anthropic-Style Code Review
-description: Parallel bug-finder agents, verifier voting, severity-ranked inline comments, and a merge gate. Runs on any OpenAI-compatible API (default Ollama Cloud) via the Pi agent harness.
+description: Parallel bug-finder agents, verifier voting, severity-ranked inline comments, a security review, and merge gates. Runs on any OpenAI-compatible API (default Ollama Cloud) via the Pi agent harness.
 branding:
   icon: eye
   color: purple
@@ -20,8 +20,17 @@ inputs:
   verifier_model:
     description: Model for verifier votes (a different model family gives more independent votes).
     default: deepseek-v4.1-flash
+  security_review:
+    description: "on | off. Runs the security pass and publishes its gate check (<check_name>/security)."
+    default: "on"
+  security_finder_model:
+    description: Model for security finders. Default finder_model.
+    required: false
+  security_verifier_model:
+    description: Model for security exploitability votes. Default verifier_model.
+    required: false
   depth:
-    description: quick | standard | deep. Overrides REVIEW.md frontmatter. Default standard.
+    description: quick | standard | deep. Overrides REVIEW.md frontmatter. Default standard. Deep also forces the full security pass.
     required: false
   voters:
     description: Override the preset's number of verifier votes per finding.
@@ -51,7 +60,7 @@ inputs:
     description: Login that posts the reviews; used to find this action's own reviews and threads.
     default: github-actions[bot]
   check_name:
-    description: Name of the merge-gating check run.
+    description: Name of the bug merge-gate check run; the security gate is <check_name>/security.
     default: anthropic-style-code-review
 
 runs:

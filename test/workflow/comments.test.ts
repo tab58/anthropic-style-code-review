@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { type Finding, fingerprint } from '../../src/review/index.js'
-import { findingComment, skippedComment, stepBackComment, summary } from '../../src/workflow/comments.js'
-import { decodeFindingMarker, decodeState } from '../../src/workflow/markers.js'
+import type { SecurityFinding } from '../../src/security/index.js'
+import { findingComment, securityComment, skippedComment, stepBackComment, summary } from '../../src/workflow/comments.js'
+import { decodeFindingMarker, decodeSecurityMarker, decodeState } from '../../src/workflow/markers.js'
 
 const f = (over: Partial<Finding> = {}): Finding => ({
   file: 'a.ts',
@@ -99,5 +100,47 @@ describe('findingComment without optional fields', () => {
       severity: 'nit', category: 'bug', bugClass: 'c', also: [],
     })
     expect(body).not.toContain('Same issue also at')
+  })
+})
+
+const vuln = (over: Partial<SecurityFinding> = {}): SecurityFinding => ({
+  file: 'src/db.ts', line: 4, endLine: 4, title: 'SQL injection', vulnClass: 'sql-injection', source: 'req.query.id', sink: 'db.query',
+  exploitScenario: 'id=1 OR 1=1', impact: 'dump users', evidence: 'db.query(x)', severity: 'high', introduced: true, ...over,
+})
+
+describe('securityComment', () => {
+  it('tags severity, shows the attack path, and ends with a security marker', () => {
+    const body = securityComment(vuln())
+    expect(body).toMatch(/^\*\*Security · High\*\*: SQL injection/)
+    for (const part of ['req.query.id', 'db.query', 'id=1 OR 1=1', 'dump users', '> db.query(x)']) expect(body).toContain(part)
+    expect(decodeSecurityMarker(body)).toMatchObject({ level: 'high', introduced: true })
+  })
+
+  it('labels pre-existing vulnerabilities and lists other locations', () => {
+    const body = securityComment(vuln({ severity: 'low', introduced: false, also: [{ file: 'b.ts', line: 1, endLine: 1 }] }))
+    expect(body).toMatch(/^\*\*Security · Low · Pre-existing\*\*/)
+    expect(body).toContain('`b.ts:1`')
+  })
+
+  it('neutralizes HTML comments in model text', () => {
+    expect(securityComment(vuln({ title: '<!-- x -->', impact: '<!-- y -->' })).match(/<!--/g)).toHaveLength(1)
+  })
+})
+
+describe('summary with security findings', () => {
+  const state = { round: 1, sha: 'abc', fingerprints: [] }
+  it('appends the security count to the first line', () => {
+    const body = summary({ findings: [f()], security: [vuln(), vuln({ severity: 'low' })], outOfDiff: [], securityOutOfDiff: [], resolved: 0, state, maxRounds: 3 })
+    expect(body.split('\n')[0]).toBe('**1 issue found** (1 important) · **2 security findings** (1 high, 1 low)')
+  })
+
+  it('reports security alone when there are no bug findings', () => {
+    const body = summary({ findings: [], security: [vuln({ severity: 'medium' })], outOfDiff: [], securityOutOfDiff: [], resolved: 0, state, maxRounds: 3 })
+    expect(body.split('\n')[0]).toBe('**1 security finding** (1 medium)')
+  })
+
+  it('lists security findings outside the diff', () => {
+    const body = summary({ findings: [], security: [vuln()], outOfDiff: [], securityOutOfDiff: [vuln({ file: 'z.ts', line: 9, endLine: 9 })], resolved: 0, state, maxRounds: 3 })
+    expect(body).toContain('`z.ts:9` **Security · High**: SQL injection')
   })
 })

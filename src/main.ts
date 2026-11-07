@@ -18,16 +18,24 @@ async function main(): Promise<void> {
     ...context.repo,
     prNumber: inputs.prNumber,
     botLogin: inputs.botLogin,
-    checkName: inputs.checkName,
     secrets: [inputs.apiKey, inputs.githubToken],
   })
   const createReviewer = () =>
-    createPiReviewer({ baseUrl: inputs.baseUrl, apiKey: inputs.apiKey, finderModel: inputs.finderModel, verifierModel: inputs.verifierModel, cwd: workspace })
+    createPiReviewer({
+      baseUrl: inputs.baseUrl,
+      apiKey: inputs.apiKey,
+      finderModel: inputs.finderModel,
+      verifierModel: inputs.verifierModel,
+      securityFinderModel: inputs.securityFinderModel,
+      securityVerifierModel: inputs.securityVerifierModel,
+      cwd: workspace,
+    })
   const workflow = createWorkflow({ github, createReviewer, log: { info: core.info, warning: core.warning } }, inputs.workflow)
 
   if (inputs.event === 'gate') {
     const gate = await workflow.gate()
-    core.info(`Gate: ${gate.conclusion} (${gate.openImportant} open important)`)
+    const sec = gate.security ? `; security ${gate.security.conclusion} (${gate.security.openBlocking} open high/medium)` : ''
+    core.info(`Gate: ${gate.conclusion} (${gate.openImportant} open important)${sec}`)
   } else {
     core.info((await workflow.review({ allowFork: inputs.allowFork })).message)
   }

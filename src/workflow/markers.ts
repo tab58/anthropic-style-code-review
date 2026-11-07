@@ -1,6 +1,7 @@
 import { Type } from 'typebox'
 import { Check } from 'typebox/value'
 import type { Severity } from '../review/index.js'
+import type { SecurityLevel } from '../security/index.js'
 
 /** Review progress for one PR, persisted as a hidden marker in the bot's review bodies. */
 export type ReviewState = {
@@ -10,6 +11,8 @@ export type ReviewState = {
   readonly sha: string
   /** Fingerprints of every finding posted so far. */
   readonly fingerprints: readonly string[]
+  /** Last head SHA the security pass completed on; the security gate fails while it isn't HEAD. Absent before v1.1. */
+  readonly securitySha?: string
 }
 
 const STATE_RE = /<!-- anthropic-style-code-review:state (.*?) -->/g
@@ -18,11 +21,17 @@ const StateSchema = Type.Object({
   round: Type.Integer({ minimum: 1 }),
   sha: Type.String(),
   fingerprints: Type.Array(Type.String()),
+  securitySha: Type.Optional(Type.String()),
 })
+const SECURITY_RE = /<!-- anthropic-style-code-review:security (high|medium|low) (new|pre) (\S+) -->/g
 const SEVERITIES: readonly Severity[] = ['important', 'pre_existing', 'nit']
+const LEVELS: readonly SecurityLevel[] = ['high', 'medium', 'low']
 
 /** Narrows a string to a {@link Severity}. */
 const isSeverity = (s: string): s is Severity => SEVERITIES.some((v) => v === s)
+
+/** Narrows a string to a {@link SecurityLevel}. */
+const isLevel = (s: string): s is SecurityLevel => LEVELS.some((v) => v === s)
 
 /** `>` is escaped so the JSON can never contain `-->` and close the comment early. */
 export const encodeState = (s: ReviewState): string =>
@@ -61,3 +70,22 @@ export function decodeFindingMarker(body: string): { readonly severity: Severity
 /** Number of unresolved threads whose finding marker says Important. */
 export const countOpenImportant = (threads: readonly { readonly isResolved: boolean; readonly body: string }[]): number =>
   threads.filter((t) => !t.isResolved && decodeFindingMarker(t.body)?.severity === 'important').length
+
+/** Hidden marker tagging an inline security comment: level, introduced (`new`) or pre-existing (`pre`), fingerprint. */
+export const encodeSecurityMarker = (level: SecurityLevel, introduced: boolean, fingerprint: string): string =>
+  `<!-- anthropic-style-code-review:security ${level} ${introduced ? 'new' : 'pre'} ${fingerprint} -->`
+
+/** Reads the LAST security marker in a comment; undefined if none is valid. */
+export function decodeSecurityMarker(body: string): { readonly level: SecurityLevel; readonly introduced: boolean; readonly fingerprint: string } | undefined {
+  const m = [...body.matchAll(SECURITY_RE)].at(-1)
+  const level = m?.[1]
+  const fp = m?.[3]
+  return level !== undefined && fp !== undefined && isLevel(level) ? { level, introduced: m?.[2] === 'new', fingerprint: fp } : undefined
+}
+
+/** Number of unresolved security threads that block merge: introduced by the PR, High or Medium. */
+export const countOpenSecurity = (threads: readonly { readonly isResolved: boolean; readonly body: string }[]): number =>
+  threads.filter((t) => {
+    const m = t.isResolved ? undefined : decodeSecurityMarker(t.body)
+    return m !== undefined && m.introduced && m.level !== 'low'
+  }).length

@@ -84,3 +84,17 @@ describe('renderGuidance', () => {
     expect(renderGuidance({ review: undefined, conventions: [] })).toBe('')
   })
 })
+
+describe('security frontmatter', () => {
+  it('parses security_paths and security_exclude_paths', () => {
+    const md = '---\nsecurity_paths: ["src/billing/**"]\nsecurity_exclude_paths: ["vendor/**"]\n---\n'
+    expect(parseReviewMd(md).config).toEqual({ skipPaths: [], securityPaths: ['src/billing/**'], securityExcludePaths: ['vendor/**'] })
+  })
+
+  it.each([['---\nsecurity_paths: "x"\n---\n', /security_paths/], ['---\nsecurity_exclude_paths: [1]\n---\n', /security_exclude_paths/]])(
+    'rejects invalid %#',
+    (md, err) => {
+      expect(() => parseReviewMd(md)).toThrow(err)
+    },
+  )
+})

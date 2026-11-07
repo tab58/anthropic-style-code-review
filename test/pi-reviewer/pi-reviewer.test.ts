@@ -131,3 +131,46 @@ describe('createPiReviewer (against a fake OpenAI-compatible server)', () => {
     await expect((await reviewer()).find('logic', input)).rejects.toThrow(/without calling submit_findings/)
   })
 })
+
+describe('createPiReviewer security methods (fake server)', () => {
+  const rawVuln = {
+    file: './src/db.ts',
+    line: 4,
+    title: 'SQL injection',
+    vuln_class: 'sql-injection',
+    source: 'req.query.id',
+    sink: 'db.query',
+    exploit_scenario: 'id=1 OR 1=1',
+    impact: 'dump users',
+    evidence: 'db.query(`${id}`)',
+    severity: 'high',
+    introduced: true,
+  }
+  const vuln = {
+    file: 'src/db.ts', line: 4, endLine: 4, title: 'SQL injection', vulnClass: 'sql-injection', source: 'req.query.id', sink: 'db.query',
+    exploitScenario: 'id=1 OR 1=1', impact: 'dump users', evidence: 'db.query(`${id}`)', severity: 'high' as const, introduced: true,
+  }
+
+  it('findVulnerabilities defaults to the finder model and maps the submission', async () => {
+    turns = [{ tool: 'submit_security_findings', args: { findings: [rawVuln] } }]
+    expect(await (await reviewer()).findVulnerabilities('injection', input)).toEqual([vuln])
+    expect(requests[0]!.body.model).toBe('finder-m')
+    expect(requests[0]!.tools.sort()).toEqual(['find', 'grep', 'ls', 'read', 'submit_security_findings'])
+    expect(JSON.stringify(requests[0]!.body.messages)).toContain('Injection: SQL/NoSQL')
+  })
+
+  it('judgeExploit defaults to the verifier model and returns the verdict', async () => {
+    turns = [{ tool: 'submit_exploit_verdict', args: { exploitable: true, severity: 'medium', reason: 'reachable' } }]
+    expect(await (await reviewer()).judgeExploit(vuln, input)).toEqual({ exploitable: true, severity: 'medium', reason: 'reachable' })
+    expect(requests[0]!.body.model).toBe('verifier-m')
+  })
+
+  it('uses the security model overrides when given', async () => {
+    const cwd = await mkdtemp(join(tmpdir(), 'repo-'))
+    const r = await createPiReviewer({ baseUrl, apiKey: 'k', finderModel: 'f', verifierModel: 'v', securityFinderModel: 'sf', securityVerifierModel: 'sv', cwd })
+    turns = [{ tool: 'submit_security_findings', args: { findings: [] } }, { tool: 'submit_exploit_verdict', args: { exploitable: false, severity: 'low', reason: 'x' } }]
+    await r.findVulnerabilities('security-general', input)
+    await r.judgeExploit(vuln, input)
+    expect(requests.map((q) => q.body.model)).toEqual(['sf', 'sv'])
+  })
+})

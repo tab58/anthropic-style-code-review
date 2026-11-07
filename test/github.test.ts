@@ -24,7 +24,7 @@ function fakeApi(handler: Handler) {
 
 const client = (handler: Handler, over: Partial<GitHubClientConfig> = {}) => {
   const { api, calls } = fakeApi(handler)
-  const gh = createGitHubClient({ api, owner: 'o', repo: 'r', prNumber: 7, botLogin: 'github-actions[bot]', checkName: 'gate', secrets: [], ...over })
+  const gh = createGitHubClient({ api, owner: 'o', repo: 'r', prNumber: 7, botLogin: 'github-actions[bot]', secrets: [], ...over })
   return { gh, calls }
 }
 
@@ -206,9 +206,9 @@ describe('resolveThread', () => {
 })
 
 describe('setCheck', () => {
-  it('creates a completed check run with the configured name', async () => {
+  it('creates a completed check run with the given name', async () => {
     const { gh, calls } = client(() => ({}))
-    await gh.setCheck({ headSha: 'h', conclusion: 'failure', title: 'T', summary: 'S' })
+    await gh.setCheck({ name: 'gate', headSha: 'h', conclusion: 'failure', title: 'T', summary: 'S' })
     expect(calls[0]).toMatchObject({
       route: 'POST /repos/{owner}/{repo}/check-runs',
       params: { name: 'gate', head_sha: 'h', status: 'completed', conclusion: 'failure', output: { title: 'T', summary: 'S' } },

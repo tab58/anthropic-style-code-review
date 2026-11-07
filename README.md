@@ -9,6 +9,7 @@ A GitHub Action that reviews PRs the way described in
 4. Several **verifier agents vote** on each finding. Only findings that win the vote get posted.
 5. Survivors are posted as one PR review (always `COMMENT`, never an approval). Each inline comment is tagged **Important**, **Nit** or **Pre-existing**, and the summary starts with a count.
 6. A check run (`anthropic-style-code-review`) fails while any **Important** thread is unresolved.
+7. A separate **security review** runs on every PR (see [Security review](#security-review)), with its own gate check `anthropic-style-code-review/security`.
 
 **Convergence rules:**
 - Pushes after the first review only review the new commits.
@@ -117,11 +118,11 @@ Each agent session sends one request at a time, so `max_concurrency` equals the 
 
 The action posts findings; the merge block comes from GitHub:
 
-1. Open a test PR once, so the `anthropic-style-code-review` check exists.
+1. Open a test PR once, so the checks exist.
 2. Go to **Settings → Rules → Rulesets** (or **Settings → Branches** for classic branch protection) for your default branch.
-3. Enable **Require status checks to pass** and add `anthropic-style-code-review`.
+3. Enable **Require status checks to pass** and add `anthropic-style-code-review` and `anthropic-style-code-review/security`.
 
-From then on, a PR can't merge while any **Important** finding is unresolved. Resolve a thread by fixing the issue (the next push auto-resolves it) or by replying with a reason and clicking **Resolve conversation**. Nits and pre-existing findings never block.
+From then on, a PR can't merge while any **Important** finding or any **Security · High/Medium** finding it introduced is unresolved. Resolve a thread by fixing the issue (the next push auto-resolves it) or by replying with a reason and clicking **Resolve conversation**. Nits and pre-existing findings never block.
 
 ### 6. Tune it with REVIEW.md (optional)
 
@@ -191,6 +192,25 @@ git push && git push origin v1.0.0 && git push -f origin v1   # force only the m
 | `nit_cap` | `3` | Max nits per review |
 | `base_url` | `https://ollama.com/v1` | Any OpenAI-compatible endpoint |
 | `bot_login` | `github-actions[bot]` | Change this if you pass a different `github_token` |
+| `security_review` | `on` | `off` disables the security pass and its check |
+| `security_finder_model` / `security_verifier_model` | `finder_model` / `verifier_model` | Upgrade security models independently (e.g. a stronger verifier) |
+| `check_name` | `anthropic-style-code-review` | Bug gate name; the security gate is `<check_name>/security` |
+
+## Security review
+
+A second find → vote pass, focused on vulnerabilities an attacker can actually exploit:
+
+- **Every PR gets a quick pass** (2 general security finders). The diff gets a **full pass** (4 specialists: injection, authn/authz, secrets & crypto, code execution & data exposure) when it touches security-sensitive paths (auth, sessions, tokens, crypto, admin, `.github/workflows/`, Dockerfiles, dependency manifests, infrastructure) or adds code that reaches dangerous sinks (shell exec, `eval`, SQL built from strings, `innerHTML`, unsafe deserialization). `depth: deep` always uses the full pass.
+- **Every finding needs an exploit path:** attacker-controlled source → sink line → concrete exploit → impact. Findings without one are dropped.
+- **Verifiers vote on exploitability** (2 of 3 must agree), and the median of their ratings sets the severity: **High**, **Medium** or **Low**.
+- **Excluded as chronic false positives:** denial of service, resource exhaustion, missing rate limits, generic missing input validation, open redirects, regex DoS, and anything in docs or test files.
+- **Gate:** `anthropic-style-code-review/security` fails while any High or Medium vulnerability *introduced by the PR* is unresolved. Low and **Pre-existing** findings are posted but never block. A finding on a line the PR added always counts as introduced, whatever the model says.
+- **Fails closed:** the gate also stays red while the latest commits haven't been security-reviewed:
+  - **The pass failed, or votes were left undecided** (e.g. provider errors). The bug review still posts, and the security pass retries on the next run (or when you re-run the job).
+  - **The diff exceeded `max_diff_lines`, or the review is paused at the round cap.** A human has to review and override.
+- **Blocking findings always get a thread.** A High/Medium finding outside the diff is anchored to the nearest changed line, so resolving it is explicit.
+
+Like Anthropic's own security-review action, this is **not hardened against a determined attacker**. A malicious diff can try to talk the agents out of flagging it, so keep fork PRs on manual dispatch.
 
 ## REVIEW.md
 
@@ -201,6 +221,8 @@ The action reads `REVIEW.md` from the repo root on the base branch. It is writte
 depth: deep            # quick | standard | deep
 skip_paths: ["docs/**", "**/*.lock", "**/__generated__/**"]
 nit_cap: 1
+security_paths: ["src/billing/**"]        # also trigger the full security pass
+security_exclude_paths: ["vendor/**"]     # never report security findings here
 ---
 - Config files: a wrong value that silently misroutes traffic is Important.
 - Never flag missing comments or naming.

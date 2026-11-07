@@ -10,6 +10,8 @@ export type FileDiff = {
   readonly deleted: boolean
   /** RIGHT-side (new file) line numbers a review comment may target: added and context lines. */
   readonly rightLines: ReadonlySet<number>
+  /** RIGHT-side line numbers this diff added (a subset of `rightLines`). */
+  readonly addedLines: ReadonlySet<number>
   /** Number of added plus removed lines. */
   readonly changed: number
 }
@@ -30,8 +32,9 @@ function pathOf(lines: readonly string[]): { path: string; deleted: boolean } {
 }
 
 /** Walks hunks, collecting RIGHT-side line numbers and counting changed lines. */
-function scanHunks(lines: readonly string[]): { rightLines: Set<number>; changed: number } {
+function scanHunks(lines: readonly string[]): { rightLines: Set<number>; addedLines: Set<number>; changed: number } {
   const rightLines = new Set<number>()
+  const addedLines = new Set<number>()
   let right = 0
   let inHunk = false
   let changed = 0
@@ -43,6 +46,7 @@ function scanHunks(lines: readonly string[]): { rightLines: Set<number>; changed
     } else if (!inHunk) {
       continue
     } else if (line.startsWith('+')) {
+      addedLines.add(right)
       rightLines.add(right++)
       changed++
     } else if (line.startsWith('-')) {
@@ -51,7 +55,7 @@ function scanHunks(lines: readonly string[]): { rightLines: Set<number>; changed
       rightLines.add(right++)
     }
   }
-  return { rightLines, changed }
+  return { rightLines, addedLines, changed }
 }
 
 /**

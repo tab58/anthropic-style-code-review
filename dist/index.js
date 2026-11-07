@@ -363,8 +363,8 @@ var require_errors = __commonJS({
     "use strict";
     var kUndiciError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR");
     var UndiciError = class extends Error {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "UndiciError";
         this.code = "UND_ERR";
       }
@@ -375,10 +375,10 @@ var require_errors = __commonJS({
     };
     var kConnectTimeoutError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_CONNECT_TIMEOUT");
     var ConnectTimeoutError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "ConnectTimeoutError";
-        this.message = message2 || "Connect Timeout Error";
+        this.message = message3 || "Connect Timeout Error";
         this.code = "UND_ERR_CONNECT_TIMEOUT";
       }
       static [Symbol.hasInstance](instance) {
@@ -388,10 +388,10 @@ var require_errors = __commonJS({
     };
     var kHeadersTimeoutError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_HEADERS_TIMEOUT");
     var HeadersTimeoutError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "HeadersTimeoutError";
-        this.message = message2 || "Headers Timeout Error";
+        this.message = message3 || "Headers Timeout Error";
         this.code = "UND_ERR_HEADERS_TIMEOUT";
       }
       static [Symbol.hasInstance](instance) {
@@ -401,10 +401,10 @@ var require_errors = __commonJS({
     };
     var kHeadersOverflowError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_HEADERS_OVERFLOW");
     var HeadersOverflowError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "HeadersOverflowError";
-        this.message = message2 || "Headers Overflow Error";
+        this.message = message3 || "Headers Overflow Error";
         this.code = "UND_ERR_HEADERS_OVERFLOW";
       }
       static [Symbol.hasInstance](instance) {
@@ -414,10 +414,10 @@ var require_errors = __commonJS({
     };
     var kBodyTimeoutError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_BODY_TIMEOUT");
     var BodyTimeoutError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "BodyTimeoutError";
-        this.message = message2 || "Body Timeout Error";
+        this.message = message3 || "Body Timeout Error";
         this.code = "UND_ERR_BODY_TIMEOUT";
       }
       static [Symbol.hasInstance](instance) {
@@ -427,10 +427,10 @@ var require_errors = __commonJS({
     };
     var kResponseStatusCodeError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_RESPONSE_STATUS_CODE");
     var ResponseStatusCodeError = class extends UndiciError {
-      constructor(message2, statusCode, headers, body) {
-        super(message2);
+      constructor(message3, statusCode, headers, body) {
+        super(message3);
         this.name = "ResponseStatusCodeError";
-        this.message = message2 || "Response Status Code Error";
+        this.message = message3 || "Response Status Code Error";
         this.code = "UND_ERR_RESPONSE_STATUS_CODE";
         this.body = body;
         this.status = statusCode;
@@ -444,10 +444,10 @@ var require_errors = __commonJS({
     };
     var kInvalidArgumentError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_INVALID_ARG");
     var InvalidArgumentError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "InvalidArgumentError";
-        this.message = message2 || "Invalid Argument Error";
+        this.message = message3 || "Invalid Argument Error";
         this.code = "UND_ERR_INVALID_ARG";
       }
       static [Symbol.hasInstance](instance) {
@@ -457,10 +457,10 @@ var require_errors = __commonJS({
     };
     var kInvalidReturnValueError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_INVALID_RETURN_VALUE");
     var InvalidReturnValueError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "InvalidReturnValueError";
-        this.message = message2 || "Invalid Return Value Error";
+        this.message = message3 || "Invalid Return Value Error";
         this.code = "UND_ERR_INVALID_RETURN_VALUE";
       }
       static [Symbol.hasInstance](instance) {
@@ -470,10 +470,10 @@ var require_errors = __commonJS({
     };
     var kAbortError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_ABORT");
     var AbortError2 = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "AbortError";
-        this.message = message2 || "The operation was aborted";
+        this.message = message3 || "The operation was aborted";
         this.code = "UND_ERR_ABORT";
       }
       static [Symbol.hasInstance](instance) {
@@ -483,10 +483,10 @@ var require_errors = __commonJS({
     };
     var kRequestAbortedError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_ABORTED");
     var RequestAbortedError2 = class extends AbortError2 {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "AbortError";
-        this.message = message2 || "Request aborted";
+        this.message = message3 || "Request aborted";
         this.code = "UND_ERR_ABORTED";
       }
       static [Symbol.hasInstance](instance) {
@@ -496,10 +496,10 @@ var require_errors = __commonJS({
     };
     var kInformationalError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_INFO");
     var InformationalError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "InformationalError";
-        this.message = message2 || "Request information";
+        this.message = message3 || "Request information";
         this.code = "UND_ERR_INFO";
       }
       static [Symbol.hasInstance](instance) {
@@ -509,10 +509,10 @@ var require_errors = __commonJS({
     };
     var kRequestContentLengthMismatchError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_REQ_CONTENT_LENGTH_MISMATCH");
     var RequestContentLengthMismatchError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "RequestContentLengthMismatchError";
-        this.message = message2 || "Request body length does not match content-length header";
+        this.message = message3 || "Request body length does not match content-length header";
         this.code = "UND_ERR_REQ_CONTENT_LENGTH_MISMATCH";
       }
       static [Symbol.hasInstance](instance) {
@@ -522,10 +522,10 @@ var require_errors = __commonJS({
     };
     var kResponseContentLengthMismatchError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_RES_CONTENT_LENGTH_MISMATCH");
     var ResponseContentLengthMismatchError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "ResponseContentLengthMismatchError";
-        this.message = message2 || "Response body length does not match content-length header";
+        this.message = message3 || "Response body length does not match content-length header";
         this.code = "UND_ERR_RES_CONTENT_LENGTH_MISMATCH";
       }
       static [Symbol.hasInstance](instance) {
@@ -535,10 +535,10 @@ var require_errors = __commonJS({
     };
     var kClientDestroyedError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_DESTROYED");
     var ClientDestroyedError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "ClientDestroyedError";
-        this.message = message2 || "The client is destroyed";
+        this.message = message3 || "The client is destroyed";
         this.code = "UND_ERR_DESTROYED";
       }
       static [Symbol.hasInstance](instance) {
@@ -548,10 +548,10 @@ var require_errors = __commonJS({
     };
     var kClientClosedError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_CLOSED");
     var ClientClosedError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "ClientClosedError";
-        this.message = message2 || "The client is closed";
+        this.message = message3 || "The client is closed";
         this.code = "UND_ERR_CLOSED";
       }
       static [Symbol.hasInstance](instance) {
@@ -561,10 +561,10 @@ var require_errors = __commonJS({
     };
     var kSocketError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_SOCKET");
     var SocketError = class extends UndiciError {
-      constructor(message2, socket) {
-        super(message2);
+      constructor(message3, socket) {
+        super(message3);
         this.name = "SocketError";
-        this.message = message2 || "Socket error";
+        this.message = message3 || "Socket error";
         this.code = "UND_ERR_SOCKET";
         this.socket = socket;
       }
@@ -575,10 +575,10 @@ var require_errors = __commonJS({
     };
     var kNotSupportedError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_NOT_SUPPORTED");
     var NotSupportedError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "NotSupportedError";
-        this.message = message2 || "Not supported error";
+        this.message = message3 || "Not supported error";
         this.code = "UND_ERR_NOT_SUPPORTED";
       }
       static [Symbol.hasInstance](instance) {
@@ -588,10 +588,10 @@ var require_errors = __commonJS({
     };
     var kBalancedPoolMissingUpstreamError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_BPL_MISSING_UPSTREAM");
     var BalancedPoolMissingUpstreamError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "MissingUpstreamError";
-        this.message = message2 || "No upstream has been added to the BalancedPool";
+        this.message = message3 || "No upstream has been added to the BalancedPool";
         this.code = "UND_ERR_BPL_MISSING_UPSTREAM";
       }
       static [Symbol.hasInstance](instance) {
@@ -601,8 +601,8 @@ var require_errors = __commonJS({
     };
     var kHTTPParserError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_HTTP_PARSER");
     var HTTPParserError = class extends Error {
-      constructor(message2, code, data) {
-        super(message2);
+      constructor(message3, code, data) {
+        super(message3);
         this.name = "HTTPParserError";
         this.code = code ? `HPE_${code}` : void 0;
         this.data = data ? data.toString() : void 0;
@@ -614,10 +614,10 @@ var require_errors = __commonJS({
     };
     var kResponseExceededMaxSizeError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_RES_EXCEEDED_MAX_SIZE");
     var ResponseExceededMaxSizeError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "ResponseExceededMaxSizeError";
-        this.message = message2 || "Response content exceeded max size";
+        this.message = message3 || "Response content exceeded max size";
         this.code = "UND_ERR_RES_EXCEEDED_MAX_SIZE";
       }
       static [Symbol.hasInstance](instance) {
@@ -627,10 +627,10 @@ var require_errors = __commonJS({
     };
     var kRequestRetryError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_REQ_RETRY");
     var RequestRetryError = class extends UndiciError {
-      constructor(message2, code, { headers, data }) {
-        super(message2);
+      constructor(message3, code, { headers, data }) {
+        super(message3);
         this.name = "RequestRetryError";
-        this.message = message2 || "Request retry error";
+        this.message = message3 || "Request retry error";
         this.code = "UND_ERR_REQ_RETRY";
         this.statusCode = code;
         this.data = data;
@@ -643,10 +643,10 @@ var require_errors = __commonJS({
     };
     var kResponseError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_RESPONSE");
     var ResponseError = class extends UndiciError {
-      constructor(message2, code, { headers, data }) {
-        super(message2);
+      constructor(message3, code, { headers, data }) {
+        super(message3);
         this.name = "ResponseError";
-        this.message = message2 || "Response error";
+        this.message = message3 || "Response error";
         this.code = "UND_ERR_RESPONSE";
         this.statusCode = code;
         this.data = data;
@@ -659,10 +659,10 @@ var require_errors = __commonJS({
     };
     var kSecureProxyConnectionError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_PRX_TLS");
     var SecureProxyConnectionError = class extends UndiciError {
-      constructor(cause, message2, options) {
-        super(message2, { cause, ...options ?? {} });
+      constructor(cause, message3, options) {
+        super(message3, { cause, ...options ?? {} });
         this.name = "SecureProxyConnectionError";
-        this.message = message2 || "Secure Proxy Connection failed";
+        this.message = message3 || "Secure Proxy Connection failed";
         this.code = "UND_ERR_PRX_TLS";
         this.cause = cause;
       }
@@ -673,10 +673,10 @@ var require_errors = __commonJS({
     };
     var kMessageSizeExceededError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_WS_MESSAGE_SIZE_EXCEEDED");
     var MessageSizeExceededError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "MessageSizeExceededError";
-        this.message = message2 || "Max decompressed message size exceeded";
+        this.message = message3 || "Max decompressed message size exceeded";
         this.code = "UND_ERR_WS_MESSAGE_SIZE_EXCEEDED";
       }
       static [Symbol.hasInstance](instance) {
@@ -1696,7 +1696,7 @@ var require_request = __commonJS({
         headers,
         query,
         idempotent,
-        blocking,
+        blocking: blocking2,
         upgrade,
         headersTimeout,
         bodyTimeout,
@@ -1778,7 +1778,7 @@ var require_request = __commonJS({
         this.path = query ? buildURL(path19, query) : path19;
         this.origin = origin;
         this.idempotent = idempotent == null ? method === "HEAD" || method === "GET" : idempotent;
-        this.blocking = blocking == null ? false : blocking;
+        this.blocking = blocking2 == null ? false : blocking2;
         this.reset = reset == null ? null : reset;
         this.host = null;
         this.contentLength = null;
@@ -2687,14 +2687,14 @@ var require_connect = __commonJS({
       if (socket == null) {
         return;
       }
-      let message2 = "Connect Timeout Error";
+      let message3 = "Connect Timeout Error";
       if (Array.isArray(socket.autoSelectFamilyAttemptedAddresses)) {
-        message2 += ` (attempted addresses: ${socket.autoSelectFamilyAttemptedAddresses.join(", ")},`;
+        message3 += ` (attempted addresses: ${socket.autoSelectFamilyAttemptedAddresses.join(", ")},`;
       } else {
-        message2 += ` (attempted address: ${opts.hostname}:${opts.port},`;
+        message3 += ` (attempted address: ${opts.hostname}:${opts.port},`;
       }
-      message2 += ` timeout: ${opts.timeout}ms)`;
-      util2.destroy(socket, new ConnectTimeoutError(message2));
+      message3 += ` timeout: ${opts.timeout}ms)`;
+      util2.destroy(socket, new ConnectTimeoutError(message3));
     }
     module.exports = buildConnector;
   }
@@ -3676,15 +3676,15 @@ var require_webidl = __commonJS({
     webidl.converters = {};
     webidl.util = {};
     webidl.errors = {};
-    webidl.errors.exception = function(message2) {
-      return new TypeError(`${message2.header}: ${message2.message}`);
+    webidl.errors.exception = function(message3) {
+      return new TypeError(`${message3.header}: ${message3.message}`);
     };
     webidl.errors.conversionFailed = function(context4) {
       const plural = context4.types.length === 1 ? "" : " one of";
-      const message2 = `${context4.argument} could not be converted to${plural}: ${context4.types.join(", ")}.`;
+      const message3 = `${context4.argument} could not be converted to${plural}: ${context4.types.join(", ")}.`;
       return webidl.errors.exception({
         header: context4.prefix,
-        message: message2
+        message: message3
       });
     };
     webidl.errors.invalidArgument = function(context4) {
@@ -6009,12 +6009,12 @@ var require_client_h1 = __commonJS({
           return new ResponseContentLengthMismatchError();
         }
         const ptr = llhttp.llhttp_get_error_reason(this.ptr);
-        let message2 = "";
+        let message3 = "";
         if (ptr) {
           const len = new Uint8Array(llhttp.memory.buffer, ptr).indexOf(0);
-          message2 = "Response does not match the HTTP/1.1 protocol (" + Buffer.from(llhttp.memory.buffer, ptr, len).toString() + ")";
+          message3 = "Response does not match the HTTP/1.1 protocol (" + Buffer.from(llhttp.memory.buffer, ptr, len).toString() + ")";
         }
-        return new HTTPParserError(message2, constants12.ERROR[ret], data);
+        return new HTTPParserError(message3, constants12.ERROR[ret], data);
       }
       destroy() {
         assert(this.ptr != null);
@@ -6468,7 +6468,7 @@ var require_client_h1 = __commonJS({
       return method !== "GET" && method !== "HEAD" && method !== "OPTIONS" && method !== "TRACE" && method !== "CONNECT";
     }
     function writeH1(client, request3) {
-      const { method, path: path19, host, upgrade, blocking, reset } = request3;
+      const { method, path: path19, host, upgrade, blocking: blocking2, reset } = request3;
       let { body, headers, contentLength } = request3;
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH" || method === "QUERY" || method === "PROPFIND" || method === "PROPPATCH";
       if (util2.isFormDataLike(body)) {
@@ -6546,7 +6546,7 @@ var require_client_h1 = __commonJS({
       if (client[kMaxRequests] && socket[kCounter]++ >= client[kMaxRequests]) {
         socket[kReset] = true;
       }
-      if (blocking) {
+      if (blocking2) {
         socket[kBlocking] = true;
       }
       let header = `${method} ${path19} HTTP/1.1\r
@@ -9772,9 +9772,9 @@ var require_util3 = __commonJS({
         chunks = [];
         length = 0;
       }
-      const message2 = `Response status code ${statusCode}${statusMessage ? `: ${statusMessage}` : ""}`;
+      const message3 = `Response status code ${statusCode}${statusMessage ? `: ${statusMessage}` : ""}`;
       if (statusCode === 204 || !contentType2 || !length) {
-        queueMicrotask(() => callback(new ResponseStatusCodeError(message2, statusCode, headers)));
+        queueMicrotask(() => callback(new ResponseStatusCodeError(message3, statusCode, headers)));
         return;
       }
       const stackTraceLimit = Error.stackTraceLimit;
@@ -9790,7 +9790,7 @@ var require_util3 = __commonJS({
       } finally {
         Error.stackTraceLimit = stackTraceLimit;
       }
-      queueMicrotask(() => callback(new ResponseStatusCodeError(message2, statusCode, headers, payload)));
+      queueMicrotask(() => callback(new ResponseStatusCodeError(message3, statusCode, headers, payload)));
     }
     var isContentTypeApplicationJson = (contentType2) => {
       return contentType2.length > 15 && contentType2[11] === "/" && contentType2[0] === "a" && contentType2[1] === "p" && contentType2[2] === "p" && contentType2[3] === "l" && contentType2[4] === "i" && contentType2[5] === "c" && contentType2[6] === "a" && contentType2[7] === "t" && contentType2[8] === "i" && contentType2[9] === "o" && contentType2[10] === "n" && contentType2[12] === "j" && contentType2[13] === "s" && contentType2[14] === "o" && contentType2[15] === "n";
@@ -10617,11 +10617,11 @@ var require_mock_errors = __commonJS({
     var { UndiciError } = require_errors();
     var kMockNotMatchedError = /* @__PURE__ */ Symbol.for("undici.error.UND_MOCK_ERR_MOCK_NOT_MATCHED");
     var MockNotMatchedError = class _MockNotMatchedError extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         Error.captureStackTrace(this, _MockNotMatchedError);
         this.name = "MockNotMatchedError";
-        this.message = message2 || "The request does not match any registered mock dispatches";
+        this.message = message3 || "The request does not match any registered mock dispatches";
         this.code = "UND_MOCK_ERR_MOCK_NOT_MATCHED";
       }
       static [Symbol.hasInstance](instance) {
@@ -18270,15 +18270,15 @@ var require_websocket = __commonJS({
       this.ws[kResponse].socket.resume();
     }
     function onParserError(err) {
-      let message2;
+      let message3;
       let code;
       if (err instanceof CloseEvent) {
-        message2 = err.reason;
+        message3 = err.reason;
         code = err.code;
       } else {
-        message2 = err.message;
+        message3 = err.message;
       }
-      fireEvent("error", this, () => new ErrorEvent("error", { error: err, message: message2 }));
+      fireEvent("error", this, () => new ErrorEvent("error", { error: err, message: message3 }));
       closeWebSocketConnection(this, code);
     }
     module.exports = {
@@ -19378,8 +19378,8 @@ var require_lib = __commonJS({
     var ExponentialBackoffCeiling = 10;
     var ExponentialBackoffTimeSlice = 5;
     var HttpClientError = class _HttpClientError extends Error {
-      constructor(message2, statusCode) {
-        super(message2);
+      constructor(message3, statusCode) {
+        super(message3);
         this.name = "HttpClientError";
         this.statusCode = statusCode;
         Object.setPrototypeOf(this, _HttpClientError.prototype);
@@ -19387,8 +19387,8 @@ var require_lib = __commonJS({
     };
     exports.HttpClientError = HttpClientError;
     var HttpClientResponse = class {
-      constructor(message2) {
-        this.message = message2;
+      constructor(message3) {
+        this.message = message3;
       }
       readBody() {
         return __awaiter3(this, void 0, void 0, function* () {
@@ -33926,8 +33926,8 @@ var CreateError;
 var init_error = __esm({
   "node_modules/typebox/build/value/create/error.mjs"() {
     CreateError = class extends Error {
-      constructor(type, message2) {
-        super(message2);
+      constructor(type, message3) {
+        super(message3);
         this.type = type;
       }
     };
@@ -34542,8 +34542,8 @@ var RepairError;
 var init_error2 = __esm({
   "node_modules/typebox/build/value/repair/error.mjs"() {
     RepairError = class extends Error {
-      constructor(context4, type, value2, message2) {
-        super(message2);
+      constructor(context4, type, value2, message3) {
+        super(message3);
         this.context = context4;
         this.type = type;
         this.value = value2;
@@ -37617,9 +37617,9 @@ var require_retry_operation = __commonJS({
       var mainErrorCount = 0;
       for (var i2 = 0; i2 < this._errors.length; i2++) {
         var error2 = this._errors[i2];
-        var message2 = error2.message;
-        var count = (counts[message2] || 0) + 1;
-        counts[message2] = count;
+        var message3 = error2.message;
+        var count = (counts[message3] || 0) + 1;
+        counts[message3] = count;
         if (count >= mainErrorCount) {
           mainError = error2;
           mainErrorCount = count;
@@ -38620,8 +38620,8 @@ var require_errors2 = __commonJS({
     "use strict";
     var kUndiciError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR");
     var UndiciError = class extends Error {
-      constructor(message2, options) {
-        super(message2, options);
+      constructor(message3, options) {
+        super(message3, options);
         this.name = "UndiciError";
         this.code = "UND_ERR";
       }
@@ -38634,10 +38634,10 @@ var require_errors2 = __commonJS({
     };
     var kConnectTimeoutError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_CONNECT_TIMEOUT");
     var ConnectTimeoutError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "ConnectTimeoutError";
-        this.message = message2 || "Connect Timeout Error";
+        this.message = message3 || "Connect Timeout Error";
         this.code = "UND_ERR_CONNECT_TIMEOUT";
       }
       static [Symbol.hasInstance](instance) {
@@ -38649,10 +38649,10 @@ var require_errors2 = __commonJS({
     };
     var kHeadersTimeoutError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_HEADERS_TIMEOUT");
     var HeadersTimeoutError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "HeadersTimeoutError";
-        this.message = message2 || "Headers Timeout Error";
+        this.message = message3 || "Headers Timeout Error";
         this.code = "UND_ERR_HEADERS_TIMEOUT";
       }
       static [Symbol.hasInstance](instance) {
@@ -38664,10 +38664,10 @@ var require_errors2 = __commonJS({
     };
     var kHeadersOverflowError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_HEADERS_OVERFLOW");
     var HeadersOverflowError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "HeadersOverflowError";
-        this.message = message2 || "Headers Overflow Error";
+        this.message = message3 || "Headers Overflow Error";
         this.code = "UND_ERR_HEADERS_OVERFLOW";
       }
       static [Symbol.hasInstance](instance) {
@@ -38679,10 +38679,10 @@ var require_errors2 = __commonJS({
     };
     var kBodyTimeoutError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_BODY_TIMEOUT");
     var BodyTimeoutError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "BodyTimeoutError";
-        this.message = message2 || "Body Timeout Error";
+        this.message = message3 || "Body Timeout Error";
         this.code = "UND_ERR_BODY_TIMEOUT";
       }
       static [Symbol.hasInstance](instance) {
@@ -38694,10 +38694,10 @@ var require_errors2 = __commonJS({
     };
     var kInvalidArgumentError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_INVALID_ARG");
     var InvalidArgumentError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "InvalidArgumentError";
-        this.message = message2 || "Invalid Argument Error";
+        this.message = message3 || "Invalid Argument Error";
         this.code = "UND_ERR_INVALID_ARG";
       }
       static [Symbol.hasInstance](instance) {
@@ -38709,10 +38709,10 @@ var require_errors2 = __commonJS({
     };
     var kInvalidReturnValueError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_INVALID_RETURN_VALUE");
     var InvalidReturnValueError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "InvalidReturnValueError";
-        this.message = message2 || "Invalid Return Value Error";
+        this.message = message3 || "Invalid Return Value Error";
         this.code = "UND_ERR_INVALID_RETURN_VALUE";
       }
       static [Symbol.hasInstance](instance) {
@@ -38724,10 +38724,10 @@ var require_errors2 = __commonJS({
     };
     var kAbortError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_ABORT");
     var AbortError2 = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "AbortError";
-        this.message = message2 || "The operation was aborted";
+        this.message = message3 || "The operation was aborted";
         this.code = "UND_ERR_ABORT";
       }
       static [Symbol.hasInstance](instance) {
@@ -38739,10 +38739,10 @@ var require_errors2 = __commonJS({
     };
     var kRequestAbortedError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_ABORTED");
     var RequestAbortedError2 = class extends AbortError2 {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "AbortError";
-        this.message = message2 || "Request aborted";
+        this.message = message3 || "Request aborted";
         this.code = "UND_ERR_ABORTED";
       }
       static [Symbol.hasInstance](instance) {
@@ -38754,10 +38754,10 @@ var require_errors2 = __commonJS({
     };
     var kInformationalError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_INFO");
     var InformationalError = class extends UndiciError {
-      constructor(message2, options) {
-        super(message2, options);
+      constructor(message3, options) {
+        super(message3, options);
         this.name = "InformationalError";
-        this.message = message2 || "Request information";
+        this.message = message3 || "Request information";
         this.code = "UND_ERR_INFO";
       }
       static [Symbol.hasInstance](instance) {
@@ -38769,10 +38769,10 @@ var require_errors2 = __commonJS({
     };
     var kRequestContentLengthMismatchError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_REQ_CONTENT_LENGTH_MISMATCH");
     var RequestContentLengthMismatchError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "RequestContentLengthMismatchError";
-        this.message = message2 || "Request body length does not match content-length header";
+        this.message = message3 || "Request body length does not match content-length header";
         this.code = "UND_ERR_REQ_CONTENT_LENGTH_MISMATCH";
       }
       static [Symbol.hasInstance](instance) {
@@ -38784,10 +38784,10 @@ var require_errors2 = __commonJS({
     };
     var kResponseContentLengthMismatchError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_RES_CONTENT_LENGTH_MISMATCH");
     var ResponseContentLengthMismatchError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "ResponseContentLengthMismatchError";
-        this.message = message2 || "Response body length does not match content-length header";
+        this.message = message3 || "Response body length does not match content-length header";
         this.code = "UND_ERR_RES_CONTENT_LENGTH_MISMATCH";
       }
       static [Symbol.hasInstance](instance) {
@@ -38799,10 +38799,10 @@ var require_errors2 = __commonJS({
     };
     var kClientDestroyedError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_DESTROYED");
     var ClientDestroyedError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "ClientDestroyedError";
-        this.message = message2 || "The client is destroyed";
+        this.message = message3 || "The client is destroyed";
         this.code = "UND_ERR_DESTROYED";
       }
       static [Symbol.hasInstance](instance) {
@@ -38814,10 +38814,10 @@ var require_errors2 = __commonJS({
     };
     var kClientClosedError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_CLOSED");
     var ClientClosedError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "ClientClosedError";
-        this.message = message2 || "The client is closed";
+        this.message = message3 || "The client is closed";
         this.code = "UND_ERR_CLOSED";
       }
       static [Symbol.hasInstance](instance) {
@@ -38829,10 +38829,10 @@ var require_errors2 = __commonJS({
     };
     var kSocketError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_SOCKET");
     var SocketError = class extends UndiciError {
-      constructor(message2, socket) {
-        super(message2);
+      constructor(message3, socket) {
+        super(message3);
         this.name = "SocketError";
-        this.message = message2 || "Socket error";
+        this.message = message3 || "Socket error";
         this.code = "UND_ERR_SOCKET";
         this.socket = socket;
       }
@@ -38845,10 +38845,10 @@ var require_errors2 = __commonJS({
     };
     var kNotSupportedError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_NOT_SUPPORTED");
     var NotSupportedError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "NotSupportedError";
-        this.message = message2 || "Not supported error";
+        this.message = message3 || "Not supported error";
         this.code = "UND_ERR_NOT_SUPPORTED";
       }
       static [Symbol.hasInstance](instance) {
@@ -38860,10 +38860,10 @@ var require_errors2 = __commonJS({
     };
     var kBalancedPoolMissingUpstreamError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_BPL_MISSING_UPSTREAM");
     var BalancedPoolMissingUpstreamError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "MissingUpstreamError";
-        this.message = message2 || "No upstream has been added to the BalancedPool";
+        this.message = message3 || "No upstream has been added to the BalancedPool";
         this.code = "UND_ERR_BPL_MISSING_UPSTREAM";
       }
       static [Symbol.hasInstance](instance) {
@@ -38875,8 +38875,8 @@ var require_errors2 = __commonJS({
     };
     var kWebAssemblyNotSupportedError = /* @__PURE__ */ Symbol.for("undici.error.ERR_WEBASSEMBLY_NOT_SUPPORTED");
     var WebAssemblyNotSupportedError = class extends Error {
-      constructor(message2) {
-        super(message2 || "WebAssembly is not supported in this environment, but is required for HTTP/1 parsing");
+      constructor(message3) {
+        super(message3 || "WebAssembly is not supported in this environment, but is required for HTTP/1 parsing");
         this.code = "ERR_WEBASSEMBLY_NOT_SUPPORTED";
       }
       static [Symbol.hasInstance](instance) {
@@ -38888,8 +38888,8 @@ var require_errors2 = __commonJS({
     };
     var kHTTPParserError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_HTTP_PARSER");
     var HTTPParserError = class extends Error {
-      constructor(message2, code, data) {
-        super(message2);
+      constructor(message3, code, data) {
+        super(message3);
         this.name = "HTTPParserError";
         this.code = code ? `HPE_${code}` : void 0;
         this.data = data ? data.toString() : void 0;
@@ -38903,10 +38903,10 @@ var require_errors2 = __commonJS({
     };
     var kResponseExceededMaxSizeError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_RES_EXCEEDED_MAX_SIZE");
     var ResponseExceededMaxSizeError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "ResponseExceededMaxSizeError";
-        this.message = message2 || "Response content exceeded max size";
+        this.message = message3 || "Response content exceeded max size";
         this.code = "UND_ERR_RES_EXCEEDED_MAX_SIZE";
       }
       static [Symbol.hasInstance](instance) {
@@ -38918,10 +38918,10 @@ var require_errors2 = __commonJS({
     };
     var kRequestRetryError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_REQ_RETRY");
     var RequestRetryError = class extends UndiciError {
-      constructor(message2, code, { headers, data }) {
-        super(message2);
+      constructor(message3, code, { headers, data }) {
+        super(message3);
         this.name = "RequestRetryError";
-        this.message = message2 || "Request retry error";
+        this.message = message3 || "Request retry error";
         this.code = "UND_ERR_REQ_RETRY";
         this.statusCode = code;
         this.data = data;
@@ -38936,10 +38936,10 @@ var require_errors2 = __commonJS({
     };
     var kResponseError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_RESPONSE");
     var ResponseError = class extends UndiciError {
-      constructor(message2, code, { headers, body, bodyTruncated = false }) {
-        super(message2);
+      constructor(message3, code, { headers, body, bodyTruncated = false }) {
+        super(message3);
         this.name = "ResponseError";
-        this.message = message2 || "Response error";
+        this.message = message3 || "Response error";
         this.code = "UND_ERR_RESPONSE";
         this.statusCode = code;
         this.body = body;
@@ -38955,10 +38955,10 @@ var require_errors2 = __commonJS({
     };
     var kSecureProxyConnectionError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_PRX_TLS");
     var SecureProxyConnectionError = class extends UndiciError {
-      constructor(cause, message2, options = {}) {
-        super(message2, { cause, ...options });
+      constructor(cause, message3, options = {}) {
+        super(message3, { cause, ...options });
         this.name = "SecureProxyConnectionError";
-        this.message = message2 || "Secure Proxy Connection failed";
+        this.message = message3 || "Secure Proxy Connection failed";
         this.code = "UND_ERR_PRX_TLS";
         this.cause = cause;
       }
@@ -38971,10 +38971,10 @@ var require_errors2 = __commonJS({
     };
     var kProxyConnectionError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_PRX_CONN");
     var ProxyConnectionError = class extends UndiciError {
-      constructor(cause, message2, options = {}) {
-        super(message2, { cause, ...options });
+      constructor(cause, message3, options = {}) {
+        super(message3, { cause, ...options });
         this.name = "ProxyConnectionError";
-        this.message = message2 || "Proxy Connection failed";
+        this.message = message3 || "Proxy Connection failed";
         this.code = "UND_ERR_PRX_CONN";
         this.cause = cause;
       }
@@ -38987,10 +38987,10 @@ var require_errors2 = __commonJS({
     };
     var kMaxRedirectsError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_REDIRECT_MAX");
     var MaxRedirectsError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "MaxRedirectsError";
-        this.message = message2 || "max redirects";
+        this.message = message3 || "max redirects";
         this.code = "UND_ERR_REDIRECT_MAX";
       }
       static [Symbol.hasInstance](instance) {
@@ -39002,10 +39002,10 @@ var require_errors2 = __commonJS({
     };
     var kMaxOriginsReachedError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_MAX_ORIGINS_REACHED");
     var MaxOriginsReachedError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "MaxOriginsReachedError";
-        this.message = message2 || "Maximum allowed origins reached";
+        this.message = message3 || "Maximum allowed origins reached";
         this.code = "UND_ERR_MAX_ORIGINS_REACHED";
       }
       static [Symbol.hasInstance](instance) {
@@ -39016,19 +39016,19 @@ var require_errors2 = __commonJS({
       }
     };
     var Socks5ProxyError = class extends UndiciError {
-      constructor(message2, code) {
-        super(message2);
+      constructor(message3, code) {
+        super(message3);
         this.name = "Socks5ProxyError";
-        this.message = message2 || "SOCKS5 proxy error";
+        this.message = message3 || "SOCKS5 proxy error";
         this.code = code || "UND_ERR_SOCKS5";
       }
     };
     var kMessageSizeExceededError = /* @__PURE__ */ Symbol.for("undici.error.UND_ERR_WS_MESSAGE_SIZE_EXCEEDED");
     var MessageSizeExceededError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "MessageSizeExceededError";
-        this.message = message2 || "Max decompressed message size exceeded";
+        this.message = message3 || "Max decompressed message size exceeded";
         this.code = "UND_ERR_WS_MESSAGE_SIZE_EXCEEDED";
       }
       static [Symbol.hasInstance](instance) {
@@ -40068,14 +40068,14 @@ var require_util9 = __commonJS({
       if (socket == null) {
         return;
       }
-      let message2 = "Connect Timeout Error";
+      let message3 = "Connect Timeout Error";
       if (Array.isArray(socket.autoSelectFamilyAttemptedAddresses)) {
-        message2 += ` (attempted addresses: ${socket.autoSelectFamilyAttemptedAddresses.join(", ")},`;
+        message3 += ` (attempted addresses: ${socket.autoSelectFamilyAttemptedAddresses.join(", ")},`;
       } else {
-        message2 += ` (attempted address: ${opts.hostname}:${opts.port},`;
+        message3 += ` (attempted address: ${opts.hostname}:${opts.port},`;
       }
-      message2 += ` timeout: ${opts.timeout}ms)`;
-      destroy(socket, new ConnectTimeoutError(message2));
+      message3 += ` timeout: ${opts.timeout}ms)`;
+      destroy(socket, new ConnectTimeoutError(message3));
     }
     var lastUrlString = null;
     var lastProtocol = null;
@@ -41128,15 +41128,15 @@ var require_webidl2 = __commonJS({
       errors: {},
       is: {}
     };
-    webidl.errors.exception = function(message2) {
-      return new TypeError(`${message2.header}: ${message2.message}`);
+    webidl.errors.exception = function(message3) {
+      return new TypeError(`${message3.header}: ${message3.message}`);
     };
     webidl.errors.conversionFailed = function(opts) {
       const plural = opts.types.length === 1 ? "" : " one of";
-      const message2 = `${opts.argument} could not be converted to${plural}: ${opts.types.join(", ")}.`;
+      const message3 = `${opts.argument} could not be converted to${plural}: ${opts.types.join(", ")}.`;
       return webidl.errors.exception({
         header: opts.prefix,
-        message: message2
+        message: message3
       });
     };
     webidl.errors.invalidArgument = function(context4) {
@@ -42793,7 +42793,7 @@ var require_request3 = __commonJS({
         headers,
         query,
         idempotent,
-        blocking,
+        blocking: blocking2,
         upgrade,
         headersTimeout,
         bodyTimeout,
@@ -42892,7 +42892,7 @@ var require_request3 = __commonJS({
         this.origin = origin;
         this.protocol = getProtocolFromUrlString(origin);
         this.idempotent = idempotent == null ? method === "HEAD" || method === "GET" || method === "QUERY" : idempotent;
-        this.blocking = blocking ?? this.method !== "HEAD";
+        this.blocking = blocking2 ?? this.method !== "HEAD";
         this.reset = reset == null ? null : reset;
         this.host = null;
         this.contentLength = null;
@@ -43528,14 +43528,14 @@ var require_connect2 = __commonJS({
     }
     function maybeNormalizeConnectError(err, socket, opts) {
       if (err instanceof AggregateError && (err.code === "ETIMEDOUT" || err.errors.some((e2) => e2 != null && e2.code === "ETIMEDOUT"))) {
-        let message2 = "Connect Timeout Error";
+        let message3 = "Connect Timeout Error";
         if (Array.isArray(socket.autoSelectFamilyAttemptedAddresses)) {
-          message2 += ` (attempted addresses: ${socket.autoSelectFamilyAttemptedAddresses.join(", ")},`;
+          message3 += ` (attempted addresses: ${socket.autoSelectFamilyAttemptedAddresses.join(", ")},`;
         } else {
-          message2 += ` (attempted address: ${opts.hostname}:${opts.port},`;
+          message3 += ` (attempted address: ${opts.hostname}:${opts.port},`;
         }
-        message2 += ` timeout: ${opts.timeout}ms)`;
-        const wrapped = new ConnectTimeoutError(message2);
+        message3 += ` timeout: ${opts.timeout}ms)`;
+        const wrapped = new ConnectTimeoutError(message3);
         wrapped.cause = err;
         return wrapped;
       }
@@ -46815,8 +46815,8 @@ var require_parser_h1 = __commonJS({
           cursor += eventLen;
         }
       }
-      fail(code, message2) {
-        this.milo.fail(this.parser, code, message2);
+      fail(code, message3) {
+        this.milo.fail(this.parser, code, message3);
         this.errored = true;
       }
       onUpgrade(head) {
@@ -47893,12 +47893,12 @@ var require_client_h12 = __commonJS({
           return new ResponseContentLengthMismatchError();
         }
         const ptr = llhttp.llhttp_get_error_reason(this.ptr);
-        let message2 = "";
+        let message3 = "";
         if (ptr) {
           const len = new Uint8Array(llhttp.memory.buffer, ptr).indexOf(0);
-          message2 = "Response does not match the HTTP/1.1 protocol (" + Buffer.from(llhttp.memory.buffer, ptr, len).toString() + ")";
+          message3 = "Response does not match the HTTP/1.1 protocol (" + Buffer.from(llhttp.memory.buffer, ptr, len).toString() + ")";
         }
-        return new HTTPParserError(message2, constants12.ERROR[ret], data);
+        return new HTTPParserError(message3, constants12.ERROR[ret], data);
       }
       destroy() {
         assert(currentParser === null);
@@ -48445,7 +48445,7 @@ var require_client_h12 = __commonJS({
       }
     }
     function writeH1(client, request3) {
-      const { method, path: path19, host, upgrade, blocking, reset } = request3;
+      const { method, path: path19, host, upgrade, blocking: blocking2, reset } = request3;
       let { body, headers, contentLength } = request3;
       const expectsPayload = method === "PUT" || method === "POST" || method === "PATCH" || method === "QUERY" || method === "PROPFIND" || method === "PROPPATCH";
       if (util2.isFormDataLike(body)) {
@@ -48517,7 +48517,7 @@ var require_client_h12 = __commonJS({
       if (client[kMaxRequests] && ++socket[kCounter] >= client[kMaxRequests]) {
         socket[kReset] = true;
       }
-      if (blocking) {
+      if (blocking2) {
         socket[kBlocking] = true;
       }
       setTypeOfService(socket, request3);
@@ -52038,8 +52038,8 @@ var require_socks5_utils = __commonJS({
         7: "Command not supported",
         8: "Address type not supported"
       };
-      const message2 = messages[replyCode] || `Unknown SOCKS5 error code: ${replyCode}`;
-      const error2 = new Error(message2);
+      const message3 = messages[replyCode] || `Unknown SOCKS5 error code: ${replyCode}`;
+      const error2 = new Error(message3);
       error2.code = `SOCKS5_${replyCode}`;
       return error2;
     }
@@ -55030,10 +55030,10 @@ var require_mock_errors2 = __commonJS({
     var { UndiciError } = require_errors2();
     var kMockNotMatchedError = /* @__PURE__ */ Symbol.for("undici.error.UND_MOCK_ERR_MOCK_NOT_MATCHED");
     var MockNotMatchedError = class extends UndiciError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "MockNotMatchedError";
-        this.message = message2 || "The request does not match any registered mock dispatches";
+        this.message = message3 || "The request does not match any registered mock dispatches";
         this.code = "UND_MOCK_ERR_MOCK_NOT_MATCHED";
       }
       static [Symbol.hasInstance](instance) {
@@ -68029,9 +68029,9 @@ var require_websocketerror = __commonJS({
     var WebSocketError = class _WebSocketError extends createInheritableDOMException() {
       #closeCode;
       #reason;
-      constructor(message2 = "", init = void 0) {
-        message2 = webidl.converters.DOMString(message2, "WebSocketError", "message");
-        super(message2, "WebSocketError");
+      constructor(message3 = "", init = void 0) {
+        message3 = webidl.converters.DOMString(message3, "WebSocketError", "message");
+        super(message3, "WebSocketError");
         if (init === kConstruct) {
           return;
         } else if (init !== null) {
@@ -68053,8 +68053,8 @@ var require_websocketerror = __commonJS({
         return this.#reason;
       }
       static {
-        createUnvalidatedWebSocketError = (message2, code, reason) => {
-          const error2 = new _WebSocketError(message2, kConstruct);
+        createUnvalidatedWebSocketError = (message3, code, reason) => {
+          const error2 = new _WebSocketError(message3, kConstruct);
           error2.#closeCode = code;
           error2.#reason = reason;
           return error2;
@@ -69534,10 +69534,10 @@ async function retryAssistantCall(produce, policy, signal, callbacks) {
     await callbacks?.onRetryAttemptStart?.();
   }
 }
-function isRetryableAssistantError(message2) {
-  if (message2.stopReason !== "error" || !message2.errorMessage)
+function isRetryableAssistantError(message3) {
+  if (message3.stopReason !== "error" || !message3.errorMessage)
     return false;
-  const errorMessage9 = message2.errorMessage;
+  const errorMessage9 = message3.errorMessage;
   if (NON_RETRYABLE_PROVIDER_LIMIT_ERROR_PATTERN.test(errorMessage9))
     return false;
   return RETRYABLE_PROVIDER_ERROR_PATTERN.test(errorMessage9);
@@ -71353,10 +71353,10 @@ var init_event_stream = __esm({
           this.#time(result);
         super.end(result);
       }
-      #time(message2) {
-        if (this.done || message2.durationMs !== void 0 || message2.timestamp < this.#startedAt)
+      #time(message3) {
+        if (this.done || message3.durationMs !== void 0 || message3.timestamp < this.#startedAt)
           return;
-        message2.durationMs = Math.max(0, Math.round(performance.now() - this.#startedAtMonotonic));
+        message3.durationMs = Math.max(0, Math.round(performance.now() - this.#startedAtMonotonic));
       }
     };
   }
@@ -71412,12 +71412,12 @@ function lazyStream(model2, setup, observer) {
     observer?.onResult?.(result);
   };
   setup().then((inner) => forwardStream(outer, inner, observer, observeResult)).catch((error2) => {
-    const message2 = createSetupErrorMessage(model2, error2, startedAt);
-    const event = { type: "error", reason: "error", error: message2 };
+    const message3 = createSetupErrorMessage(model2, error2, startedAt);
+    const event = { type: "error", reason: "error", error: message3 };
     outer.push(event);
     observer?.onEvent?.(event);
-    outer.end(message2);
-    observeResult(message2);
+    outer.end(message3);
+    observeResult(message3);
   });
   return outer;
 }
@@ -71669,8 +71669,8 @@ function extractDiagnosticError(error2) {
 function createAssistantMessageDiagnostic(type, error2, details) {
   return { type, timestamp: Date.now(), error: extractDiagnosticError(error2), details };
 }
-function appendAssistantMessageDiagnostic(message2, diagnostic) {
-  message2.diagnostics = [...message2.diagnostics ?? [], diagnostic];
+function appendAssistantMessageDiagnostic(message3, diagnostic) {
+  message3.diagnostics = [...message3.diagnostics ?? [], diagnostic];
 }
 var init_diagnostics = __esm({
   "node_modules/@earendil-works/pi-ai/dist/utils/diagnostics.js"() {
@@ -71678,13 +71678,13 @@ var init_diagnostics = __esm({
 });
 
 // node_modules/@earendil-works/pi-ai/dist/utils/models-error.js
-function withCauseDetail(message2, cause) {
+function withCauseDetail(message3, cause) {
   if (cause === void 0 || cause === null)
-    return message2;
+    return message3;
   const detail = formatThrownValue(cause).trim();
-  if (!detail || message2.includes(detail))
-    return message2;
-  return `${message2}: ${detail}`;
+  if (!detail || message3.includes(detail))
+    return message3;
+  return `${message3}: ${detail}`;
 }
 var ModelsError;
 var init_models_error = __esm({
@@ -71692,8 +71692,8 @@ var init_models_error = __esm({
     init_diagnostics();
     ModelsError = class extends Error {
       code;
-      constructor(code, message2, options) {
-        super(withCauseDetail(message2, options?.cause), options);
+      constructor(code, message3, options) {
+        super(withCauseDetail(message3, options?.cause), options);
         this.name = "ModelsError";
         this.code = code;
       }
@@ -71923,20 +71923,20 @@ function contentText(content, separator = "\n") {
     return content;
   return content.filter((block) => block.type === "text").map((block) => block.text).join(separator);
 }
-function getSystemMessageText(message2) {
-  const parts = [contentText(message2.content)];
-  for (const text of Object.values(message2.sections ?? {})) {
+function getSystemMessageText(message3) {
+  const parts = [contentText(message3.content)];
+  for (const text of Object.values(message3.sections ?? {})) {
     if (text !== null)
       parts.push(text);
   }
   return parts.filter((part) => part.length > 0).join("\n\n");
 }
-function renderSystemMessageUpdate(message2) {
+function renderSystemMessageUpdate(message3) {
   const parts = [];
-  const text = contentText(message2.content);
+  const text = contentText(message3.content);
   if (text.length > 0)
     parts.push(text);
-  for (const [name, value2] of Object.entries(message2.sections ?? {})) {
+  for (const [name, value2] of Object.entries(message3.sections ?? {})) {
     parts.push(value2 === null ? `Removed system prompt section "${name}".` : `Updated system prompt section "${name}":
 
 ${value2}`);
@@ -72018,30 +72018,30 @@ function observeModelRequest(requestedModel, options, poll) {
         });
       }
     },
-    onResult(message2) {
-      if (message2) {
+    onResult(message3) {
+      if (message3) {
         span.setAttributes({
-          stop: message2.stopReason,
-          "usage.input": message2.usage.input,
-          "usage.output": message2.usage.output,
-          "usage.cache_read": message2.usage.cacheRead,
-          "usage.cache_write": message2.usage.cacheWrite,
-          "cost.total": message2.usage.cost.total,
-          "response.id": message2.responseId
+          stop: message3.stopReason,
+          "usage.input": message3.usage.input,
+          "usage.output": message3.usage.output,
+          "usage.cache_read": message3.usage.cacheRead,
+          "usage.cache_write": message3.usage.cacheWrite,
+          "cost.total": message3.usage.cost.total,
+          "response.id": message3.responseId
         });
-        if (message2.stopReason === "error") {
+        if (message3.stopReason === "error") {
           span.setStatus({
             status: "error",
-            error: { name: "provider_error", message: ownedSlice(message2.errorMessage ?? "", 0, 500) }
+            error: { name: "provider_error", message: ownedSlice(message3.errorMessage ?? "", 0, 500) }
           });
         }
-        requestDuration.record(performance.now() - started, { ...attributes, stop: message2.stopReason }, span);
-        if (!poll || message2.stopReason !== "pending" && message2.stopReason !== "deferred") {
-          tokens.add(message2.usage.input, { ...attributes, kind: "input" });
-          tokens.add(message2.usage.output, { ...attributes, kind: "output" });
-          tokens.add(message2.usage.cacheRead, { ...attributes, kind: "cache_read" });
-          tokens.add(message2.usage.cacheWrite, { ...attributes, kind: "cache_write" });
-          cost.add(message2.usage.cost.total, attributes);
+        requestDuration.record(performance.now() - started, { ...attributes, stop: message3.stopReason }, span);
+        if (!poll || message3.stopReason !== "pending" && message3.stopReason !== "deferred") {
+          tokens.add(message3.usage.input, { ...attributes, kind: "input" });
+          tokens.add(message3.usage.output, { ...attributes, kind: "output" });
+          tokens.add(message3.usage.cacheRead, { ...attributes, kind: "cache_read" });
+          tokens.add(message3.usage.cacheWrite, { ...attributes, kind: "cache_write" });
+          cost.add(message3.usage.cost.total, attributes);
         }
       }
       finish();
@@ -72357,8 +72357,8 @@ function normalizeContext(context4) {
   const messages = initialMessage ? [initialMessage, ...context4.messages] : context4.messages;
   return { messages };
 }
-function isSystemMessage(message2) {
-  return message2.role === "system";
+function isSystemMessage(message3) {
+  return message3.role === "system";
 }
 function getInitialSystemMessage(messages) {
   const first = messages[0];
@@ -72369,12 +72369,12 @@ function withoutInitialSystemMessage(messages) {
 }
 function getCurrentTools(messages) {
   const tools = /* @__PURE__ */ new Map();
-  for (const message2 of messages) {
-    if (!isSystemMessage(message2))
+  for (const message3 of messages) {
+    if (!isSystemMessage(message3))
       continue;
-    for (const tool of message2.toolsRemoved ?? [])
+    for (const tool of message3.toolsRemoved ?? [])
       tools.delete(tool.name);
-    for (const tool of message2.toolsAdded ?? [])
+    for (const tool of message3.toolsAdded ?? [])
       tools.set(tool.name, tool);
   }
   return [...tools.values()];
@@ -72383,14 +72383,14 @@ function getCurrentSystemMessage(messages) {
   const content = [];
   const sections = /* @__PURE__ */ new Map();
   let timestamp;
-  for (const message2 of messages) {
-    if (!isSystemMessage(message2))
+  for (const message3 of messages) {
+    if (!isSystemMessage(message3))
       continue;
-    timestamp ??= message2.timestamp;
-    const text = contentText(message2.content);
+    timestamp ??= message3.timestamp;
+    const text = contentText(message3.content);
     if (text.length > 0)
       content.push(text);
-    for (const [name, value2] of Object.entries(message2.sections ?? {})) {
+    for (const [name, value2] of Object.entries(message3.sections ?? {})) {
       if (value2 === null)
         sections.delete(name);
       else
@@ -72409,12 +72409,12 @@ function getCurrentSystemMessage(messages) {
   };
 }
 function getCurrentSystemPrompt(messages) {
-  const message2 = getCurrentSystemMessage(messages);
-  return message2 ? getSystemMessageText(message2) : "";
+  const message3 = getCurrentSystemMessage(messages);
+  return message3 ? getSystemMessageText(message3) : "";
 }
 function collapseSystemMessages(context4) {
   const head = getCurrentSystemMessage(context4.messages);
-  const messages = context4.messages.filter((message2) => message2.role !== "system");
+  const messages = context4.messages.filter((message3) => message3.role !== "system");
   return { messages: head ? [head, ...messages] : messages };
 }
 function resolveTranscript(context4, supportsMidConvoSystemMessages) {
@@ -72447,20 +72447,20 @@ function getToolStateChanges(previous, current) {
 }
 function getDeclaredTools(messages) {
   const definitions = /* @__PURE__ */ new Map();
-  for (const message2 of messages) {
-    if (!isSystemMessage(message2))
+  for (const message3 of messages) {
+    if (!isSystemMessage(message3))
       continue;
-    for (const tool of message2.toolsAdded ?? [])
+    for (const tool of message3.toolsAdded ?? [])
       definitions.set(tool.name, tool);
   }
   return [...definitions.values()];
 }
 function hasToolRedefinitions(messages) {
   const declared = /* @__PURE__ */ new Map();
-  for (const message2 of messages) {
-    if (!isSystemMessage(message2))
+  for (const message3 of messages) {
+    if (!isSystemMessage(message3))
       continue;
-    for (const tool of message2.toolsAdded ?? []) {
+    for (const tool of message3.toolsAdded ?? []) {
       const previous = declared.get(tool.name);
       if (previous !== void 0 && !declarationsEqual(previous, tool))
         return true;
@@ -72476,10 +72476,10 @@ function findLastNonAdditiveToolChange(systemMessages) {
   const declared = /* @__PURE__ */ new Set();
   let last = -1;
   for (let index3 = 0; index3 < systemMessages.length; index3++) {
-    const message2 = systemMessages[index3];
-    if ((message2.toolsRemoved?.length ?? 0) > 0)
+    const message3 = systemMessages[index3];
+    if ((message3.toolsRemoved?.length ?? 0) > 0)
       last = index3;
-    for (const tool of message2.toolsAdded ?? []) {
+    for (const tool of message3.toolsAdded ?? []) {
       if (declared.has(tool.name))
         last = index3;
       declared.add(tool.name);
@@ -74069,24 +74069,24 @@ function assistantContentToText(content) {
     return `${block.name}:${JSON.stringify(block.arguments)}`;
   }).join("\n");
 }
-function toolResultToText(message2) {
-  return [message2.toolName, ...message2.content.map((block) => contentToText([block]))].join("\n");
+function toolResultToText(message3) {
+  return [message3.toolName, ...message3.content.map((block) => contentToText([block]))].join("\n");
 }
-function messageToText(message2) {
-  if (message2.role === "system") {
+function messageToText(message3) {
+  if (message3.role === "system") {
     return [
-      getSystemMessageText(message2),
-      ...message2.toolsRemoved?.map((tool) => `tool-:${JSON.stringify(tool)}`) ?? [],
-      ...message2.toolsAdded?.map((tool) => `tool+:${JSON.stringify(tool)}`) ?? []
+      getSystemMessageText(message3),
+      ...message3.toolsRemoved?.map((tool) => `tool-:${JSON.stringify(tool)}`) ?? [],
+      ...message3.toolsAdded?.map((tool) => `tool+:${JSON.stringify(tool)}`) ?? []
     ].filter((part) => part.length > 0).join("\n");
   }
-  if (message2.role === "user") {
-    return contentToText(message2.content);
+  if (message3.role === "user") {
+    return contentToText(message3.content);
   }
-  if (message2.role === "assistant") {
-    return assistantContentToText(message2.content);
+  if (message3.role === "assistant") {
+    return assistantContentToText(message3.content);
   }
-  return toolResultToText(message2);
+  return toolResultToText(message3);
 }
 function joinedLength(messages, count = messages.length) {
   let length = count > 0 ? (count - 1) * 2 : 0;
@@ -74109,11 +74109,11 @@ function commonPrefixLength(a, b2) {
   }
   return index3;
 }
-function withUsageEstimate(message2, context4, options, promptCache) {
-  const prompt = context4.messages.map((message3) => `${message3.role}:${messageToText(message3)}`);
+function withUsageEstimate(message3, context4, options, promptCache) {
+  const prompt = context4.messages.map((message4) => `${message4.role}:${messageToText(message4)}`);
   const promptLength = joinedLength(prompt);
   const promptTokens = Math.ceil(promptLength / 4);
-  const outputTokens = estimateTokens(assistantContentToText(message2.content));
+  const outputTokens = estimateTokens(assistantContentToText(message3.content));
   let input2 = promptTokens;
   let cacheRead = 0;
   let cacheWrite = 0;
@@ -74131,7 +74131,7 @@ function withUsageEstimate(message2, context4, options, promptCache) {
     promptCache.set(sessionId, prompt);
   }
   return {
-    ...message2,
+    ...message3,
     usage: {
       input: input2,
       output: outputTokens,
@@ -74153,8 +74153,8 @@ function splitStringByTokenSize(text, minTokenSize, maxTokenSize) {
   }
   return chunks.length > 0 ? chunks : [""];
 }
-function cloneMessage(message2, api, provider2, modelId) {
-  const cloned = structuredClone(message2);
+function cloneMessage(message3, api, provider2, modelId) {
+  const cloned = structuredClone(message3);
   return {
     ...cloned,
     api,
@@ -74205,8 +74205,8 @@ function scheduleChunk(chunk, tokensPerSecond) {
   const delayMs = estimateTokens(chunk) / tokensPerSecond * 1e3;
   return new Promise((resolve19) => setTimeout(resolve19, delayMs));
 }
-async function streamWithDeltas(stream12, message2, minTokenSize, maxTokenSize, tokensPerSecond, signal) {
-  const partial = { ...message2, content: [], stopReason: "pending" };
+async function streamWithDeltas(stream12, message3, minTokenSize, maxTokenSize, tokensPerSecond, signal) {
+  const partial = { ...message3, content: [], stopReason: "pending" };
   if (signal?.aborted) {
     const aborted = createAbortedMessage(partial);
     stream12.push({ type: "error", reason: "aborted", error: aborted });
@@ -74214,14 +74214,14 @@ async function streamWithDeltas(stream12, message2, minTokenSize, maxTokenSize, 
     return;
   }
   stream12.push({ type: "start", partial: { ...partial } });
-  for (let index3 = 0; index3 < message2.content.length; index3++) {
+  for (let index3 = 0; index3 < message3.content.length; index3++) {
     if (signal?.aborted) {
       const aborted = createAbortedMessage(partial);
       stream12.push({ type: "error", reason: "aborted", error: aborted });
       stream12.end(aborted);
       return;
     }
-    const block = message2.content[index3];
+    const block = message3.content[index3];
     if (block.type === "thinking") {
       partial.content = [...partial.content, { type: "thinking", thinking: "" }];
       stream12.push({ type: "thinking_start", contentIndex: index3, partial: { ...partial } });
@@ -74278,16 +74278,16 @@ async function streamWithDeltas(stream12, message2, minTokenSize, maxTokenSize, 
     partial.content[index3].arguments = block.arguments;
     stream12.push({ type: "toolcall_end", contentIndex: index3, toolCall: block, partial: { ...partial } });
   }
-  if (message2.stopReason === "pending") {
+  if (message3.stopReason === "pending") {
     throw new Error("Faux response ended without a stop reason");
   }
-  if (message2.stopReason === "error" || message2.stopReason === "aborted") {
-    stream12.push({ type: "error", reason: message2.stopReason, error: message2 });
-    stream12.end(message2);
+  if (message3.stopReason === "error" || message3.stopReason === "aborted") {
+    stream12.push({ type: "error", reason: message3.stopReason, error: message3 });
+    stream12.end(message3);
     return;
   }
-  stream12.push({ type: "done", reason: message2.stopReason, message: message2 });
-  stream12.end(message2);
+  stream12.push({ type: "done", reason: message3.stopReason, message: message3 });
+  stream12.end(message3);
 }
 function createFauxCore(options) {
   const api = options.api ?? randomId(DEFAULT_API);
@@ -74335,10 +74335,10 @@ function createFauxCore(options) {
       try {
         await streamOptions?.onResponse?.({ status: 200, headers: {} }, requestModel);
         if (!step) {
-          let message3 = createErrorMessage(new Error("No more faux responses queued"), api, provider2, requestModel.id);
-          message3 = withUsageEstimate(message3, context4, streamOptions, promptCache);
-          outer.push({ type: "error", reason: "error", error: message3 });
-          outer.end(message3);
+          let message4 = createErrorMessage(new Error("No more faux responses queued"), api, provider2, requestModel.id);
+          message4 = withUsageEstimate(message4, context4, streamOptions, promptCache);
+          outer.push({ type: "error", reason: "error", error: message4 });
+          outer.end(message4);
           return;
         }
         if (streamOptions?.deferred) {
@@ -74361,12 +74361,12 @@ function createFauxCore(options) {
           await streamWithDeltas(outer, createDeferredMessage(requestModel, handle), minTokenSize, maxTokenSize, tokensPerSecond, streamOptions.signal);
           return;
         }
-        const message2 = await resolveResponse(step, context4, streamOptions, requestModel);
-        await streamWithDeltas(outer, message2, minTokenSize, maxTokenSize, tokensPerSecond, streamOptions?.signal);
+        const message3 = await resolveResponse(step, context4, streamOptions, requestModel);
+        await streamWithDeltas(outer, message3, minTokenSize, maxTokenSize, tokensPerSecond, streamOptions?.signal);
       } catch (error2) {
-        const message2 = createErrorMessage(error2, api, provider2, requestModel.id);
-        outer.push({ type: "error", reason: "error", error: message2 });
-        outer.end(message2);
+        const message3 = createErrorMessage(error2, api, provider2, requestModel.id);
+        outer.push({ type: "error", reason: "error", error: message3 });
+        outer.end(message3);
       }
     });
     return outer;
@@ -74399,9 +74399,9 @@ function createFauxCore(options) {
         }
         await streamWithDeltas(outer, entry.final, minTokenSize, maxTokenSize, tokensPerSecond, fetchOptions?.signal);
       } catch (error2) {
-        const message2 = createErrorMessage(error2, api, provider2, requestModel.id);
-        outer.push({ type: "error", reason: "error", error: message2 });
-        outer.end(message2);
+        const message3 = createErrorMessage(error2, api, provider2, requestModel.id);
+        outer.push({ type: "error", reason: "error", error: message3 });
+        outer.end(message3);
       }
     });
     return outer;
@@ -74523,34 +74523,34 @@ var init_types4 = __esm({
 });
 
 // node_modules/@earendil-works/pi-ai/dist/utils/overflow.js
-function isContextOverflow(message2, contextWindow) {
-  if (message2.stopReason === "error" && message2.errorMessage) {
-    const isNonOverflow = NON_OVERFLOW_PATTERNS.some((p) => p.test(message2.errorMessage));
+function isContextOverflow(message3, contextWindow) {
+  if (message3.stopReason === "error" && message3.errorMessage) {
+    const isNonOverflow = NON_OVERFLOW_PATTERNS.some((p) => p.test(message3.errorMessage));
     if (!isNonOverflow) {
-      if (OVERFLOW_PATTERNS.some((p) => p.test(message2.errorMessage))) {
+      if (OVERFLOW_PATTERNS.some((p) => p.test(message3.errorMessage))) {
         return true;
       }
-      if (message2.provider === "cerebras" && CEREBRAS_BODYLESS_OVERFLOW_PATTERN.test(message2.errorMessage)) {
+      if (message3.provider === "cerebras" && CEREBRAS_BODYLESS_OVERFLOW_PATTERN.test(message3.errorMessage)) {
         return true;
       }
     }
   }
-  if (contextWindow && message2.stopReason === "stop") {
-    const inputTokens = message2.usage.input + message2.usage.cacheRead;
+  if (contextWindow && message3.stopReason === "stop") {
+    const inputTokens = message3.usage.input + message3.usage.cacheRead;
     if (inputTokens > contextWindow) {
       return true;
     }
   }
-  if (contextWindow && message2.stopReason === "length" && message2.usage.output === 0) {
-    const inputTokens = message2.usage.input + message2.usage.cacheRead;
+  if (contextWindow && message3.stopReason === "length" && message3.usage.output === 0) {
+    const inputTokens = message3.usage.input + message3.usage.cacheRead;
     if (inputTokens >= contextWindow * 0.99) {
       return true;
     }
   }
   return false;
 }
-function isRecoverableLength(message2, desiredMaxOutput) {
-  return message2.stopReason === "length" && desiredMaxOutput > 0 && message2.usage.output < desiredMaxOutput;
+function isRecoverableLength(message3, desiredMaxOutput) {
+  return message3.stopReason === "length" && desiredMaxOutput > 0 && message3.usage.output < desiredMaxOutput;
 }
 function getOverflowPatterns() {
   return [...OVERFLOW_PATTERNS];
@@ -76652,8 +76652,8 @@ var init_explain = __esm({
         if (this.ok(node, b2, v2))
           return;
         const start = out.length;
-        const push = (keyword, message2, at2 = path19) => {
-          out.push({ path: at2, keyword, message: message2 });
+        const push = (keyword, message3, at2 = path19) => {
+          out.push({ path: at2, keyword, message: message3 });
         };
         if (this.c.draft === "7" && typeof node.$ref === "string") {
           this.walkRef(node.$ref, b2, v2, path19, out);
@@ -77864,9 +77864,9 @@ async function runAgentLoop(prompts, context4, config, emit, signal, streamFn) {
   };
   await emit({ type: "agent_start" });
   await emit({ type: "turn_start" });
-  for (const message2 of initialMessages) {
-    await emit({ type: "message_start", message: message2 });
-    await emit({ type: "message_end", message: message2 });
+  for (const message3 of initialMessages) {
+    await emit({ type: "message_start", message: message3 });
+    await emit({ type: "message_end", message: message3 });
   }
   await runLoop(currentContext, newMessages, config, signal, emit, streamFn ?? getDefaultStreamFn());
   return newMessages;
@@ -77914,11 +77914,11 @@ async function runLoop(initialContext, newMessages, initialConfig, signal, emit,
         }
         await emit({ type: "turn_start" });
       }
-      for (const message3 of declareToolChanges(currentContext, [...preparedMessages, ...pendingMessages])) {
-        await emit({ type: "message_start", message: message3 });
-        await emit({ type: "message_end", message: message3 });
-        currentContext.messages.push(message3);
-        newMessages.push(message3);
+      for (const message4 of declareToolChanges(currentContext, [...preparedMessages, ...pendingMessages])) {
+        await emit({ type: "message_start", message: message4 });
+        await emit({ type: "message_end", message: message4 });
+        currentContext.messages.push(message4);
+        newMessages.push(message4);
       }
       pendingMessages = [];
       const requestUpdate = await config.prepareRequest?.({
@@ -77934,25 +77934,25 @@ async function runLoop(initialContext, newMessages, initialConfig, signal, emit,
           reasoning: requestUpdate.thinkingLevel === void 0 ? config.reasoning : requestUpdate.thinkingLevel === "off" ? void 0 : requestUpdate.thinkingLevel
         };
       }
-      const message2 = await streamAssistantResponse(currentContext, config, signal, emit, streamFunction);
-      newMessages.push(message2);
-      if (message2.stopReason === "error" || message2.stopReason === "aborted") {
+      const message3 = await streamAssistantResponse(currentContext, config, signal, emit, streamFunction);
+      newMessages.push(message3);
+      if (message3.stopReason === "error" || message3.stopReason === "aborted") {
         lastCompletedTurn = {
-          message: message2,
+          message: message3,
           toolResults: [],
           context: currentContext,
           newMessages
         };
         await config.finishTurn?.(lastCompletedTurn, signal);
-        await emit({ type: "turn_end", message: message2, toolResults: [] });
+        await emit({ type: "turn_end", message: message3, toolResults: [] });
         await emit({ type: "agent_end", messages: newMessages });
         return;
       }
-      const toolCalls = message2.content.filter((c2) => c2.type === "toolCall");
+      const toolCalls = message3.content.filter((c2) => c2.type === "toolCall");
       const toolResults = [];
       hasMoreToolCalls = false;
       if (toolCalls.length > 0) {
-        const executedToolBatch = message2.stopReason === "length" ? await failToolCallsFromTruncatedMessage(toolCalls, emit) : await executeToolCalls(currentContext, message2, config, signal, emit);
+        const executedToolBatch = message3.stopReason === "length" ? await failToolCallsFromTruncatedMessage(toolCalls, emit) : await executeToolCalls(currentContext, message3, config, signal, emit);
         toolResults.push(...executedToolBatch.messages);
         hasMoreToolCalls = !executedToolBatch.terminate;
         for (const result of toolResults) {
@@ -77961,13 +77961,13 @@ async function runLoop(initialContext, newMessages, initialConfig, signal, emit,
         }
       }
       lastCompletedTurn = {
-        message: message2,
+        message: message3,
         toolResults,
         context: currentContext,
         newMessages
       };
       const decision = await config.finishTurn?.(lastCompletedTurn, signal);
-      await emit({ type: "turn_end", message: message2, toolResults });
+      await emit({ type: "turn_end", message: message3, toolResults });
       if (decision?.action === "end") {
         await emit({ type: "agent_end", messages: newMessages });
         return;
@@ -78001,23 +78001,23 @@ function declareToolChanges(context4, pendingMessages) {
     }
   }
   const pending = pendingMessages[systemIndex];
-  const baseline = pending ? pendingMessages.map((message2, index4) => index4 === systemIndex ? withToolChanges(pending, NO_CHANGES) : message2) : pendingMessages;
+  const baseline = pending ? pendingMessages.map((message3, index4) => index4 === systemIndex ? withToolChanges(pending, NO_CHANGES) : message3) : pendingMessages;
   const changes = getToolStateChanges(getCurrentTools([...context4.messages, ...baseline]), (context4.tools ?? []).map(toToolDeclaration));
   const unchanged = changes.toolsAdded.length === 0 && changes.toolsRemoved.length === 0;
   if (pending) {
     if (unchanged && !pending.toolsAdded?.length && !pending.toolsRemoved?.length)
       return pendingMessages;
-    return baseline.map((message2, index4) => index4 === systemIndex ? withToolChanges(pending, changes) : message2);
+    return baseline.map((message3, index4) => index4 === systemIndex ? withToolChanges(pending, changes) : message3);
   }
   if (unchanged)
     return pendingMessages;
   const update = withToolChanges({ role: "system", content: "", timestamp: Date.now() }, changes);
-  const insertIndex = pendingMessages.findIndex((message2) => message2.role !== "system");
+  const insertIndex = pendingMessages.findIndex((message3) => message3.role !== "system");
   const index3 = insertIndex === -1 ? pendingMessages.length : insertIndex;
   return [...pendingMessages.slice(0, index3), update, ...pendingMessages.slice(index3)];
 }
-function withToolChanges(message2, { toolsAdded, toolsRemoved }) {
-  const { toolsAdded: _added, toolsRemoved: _removed, ...rest } = message2;
+function withToolChanges(message3, { toolsAdded, toolsRemoved }) {
+  const { toolsAdded: _added, toolsRemoved: _removed, ...rest } = message3;
   return {
     ...rest,
     ...toolsAdded.length > 0 ? { toolsAdded } : {},
@@ -78375,9 +78375,9 @@ async function finalizeExecutedToolCall(currentContext, assistantMessage, prepar
     durationMs: executed.durationMs
   };
 }
-function createErrorToolResult(message2) {
+function createErrorToolResult(message3) {
   return {
-    content: [{ type: "text", text: message2 }],
+    content: [{ type: "text", text: message3 }],
     details: {}
   };
 }
@@ -78422,7 +78422,7 @@ var init_agent_loop = __esm({
 
 // node_modules/@earendil-works/pi-agent-core/dist/agent.js
 function defaultConvertToLlm(messages) {
-  return messages.filter((message2) => message2.role === "system" || message2.role === "user" || message2.role === "assistant" || message2.role === "toolResult");
+  return messages.filter((message3) => message3.role === "system" || message3.role === "user" || message3.role === "assistant" || message3.role === "toolResult");
 }
 function createMutableAgentState(initialState) {
   let tools = initialState?.tools?.slice() ?? [];
@@ -78486,8 +78486,8 @@ var init_agent = __esm({
       constructor(mode) {
         this.mode = mode;
       }
-      enqueue(message2) {
-        this.messages.push(message2);
+      enqueue(message3) {
+        this.messages.push(message3);
       }
       hasItems() {
         return this.messages.length > 0;
@@ -78600,12 +78600,12 @@ var init_agent = __esm({
         return this.followUpQueue.mode;
       }
       /** Queue a message to be injected after the current assistant turn finishes. */
-      steer(message2) {
-        this.steeringQueue.enqueue(message2);
+      steer(message3) {
+        this.steeringQueue.enqueue(message3);
       }
       /** Queue a message to run only after the agent would otherwise stop. */
-      followUp(message2) {
-        this.followUpQueue.enqueue(message2);
+      followUp(message3) {
+        this.followUpQueue.enqueue(message3);
       }
       /** Remove all queued steering messages. */
       clearSteeringQueue() {
@@ -78672,7 +78672,7 @@ var init_agent = __esm({
           throw new Error("Agent is already processing. Wait for completion before continuing.");
         }
         const lastMessage = this._state.messages[this._state.messages.length - 1];
-        if (!lastMessage || this._state.messages.every((message2) => message2.role === "system")) {
+        if (!lastMessage || this._state.messages.every((message3) => message3.role === "system")) {
           throw new Error("No messages to continue from");
         }
         if (lastMessage.role === "assistant") {
@@ -79220,8 +79220,8 @@ var init_error3 = __esm({
       return AnthropicError2;
     })();
     APIError = class _APIError extends AnthropicError {
-      constructor(status, error2, message2, headers, type) {
-        super(`${_APIError.makeMessage(status, error2, message2)}`);
+      constructor(status, error2, message3, headers, type) {
+        super(`${_APIError.makeMessage(status, error2, message3)}`);
         this.status = status;
         this.headers = headers;
         this.requestID = headers?.get("request-id");
@@ -79229,8 +79229,8 @@ var init_error3 = __esm({
         this.error = error2;
         this.type = type ?? null;
       }
-      static makeMessage(status, error2, message2) {
-        const msg = error2?.message ? typeof error2.message === "string" ? error2.message : JSON.stringify(error2.message) : error2 ? JSON.stringify(error2) : message2;
+      static makeMessage(status, error2, message3) {
+        const msg = error2?.message ? typeof error2.message === "string" ? error2.message : JSON.stringify(error2.message) : error2 ? JSON.stringify(error2) : message3;
         if (status && msg) {
           return `${status} ${msg}`;
         }
@@ -79242,59 +79242,59 @@ var init_error3 = __esm({
         }
         return "(no status code or body)";
       }
-      static generate(status, errorResponse, message2, headers) {
+      static generate(status, errorResponse, message3, headers) {
         if (!status || !headers) {
-          return new APIConnectionError({ message: message2, cause: castToError(errorResponse) });
+          return new APIConnectionError({ message: message3, cause: castToError(errorResponse) });
         }
         const error2 = errorResponse;
         const type = error2?.["error"]?.["type"];
         if (status === 400) {
-          return new BadRequestError(status, error2, message2, headers, type);
+          return new BadRequestError(status, error2, message3, headers, type);
         }
         if (status === 401) {
-          return new AuthenticationError(status, error2, message2, headers, type);
+          return new AuthenticationError(status, error2, message3, headers, type);
         }
         if (status === 403) {
-          return new PermissionDeniedError(status, error2, message2, headers, type);
+          return new PermissionDeniedError(status, error2, message3, headers, type);
         }
         if (status === 404) {
-          return new NotFoundError(status, error2, message2, headers, type);
+          return new NotFoundError(status, error2, message3, headers, type);
         }
         if (status === 409) {
-          return new ConflictError(status, error2, message2, headers, type);
+          return new ConflictError(status, error2, message3, headers, type);
         }
         if (status === 422) {
-          return new UnprocessableEntityError(status, error2, message2, headers, type);
+          return new UnprocessableEntityError(status, error2, message3, headers, type);
         }
         if (status === 429) {
-          return new RateLimitError(status, error2, message2, headers, type);
+          return new RateLimitError(status, error2, message3, headers, type);
         }
         if (status >= 500) {
-          return new InternalServerError(status, error2, message2, headers, type);
+          return new InternalServerError(status, error2, message3, headers, type);
         }
-        return new _APIError(status, error2, message2, headers, type);
+        return new _APIError(status, error2, message3, headers, type);
       }
     };
     APIUserAbortError = class extends APIError {
-      constructor({ message: message2 } = {}) {
-        super(void 0, void 0, message2 || "Request was aborted.", void 0);
+      constructor({ message: message3 } = {}) {
+        super(void 0, void 0, message3 || "Request was aborted.", void 0);
       }
     };
     APIConnectionError = class extends APIError {
-      constructor({ message: message2, cause }) {
-        super(void 0, void 0, message2 || "Connection error.", void 0);
+      constructor({ message: message3, cause }) {
+        super(void 0, void 0, message3 || "Connection error.", void 0);
         if (cause)
           this.cause = cause;
       }
     };
     APIConnectionTimeoutError = class extends APIConnectionError {
-      constructor({ message: message2 } = {}) {
-        super({ message: message2 ?? "Request timed out." });
+      constructor({ message: message3 } = {}) {
+        super({ message: message3 ?? "Request timed out." });
       }
     };
     RetryableError = class extends AnthropicError {
-      constructor(message2, { cause } = {}) {
-        super(message2 ?? "Retryable error.");
+      constructor(message3, { cause } = {}) {
+        super(message3 ?? "Retryable error.");
         if (cause !== void 0)
           this.cause = cause;
       }
@@ -80232,8 +80232,8 @@ var init_types6 = __esm({
     MAX_ERROR_BODY_CHARS = 2e3;
     SAFE_ERROR_KEYS = /* @__PURE__ */ new Set(["error", "error_description", "error_uri"]);
     WorkloadIdentityError = class extends AnthropicError {
-      constructor(message2, statusCode = null, body = null, requestId = null) {
-        super(message2);
+      constructor(message3, statusCode = null, body = null, requestId = null) {
+        super(message3);
         this.statusCode = statusCode;
         this.body = body;
         this.requestId = requestId;
@@ -80454,11 +80454,11 @@ function defaultLogger() {
   }
   return cachedDefaultLogger;
 }
-function debugLogRequestDetails(logger, message2, details) {
+function debugLogRequestDetails(logger, message3, details) {
   if (logger.debug === noop3) {
     return;
   }
-  logger.debug(message2, formatRequestDetails(details));
+  logger.debug(message3, formatRequestDetails(details));
 }
 var defaultLogLevel, levelNumbers, parseLogLevel, noopLogger, cachedLoggers, lastEnvLevel, cachedDefaultLogger, formatRequestDetails;
 var init_log = __esm({
@@ -82581,11 +82581,11 @@ function collectStainlessHelpers(tools, messages) {
     }
   }
   if (messages) {
-    for (const message2 of messages) {
-      if (wasCreatedByStainlessHelper(message2)) {
-        helpers2.add(message2[SDK_HELPER_SYMBOL]);
+    for (const message3 of messages) {
+      if (wasCreatedByStainlessHelper(message3)) {
+        helpers2.add(message3[SDK_HELPER_SYMBOL]);
       }
-      const content = message2.content;
+      const content = message3.content;
       if (Array.isArray(content)) {
         for (const block of content) {
           if (wasCreatedByStainlessHelper(block)) {
@@ -83643,16 +83643,16 @@ var require_dist2 = __commonJS({
     var timing_safe_equal_1 = require_timing_safe_equal();
     var WEBHOOK_TOLERANCE_IN_SECONDS = 5 * 60;
     var ExtendableError = class _ExtendableError extends Error {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         Object.setPrototypeOf(this, _ExtendableError.prototype);
         this.name = "ExtendableError";
-        this.stack = new Error(message2).stack;
+        this.stack = new Error(message3).stack;
       }
     };
     var WebhookVerificationError = class _WebhookVerificationError extends ExtendableError {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         Object.setPrototypeOf(this, _WebhookVerificationError.prototype);
         this.name = "WebhookVerificationError";
       }
@@ -84297,12 +84297,12 @@ var init_ToolError = __esm({
     ToolError = /* @__PURE__ */ (() => {
       class ToolError2 extends Error {
         constructor(content) {
-          const message2 = typeof content === "string" ? content : content.map((block) => {
+          const message3 = typeof content === "string" ? content : content.map((block) => {
             if (block.type === "text")
               return block.text;
             return `[${block.type}]`;
           }).join(" ");
-          super(message2);
+          super(message3);
           this.name = "ToolError";
           this.content = content;
         }
@@ -84625,9 +84625,9 @@ var init_SessionToolRunner = __esm({
         for (const ev of unanswered)
           await __classPrivateFieldGet2(this, _SessionToolRunner_instances, "m", _SessionToolRunner_routeToolEvent).call(this, ev);
         for (const held of [...__classPrivateFieldGet2(this, _SessionToolRunner_awaitingConfirmation, "f").values()]) {
-          const verdict = __classPrivateFieldGet2(this, _SessionToolRunner_confirmationVerdicts, "f").get(held.id);
-          if (verdict !== void 0)
-            await __classPrivateFieldGet2(this, _SessionToolRunner_instances, "m", _SessionToolRunner_applyVerdict).call(this, held, verdict);
+          const verdict2 = __classPrivateFieldGet2(this, _SessionToolRunner_confirmationVerdicts, "f").get(held.id);
+          if (verdict2 !== void 0)
+            await __classPrivateFieldGet2(this, _SessionToolRunner_instances, "m", _SessionToolRunner_applyVerdict).call(this, held, verdict2);
         }
         const outstanding = unanswered.filter((ev) => !__classPrivateFieldGet2(this, _SessionToolRunner_answered, "f").has(ev.id) && !__classPrivateFieldGet2(this, _SessionToolRunner_awaitingConfirmation, "f").has(ev.id));
         if (lastWasEndTurn && outstanding.length === 0)
@@ -84688,8 +84688,8 @@ var init_SessionToolRunner = __esm({
        */
       async function _SessionToolRunner_routeToolEvent2(ev) {
         const permission = ev.evaluated_permission;
-        const verdict = permission === "deny" ? "deny" : __classPrivateFieldGet2(this, _SessionToolRunner_confirmationVerdicts, "f").get(ev.id);
-        if (verdict === void 0) {
+        const verdict2 = permission === "deny" ? "deny" : __classPrivateFieldGet2(this, _SessionToolRunner_confirmationVerdicts, "f").get(ev.id);
+        if (verdict2 === void 0) {
           if (permission === void 0 || permission === "allow") {
             await __classPrivateFieldGet2(this, _SessionToolRunner_instances, "m", _SessionToolRunner_execute).call(this, ev, void 0);
           } else if (!__classPrivateFieldGet2(this, _SessionToolRunner_awaitingConfirmation, "f").has(ev.id)) {
@@ -84704,7 +84704,7 @@ var init_SessionToolRunner = __esm({
           }
           return;
         }
-        await __classPrivateFieldGet2(this, _SessionToolRunner_instances, "m", _SessionToolRunner_applyVerdict).call(this, ev, verdict);
+        await __classPrivateFieldGet2(this, _SessionToolRunner_instances, "m", _SessionToolRunner_applyVerdict).call(this, ev, verdict2);
       }, _SessionToolRunner_noteConfirmation = /** Record an allow/deny verdict and release the held call it gates, if any. */
       async function _SessionToolRunner_noteConfirmation2(ev) {
         __classPrivateFieldGet2(this, _SessionToolRunner_confirmationVerdicts, "f").set(ev.tool_use_id, ev.result);
@@ -84721,9 +84721,9 @@ var init_SessionToolRunner = __esm({
        * until `#execute` has finished with it. The countdown must not run over
        * gated work that is still in flight.
        */
-      async function _SessionToolRunner_applyVerdict2(ev, verdict) {
+      async function _SessionToolRunner_applyVerdict2(ev, verdict2) {
         const wasHeld = __classPrivateFieldGet2(this, _SessionToolRunner_awaitingConfirmation, "f").delete(ev.id);
-        if (verdict === "allow") {
+        if (verdict2 === "allow") {
           __classPrivateFieldGet2(this, _SessionToolRunner_logger, "f").info("tool call confirmed", {
             component: "session-tool-runner",
             session_id: this.sessionId,
@@ -85745,8 +85745,8 @@ var init_memories = __esm({
     DELETE_CAP_FLOOR = 8;
     DELETE_CAP_CEILING = 50;
     SessionMemoryError = class extends AnthropicError {
-      constructor(message2, cause) {
-        super(message2);
+      constructor(message3, cause) {
+        super(message3);
         this.name = "SessionMemoryError";
         if (cause !== void 0)
           this.cause = cause;
@@ -88680,12 +88680,12 @@ var init_constants = __esm({
 function getOutputFormat(params) {
   return params?.output_format ?? params?.output_config?.format;
 }
-function maybeParseBetaMessage(message2, params, opts) {
+function maybeParseBetaMessage(message3, params, opts) {
   const outputFormat = getOutputFormat(params);
   if (!params || !("parse" in (outputFormat ?? {}))) {
     return {
-      ...message2,
-      content: message2.content.map((block) => {
+      ...message3,
+      content: message3.content.map((block) => {
         if (block.type === "text") {
           const parsedBlock = Object.defineProperty({ ...block }, "parsed_output", {
             value: null,
@@ -88704,11 +88704,11 @@ function maybeParseBetaMessage(message2, params, opts) {
       parsed_output: null
     };
   }
-  return parseBetaMessage(message2, params, opts);
+  return parseBetaMessage(message3, params, opts);
 }
-function parseBetaMessage(message2, params, opts) {
+function parseBetaMessage(message3, params, opts) {
   let firstParsedOutput = null;
-  const content = message2.content.map((block) => {
+  const content = message3.content.map((block) => {
     if (block.type === "text") {
       const parsedOutput = parseBetaOutputFormat(params, block.text);
       if (firstParsedOutput === null) {
@@ -88729,7 +88729,7 @@ function parseBetaMessage(message2, params, opts) {
     return block;
   });
   return {
-    ...message2,
+    ...message3,
     content,
     parsed_output: firstParsedOutput
   };
@@ -89151,8 +89151,8 @@ var init_BetaMessageStream = __esm({
         }
         static createMessage(messages, params, options, { logger } = {}) {
           const runner = new BetaMessageStream2(params, { logger });
-          for (const message2 of params.messages) {
-            runner._addMessageParam(message2);
+          for (const message3 of params.messages) {
+            runner._addMessageParam(message3);
           }
           __classPrivateFieldSet(runner, _BetaMessageStream_params, { ...params, stream: true }, "f");
           runner._run(() => runner._createMessage(messages, { ...params, stream: true }, { ...options, headers: { ...options?.headers, [STAINLESS_HELPER_METHOD_HEADER]: "stream" } }));
@@ -89164,13 +89164,13 @@ var init_BetaMessageStream = __esm({
             this._emit("end");
           }, __classPrivateFieldGet2(this, _BetaMessageStream_handleError, "f"));
         }
-        _addMessageParam(message2) {
-          this.messages.push(message2);
+        _addMessageParam(message3) {
+          this.messages.push(message3);
         }
-        _addMessage(message2, emit = true) {
-          this.receivedMessages.push(message2);
+        _addMessage(message3, emit = true) {
+          this.receivedMessages.push(message3);
           if (emit) {
-            this._emit("message", message2);
+            this._emit("message", message3);
           }
         }
         async _createMessage(messages, params, options) {
@@ -89696,8 +89696,8 @@ var init_BetaToolRunnerStream = __esm({
         /** Sends the request as `client.beta.messages.stream()` does. */
         static start(messages, params, options, onToolCall) {
           const stream12 = new BetaToolRunnerStream2({ ...params, stream: true }, onToolCall);
-          for (const message2 of params.messages) {
-            stream12._addMessageParam(message2);
+          for (const message3 of params.messages) {
+            stream12._addMessageParam(message3);
           }
           stream12._run(() => stream12._createMessage(messages, { ...params, stream: true }, { ...options, headers: { ...options?.headers, [STAINLESS_HELPER_METHOD_HEADER]: "stream" } }));
           return stream12;
@@ -90017,19 +90017,19 @@ var init_BetaToolRunner = __esm({
                 const { max_iterations, runToolsEagerly, ...params } = __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params;
                 yield* __classPrivateFieldGet2(this, _BetaToolRunner_instances, "m", _BetaToolRunner_send).call(this, params);
                 if (!__classPrivateFieldGet2(this, _BetaToolRunner_mutated, "f")) {
-                  const message2 = await __classPrivateFieldGet2(this, _BetaToolRunner_message, "f");
-                  const nextStep = determineNextStepFromStopReason(message2.stop_reason);
-                  __classPrivateFieldSet(this, _BetaToolRunner_lastStopReason, message2.stop_reason, "f");
+                  const message3 = await __classPrivateFieldGet2(this, _BetaToolRunner_message, "f");
+                  const nextStep = determineNextStepFromStopReason(message3.stop_reason);
+                  __classPrivateFieldSet(this, _BetaToolRunner_lastStopReason, message3.stop_reason, "f");
                   __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.messages.push({
-                    role: message2.role,
-                    content: asContentParam(message2.content)
+                    role: message3.role,
+                    content: asContentParam(message3.content)
                   });
                   const { container } = __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params;
-                  if (message2.container) {
+                  if (message3.container) {
                     if (container == null) {
-                      __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.container = message2.container.id;
+                      __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.container = message3.container.id;
                     } else if (typeof container === "object" && container.id == null) {
-                      __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.container = { ...container, id: message2.container.id };
+                      __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.container = { ...container, id: message3.container.id };
                     }
                   }
                   if (nextStep === "stop") {
@@ -90104,11 +90104,11 @@ var init_BetaToolRunner = __esm({
          * }
          */
         async generateToolResponse(signal = __classPrivateFieldGet2(this, _BetaToolRunner_options, "f").signal) {
-          const message2 = await __classPrivateFieldGet2(this, _BetaToolRunner_message, "f") ?? this.params.messages.at(-1);
-          if (!message2) {
+          const message3 = await __classPrivateFieldGet2(this, _BetaToolRunner_message, "f") ?? this.params.messages.at(-1);
+          if (!message3) {
             return null;
           }
-          return __classPrivateFieldGet2(this, _BetaToolRunner_instances, "m", _BetaToolRunner_generateToolResponse).call(this, message2, signal);
+          return __classPrivateFieldGet2(this, _BetaToolRunner_instances, "m", _BetaToolRunner_generateToolResponse).call(this, message3, signal);
         }
         /**
          * Hold a tool call of the current reply until you are done with the reply, which is when it runs without
@@ -90359,10 +90359,10 @@ var init_BetaToolRunner = __esm({
         const lastMessage = __classPrivateFieldGet2(this, _BetaToolRunner_message, "f");
         try {
           yield* __classPrivateFieldGet2(this, _BetaToolRunner_instances, "m", _BetaToolRunner_send).call(this, { ...params, compaction });
-          const message2 = await __classPrivateFieldGet2(this, _BetaToolRunner_message, "f");
-          if (message2.content.some((block) => block.type === "compaction" && block.content)) {
+          const message3 = await __classPrivateFieldGet2(this, _BetaToolRunner_message, "f");
+          if (message3.content.some((block) => block.type === "compaction" && block.content)) {
             __classPrivateFieldGet2(this, _BetaToolRunner_instances, "m", _BetaToolRunner_recordRemovalsFromHistory).call(this);
-            __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.messages = [{ role: message2.role, content: message2.content }];
+            __classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.messages = [{ role: message3.role, content: message3.content }];
           } else {
             loggerFor(this.client).warn("Compaction produced no summary; keeping the conversation as it is.");
             __classPrivateFieldSet(this, _BetaToolRunner_message, lastMessage, "f");
@@ -90387,14 +90387,14 @@ var init_BetaToolRunner = __esm({
         return runnable;
       }, _BetaToolRunner_availableToolNames = function _BetaToolRunner_availableToolNames2() {
         const available = new Set(__classPrivateFieldGet2(this, _BetaToolRunner_instances, "m", _BetaToolRunner_runnableTools).call(this).keys());
-        for (const message2 of [...__classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.messages, __classPrivateFieldGet2(this, _BetaToolRunner_instances, "m", _BetaToolRunner_pendingToolChangesMessage).call(this)]) {
-          if (typeof message2.content === "string") {
+        for (const message3 of [...__classPrivateFieldGet2(this, _BetaToolRunner_state, "f").params.messages, __classPrivateFieldGet2(this, _BetaToolRunner_instances, "m", _BetaToolRunner_pendingToolChangesMessage).call(this)]) {
+          if (typeof message3.content === "string") {
             continue;
           }
-          for (const block of message2.content) {
-            if (message2.role === "system") {
+          for (const block of message3.content) {
+            if (message3.role === "system") {
               applyToolChange(block, available);
-            } else if (message2.role === "assistant" && block.type === "compaction") {
+            } else if (message3.role === "assistant" && block.type === "compaction") {
               for (const change of block.tool_changes ?? []) {
                 applyToolChange(change, available);
               }
@@ -90548,7 +90548,7 @@ Please migrate to a newer model. Visit https://docs.anthropic.com/en/docs/resour
               options?.headers
             ])
           };
-          return this.create(params, options).then((message2) => parseBetaMessage(message2, params, { logger: this._client.logger ?? console }));
+          return this.create(params, options).then((message3) => parseBetaMessage(message3, params, { logger: this._client.logger ?? console }));
         }
         /**
          * Create a Message stream
@@ -94166,12 +94166,12 @@ var init_files2 = __esm({
 function getOutputFormat2(params) {
   return params?.output_config?.format;
 }
-function maybeParseMessage(message2, params, opts) {
+function maybeParseMessage(message3, params, opts) {
   const outputFormat = getOutputFormat2(params);
   if (!params || !("parse" in (outputFormat ?? {}))) {
     return {
-      ...message2,
-      content: message2.content.map((block) => {
+      ...message3,
+      content: message3.content.map((block) => {
         if (block.type === "text") {
           const parsedBlock = Object.defineProperty({ ...block }, "parsed_output", {
             value: null,
@@ -94184,11 +94184,11 @@ function maybeParseMessage(message2, params, opts) {
       parsed_output: null
     };
   }
-  return parseMessage(message2, params, opts);
+  return parseMessage(message3, params, opts);
 }
-function parseMessage(message2, params, opts) {
+function parseMessage(message3, params, opts) {
   let firstParsedOutput = null;
-  const content = message2.content.map((block) => {
+  const content = message3.content.map((block) => {
     if (block.type === "text") {
       const parsedOutput = parseOutputFormat(params, block.text);
       if (firstParsedOutput === null) {
@@ -94203,7 +94203,7 @@ function parseMessage(message2, params, opts) {
     return block;
   });
   return {
-    ...message2,
+    ...message3,
     content,
     parsed_output: firstParsedOutput
   };
@@ -94351,8 +94351,8 @@ var init_MessageStream = __esm({
         }
         static createMessage(messages, params, options, { logger } = {}) {
           const runner = new MessageStream2(params, { logger });
-          for (const message2 of params.messages) {
-            runner._addMessageParam(message2);
+          for (const message3 of params.messages) {
+            runner._addMessageParam(message3);
           }
           __classPrivateFieldSet(runner, _MessageStream_params, { ...params, stream: true }, "f");
           runner._run(() => runner._createMessage(messages, { ...params, stream: true }, { ...options, headers: { ...options?.headers, [STAINLESS_HELPER_METHOD_HEADER]: "stream" } }));
@@ -94364,13 +94364,13 @@ var init_MessageStream = __esm({
             this._emit("end");
           }, __classPrivateFieldGet2(this, _MessageStream_handleError, "f"));
         }
-        _addMessageParam(message2) {
-          this.messages.push(message2);
+        _addMessageParam(message3) {
+          this.messages.push(message3);
         }
-        _addMessage(message2, emit = true) {
-          this.receivedMessages.push(message2);
+        _addMessage(message3, emit = true) {
+          this.receivedMessages.push(message3);
           if (emit) {
-            this._emit("message", message2);
+            this._emit("message", message3);
           }
         }
         async _createMessage(messages, params, options) {
@@ -95086,7 +95086,7 @@ Please migrate to a newer model. Visit https://docs.anthropic.com/en/docs/resour
          * ```
          */
         parse(params, options) {
-          return this.create(params, options).then((message2) => parseMessage(message2, params, { logger: this._client.logger ?? console }));
+          return this.create(params, options).then((message3) => parseMessage(message3, params, { logger: this._client.logger ?? console }));
         }
         /**
          * Create a Message stream.
@@ -95780,8 +95780,8 @@ var init_client = __esm({
         getUserAgent() {
           return `Anthropic/JS ${VERSION8}`;
         }
-        makeStatusError(status, error2, message2, headers) {
-          return APIError.generate(status, error2, message2, headers);
+        makeStatusError(status, error2, message3, headers) {
+          return APIError.generate(status, error2, message3, headers);
         }
         buildURL(path19, query, defaultBaseURL) {
           const baseURL = !__classPrivateFieldGet2(this, _BaseAnthropic_instances, "m", _BaseAnthropic_baseURLOverridden).call(this) && defaultBaseURL || this.baseURL;
@@ -96687,8 +96687,8 @@ function prefersJsonSchemaStrictSampling(tool) {
   const config = tool.constrainedSampling;
   return !!config && config.type === "json_schema" && config.strict === "prefer";
 }
-function isStrictToolLimitErrorMessage(message2) {
-  return STRICT_TOOL_LIMIT_ERROR_MESSAGES.some((limitMessage) => message2.includes(limitMessage));
+function isStrictToolLimitErrorMessage(message3) {
+  return STRICT_TOOL_LIMIT_ERROR_MESSAGES.some((limitMessage) => message3.includes(limitMessage));
 }
 function getJsonSchemaToolParameters(tool, strict) {
   return strict === true ? makeStrictJsonSchema(tool.parameters) : tool.parameters;
@@ -96790,8 +96790,8 @@ function resolveGrammarConstrainedSampling(tool, supportsOpenAIGrammarTools) {
       inputProperty: inferGrammarInputProperty(tool)
     };
   } catch (error2) {
-    const message2 = error2 instanceof Error ? error2.message : String(error2);
-    throw new Error(`Tool "${tool.name}" cannot use grammar constrained sampling: ${message2}.`);
+    const message3 = error2 instanceof Error ? error2.message : String(error2);
+    throw new Error(`Tool "${tool.name}" cannot use grammar constrained sampling: ${message3}.`);
   }
 }
 function createGrammarToolInputProperties(tools, supportsOpenAIGrammarTools) {
@@ -96891,16 +96891,16 @@ function estimateTextTokens(text) {
 function estimateTextAndImageContentTokens(content) {
   return Math.ceil(estimateTextAndImageContentChars(content) / CHARS_PER_TOKEN);
 }
-function estimateMessageTokens(message2) {
+function estimateMessageTokens(message3) {
   let chars = 0;
-  if (message2.role === "system") {
-    return estimateTextTokens(getSystemMessageText(message2)) + estimateToolsTokens(message2.toolsAdded) + estimateToolsTokens(message2.toolsRemoved);
+  if (message3.role === "system") {
+    return estimateTextTokens(getSystemMessageText(message3)) + estimateToolsTokens(message3.toolsAdded) + estimateToolsTokens(message3.toolsRemoved);
   }
-  if (message2.role === "user")
-    return estimateTextAndImageContentTokens(message2.content);
-  if (message2.role === "toolResult")
-    return estimateTextAndImageContentTokens(message2.content);
-  for (const block of message2.content) {
+  if (message3.role === "user")
+    return estimateTextAndImageContentTokens(message3.content);
+  if (message3.role === "toolResult")
+    return estimateTextAndImageContentTokens(message3.content);
+  for (const block of message3.content) {
     if (block.type === "text") {
       chars += block.text.length;
     } else if (block.type === "thinking") {
@@ -96915,15 +96915,15 @@ function getLastAssistantUsageInfo(messages) {
   let latestPrefixTimestamp = Number.NEGATIVE_INFINITY;
   let usageInfo;
   for (let i2 = 0; i2 < messages.length; i2++) {
-    const message2 = messages[i2];
-    if (message2.role === "assistant") {
-      const assistant = message2;
+    const message3 = messages[i2];
+    if (message3.role === "assistant") {
+      const assistant = message3;
       const usageAppliesToPrefix = assistant.timestamp >= latestPrefixTimestamp;
       if (usageAppliesToPrefix && assistant.stopReason !== "aborted" && assistant.stopReason !== "error" && calculateContextTokens(assistant.usage) > 0) {
         usageInfo = { usage: assistant.usage, index: i2 };
       }
     }
-    latestPrefixTimestamp = Math.max(latestPrefixTimestamp, message2.timestamp);
+    latestPrefixTimestamp = Math.max(latestPrefixTimestamp, message3.timestamp);
   }
   return usageInfo;
 }
@@ -96939,8 +96939,8 @@ function estimateContextTokens(context4) {
     return { tokens: usageTokens + trailingTokens, usageTokens, trailingTokens, lastUsageIndex: usageInfo.index };
   }
   let tokens = 0;
-  for (const message2 of messages)
-    tokens += estimateMessageTokens(message2);
+  for (const message3 of messages)
+    tokens += estimateMessageTokens(message3);
   return { tokens, usageTokens: 0, trailingTokens: tokens, lastUsageIndex: null };
 }
 function estimateToolsTokens(tools) {
@@ -97460,8 +97460,8 @@ async function* iterateAnthropicEvents(response, signal) {
       }
       yield event;
     } catch (error2) {
-      const message2 = error2 instanceof Error ? error2.message : String(error2);
-      throw new Error(`Could not parse Anthropic SSE event ${sse2.event}: ${message2}; data=${sse2.data}; raw=${sse2.raw.join("\\n")}`);
+      const message3 = error2 instanceof Error ? error2.message : String(error2);
+      throw new Error(`Could not parse Anthropic SSE event ${sse2.event}: ${message3}; data=${sse2.data}; raw=${sse2.raw.join("\\n")}`);
     }
   }
   if (sawMessageStart && !sawMessageEnd) {
@@ -98469,8 +98469,8 @@ var init_error5 = __esm({
     OpenAIError = class extends Error {
     };
     APIError2 = class _APIError extends OpenAIError {
-      constructor(status, error2, message2, headers) {
-        super(`${_APIError.makeMessage(status, error2, message2)}`);
+      constructor(status, error2, message3, headers) {
+        super(`${_APIError.makeMessage(status, error2, message3)}`);
         this.status = status;
         this.headers = headers;
         this.requestID = headers?.get("x-request-id");
@@ -98480,8 +98480,8 @@ var init_error5 = __esm({
         this.param = data?.["param"];
         this.type = data?.["type"];
       }
-      static makeMessage(status, error2, message2) {
-        const msg = error2?.message ? typeof error2.message === "string" ? error2.message : JSON.stringify(error2.message) : error2 ? JSON.stringify(error2) : message2;
+      static makeMessage(status, error2, message3) {
+        const msg = error2?.message ? typeof error2.message === "string" ? error2.message : JSON.stringify(error2.message) : error2 ? JSON.stringify(error2) : message3;
         if (status && msg) {
           return `${status} ${msg}`;
         }
@@ -98493,53 +98493,53 @@ var init_error5 = __esm({
         }
         return "(no status code or body)";
       }
-      static generate(status, errorResponse, message2, headers) {
+      static generate(status, errorResponse, message3, headers) {
         if (!status || !headers) {
-          return new APIConnectionError2({ message: message2, cause: castToError2(errorResponse) });
+          return new APIConnectionError2({ message: message3, cause: castToError2(errorResponse) });
         }
         const error2 = errorResponse?.["error"];
         if (status === 400) {
-          return new BadRequestError2(status, error2, message2, headers);
+          return new BadRequestError2(status, error2, message3, headers);
         }
         if (status === 401) {
-          return new AuthenticationError2(status, error2, message2, headers);
+          return new AuthenticationError2(status, error2, message3, headers);
         }
         if (status === 403) {
-          return new PermissionDeniedError2(status, error2, message2, headers);
+          return new PermissionDeniedError2(status, error2, message3, headers);
         }
         if (status === 404) {
-          return new NotFoundError2(status, error2, message2, headers);
+          return new NotFoundError2(status, error2, message3, headers);
         }
         if (status === 409) {
-          return new ConflictError2(status, error2, message2, headers);
+          return new ConflictError2(status, error2, message3, headers);
         }
         if (status === 422) {
-          return new UnprocessableEntityError2(status, error2, message2, headers);
+          return new UnprocessableEntityError2(status, error2, message3, headers);
         }
         if (status === 429) {
-          return new RateLimitError2(status, error2, message2, headers);
+          return new RateLimitError2(status, error2, message3, headers);
         }
         if (status >= 500) {
-          return new InternalServerError2(status, error2, message2, headers);
+          return new InternalServerError2(status, error2, message3, headers);
         }
-        return new _APIError(status, error2, message2, headers);
+        return new _APIError(status, error2, message3, headers);
       }
     };
     APIUserAbortError2 = class extends APIError2 {
-      constructor({ message: message2 } = {}) {
-        super(void 0, void 0, message2 || "Request was aborted.", void 0);
+      constructor({ message: message3 } = {}) {
+        super(void 0, void 0, message3 || "Request was aborted.", void 0);
       }
     };
     APIConnectionError2 = class extends APIError2 {
-      constructor({ message: message2, cause }) {
-        super(void 0, void 0, message2 || "Connection error.", void 0);
+      constructor({ message: message3, cause }) {
+        super(void 0, void 0, message3 || "Connection error.", void 0);
         if (cause)
           this.cause = cause;
       }
     };
     APIConnectionTimeoutError2 = class extends APIConnectionError2 {
-      constructor({ message: message2 } = {}) {
-        super({ message: message2 ?? "Request timed out." });
+      constructor({ message: message3 } = {}) {
+        super({ message: message3 ?? "Request timed out." });
       }
     };
     BadRequestError2 = class extends APIError2 {
@@ -98569,8 +98569,8 @@ var init_error5 = __esm({
       }
     };
     InvalidWebhookSignatureError = class extends Error {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
       }
     };
     OAuthError = class extends APIError2 {
@@ -98592,8 +98592,8 @@ var init_error5 = __esm({
       }
     };
     SubjectTokenProviderError = class extends OpenAIError {
-      constructor(message2, provider2, cause) {
-        super(message2);
+      constructor(message3, provider2, cause) {
+        super(message3);
         this.provider = provider2;
         this.cause = cause;
       }
@@ -99821,9 +99821,9 @@ function asAbortError(error2, signal) {
   if (!signal.aborted || error2 !== signal.reason || isAbortError2(error2)) {
     return error2;
   }
-  const message2 = "This operation was aborted";
+  const message3 = "This operation was aborted";
   const DOMExceptionConstructor = globalThis.DOMException;
-  return typeof DOMExceptionConstructor === "function" ? new DOMExceptionConstructor(message2, "AbortError") : Object.assign(new Error(message2), { name: "AbortError" });
+  return typeof DOMExceptionConstructor === "function" ? new DOMExceptionConstructor(message3, "AbortError") : Object.assign(new Error(message3), { name: "AbortError" });
 }
 function addRequestID(value2, response) {
   if (!value2 || typeof value2 !== "object" || Array.isArray(value2)) {
@@ -102674,8 +102674,8 @@ var init_parser4 = __esm({
 var isAssistantMessage, isToolMessage;
 var init_chatCompletionUtils = __esm({
   "node_modules/openai/lib/chatCompletionUtils.mjs"() {
-    isAssistantMessage = (message2) => message2?.role === "assistant";
-    isToolMessage = (message2) => message2?.role === "tool";
+    isAssistantMessage = (message3) => message3?.role === "assistant";
+    isToolMessage = (message3) => message3?.role === "tool";
   }
 });
 
@@ -104162,28 +104162,28 @@ function normalizeToolCallIds(chatCompletion) {
     }
   }
 }
-function toRequestMessage(message2) {
-  if (!isAssistantMessage(message2)) {
-    return message2;
+function toRequestMessage(message3) {
+  if (!isAssistantMessage(message3)) {
+    return message3;
   }
   const requestMessage = { role: "assistant" };
-  if (message2.audio != null) {
-    requestMessage.audio = { id: message2.audio.id };
+  if (message3.audio != null) {
+    requestMessage.audio = { id: message3.audio.id };
   }
-  if (message2.content !== void 0) {
-    requestMessage.content = message2.content;
+  if (message3.content !== void 0) {
+    requestMessage.content = message3.content;
   }
-  if (message2.function_call != null) {
-    requestMessage.function_call = message2.function_call;
+  if (message3.function_call != null) {
+    requestMessage.function_call = message3.function_call;
   }
-  if (message2.name !== void 0) {
-    requestMessage.name = message2.name;
+  if (message3.name !== void 0) {
+    requestMessage.name = message3.name;
   }
-  if (message2.refusal != null) {
-    requestMessage.refusal = message2.refusal;
+  if (message3.refusal != null) {
+    requestMessage.refusal = message3.refusal;
   }
-  if (message2.tool_calls !== void 0) {
-    requestMessage.tool_calls = message2.tool_calls.map((toolCall) => {
+  if (message3.tool_calls !== void 0) {
+    requestMessage.tool_calls = message3.tool_calls.map((toolCall) => {
       if (toolCall.type === "custom") {
         return {
           id: toolCall.id,
@@ -104231,23 +104231,23 @@ var init_AbstractChatCompletionRunner = __esm({
         normalizeToolCallIds(chatCompletion);
         this._chatCompletions.push(chatCompletion);
         this._emit("chatCompletion", chatCompletion);
-        const message2 = chatCompletion.choices[0]?.message;
-        if (message2) {
-          this._addMessage(message2);
+        const message3 = chatCompletion.choices[0]?.message;
+        if (message3) {
+          this._addMessage(message3);
         }
         return chatCompletion;
       }
-      _addMessage(message2, emit = true, normalizeContent = true) {
-        if (normalizeContent && !("content" in message2)) {
-          message2.content = null;
+      _addMessage(message3, emit = true, normalizeContent = true) {
+        if (normalizeContent && !("content" in message3)) {
+          message3.content = null;
         }
-        this.messages.push(message2);
+        this.messages.push(message3);
         if (emit) {
-          this._emit("message", message2);
-          if (isToolMessage(message2) && message2.content) {
-            this._emit("functionToolCallResult", message2.content);
-          } else if (isAssistantMessage(message2) && message2.tool_calls) {
-            for (const tool_call of message2.tool_calls) {
+          this._emit("message", message3);
+          if (isToolMessage(message3) && message3.content) {
+            this._emit("functionToolCallResult", message3.content);
+          } else if (isAssistantMessage(message3) && message3.tool_calls) {
+            for (const tool_call of message3.tool_calls) {
               if (tool_call.type === "function") {
                 this._emit("functionToolCall", tool_call.function);
               }
@@ -104341,8 +104341,8 @@ var init_AbstractChatCompletionRunner = __esm({
         return this._addChatCompletion(parseChatCompletion(chatCompletion, params));
       }
       async _runChatCompletion(client, params, options) {
-        for (const message2 of params.messages) {
-          this._addMessage(message2, false, false);
+        for (const message3 of params.messages) {
+          this._addMessage(message3, false, false);
         }
         return await this._createChatCompletion(client, params, options);
       }
@@ -104401,8 +104401,8 @@ var init_AbstractChatCompletionRunner = __esm({
           // oxlint-disable-next-line anti-slop/no-chained-type-assertions -- Preserve the existing non-function tool pass-through; runnable and wire schema interfaces have incompatible index signatures.
           t2
         )) : void 0;
-        for (const message2 of params.messages) {
-          this._addMessage(message2, false, false);
+        for (const message3 of params.messages) {
+          this._addMessage(message3, false, false);
         }
         let allowBufferedToolCall = false;
         const runToolCall3 = async (toolCall) => {
@@ -104469,16 +104469,16 @@ var init_AbstractChatCompletionRunner = __esm({
             messages: this.messages.map(toRequestMessage)
           }, options);
           allowBufferedToolCall = this.controller.signal.aborted && __classPrivateFieldGet3(this, _AbstractChatCompletionRunner_completionArrivedBeforeAbort, "f");
-          const message2 = chatCompletion.choices[0]?.message;
-          if (!message2) {
+          const message3 = chatCompletion.choices[0]?.message;
+          if (!message3) {
             throw new OpenAIError(`missing message in ChatCompletion response`);
           }
-          if (!message2.tool_calls?.length) {
+          if (!message3.tool_calls?.length) {
             await runAfterCompletion(chatCompletion);
             return;
           }
           if (singleFunctionToCall || params.parallel_tool_calls === false) {
-            for (const toolCall of message2.tool_calls) {
+            for (const toolCall of message3.tool_calls) {
               const result = await runToolCall3(toolCall);
               if (result.message) {
                 this._addMessage(result.message);
@@ -104492,7 +104492,7 @@ var init_AbstractChatCompletionRunner = __esm({
               }
             }
           } else {
-            const results = await Promise.allSettled(message2.tool_calls.map(runToolCall3));
+            const results = await Promise.allSettled(message3.tool_calls.map(runToolCall3));
             if (!this.controller.signal.aborted) {
               for (const result of results) {
                 if (result.status === "rejected") {
@@ -104518,12 +104518,12 @@ var init_AbstractChatCompletionRunner = __esm({
     }, _AbstractChatCompletionRunner_getFinalMessage = function _AbstractChatCompletionRunner_getFinalMessage2() {
       let i2 = this.messages.length;
       while (i2-- > 0) {
-        const message2 = this.messages[i2];
-        if (isAssistantMessage(message2)) {
+        const message3 = this.messages[i2];
+        if (isAssistantMessage(message3)) {
           const ret = {
-            ...message2,
-            content: message2.content ?? null,
-            refusal: message2.refusal ?? null
+            ...message3,
+            content: message3.content ?? null,
+            refusal: message3.refusal ?? null
           };
           return ret;
         }
@@ -104531,10 +104531,10 @@ var init_AbstractChatCompletionRunner = __esm({
       throw new OpenAIError("stream ended without producing a ChatCompletionMessage with role=assistant");
     }, _AbstractChatCompletionRunner_getFinalFunctionToolCall = function _AbstractChatCompletionRunner_getFinalFunctionToolCall2() {
       for (let i2 = this.messages.length - 1; i2 >= 0; i2--) {
-        const message2 = this.messages[i2];
-        if (isAssistantMessage(message2) && message2?.tool_calls?.length) {
-          for (let j2 = message2.tool_calls.length - 1; j2 >= 0; j2--) {
-            const toolCall = message2.tool_calls[j2];
+        const message3 = this.messages[i2];
+        if (isAssistantMessage(message3) && message3?.tool_calls?.length) {
+          for (let j2 = message3.tool_calls.length - 1; j2 >= 0; j2--) {
+            const toolCall = message3.tool_calls[j2];
             if (toolCall?.type === "function") {
               return toolCall.function;
             }
@@ -104544,10 +104544,10 @@ var init_AbstractChatCompletionRunner = __esm({
       return void 0;
     }, _AbstractChatCompletionRunner_getFinalFunctionToolCallResult = function _AbstractChatCompletionRunner_getFinalFunctionToolCallResult2() {
       for (let i2 = this.messages.length - 1; i2 >= 0; i2--) {
-        const message2 = this.messages[i2];
-        if (isToolMessage(message2) && message2.content != null && // oxlint-disable-next-line anti-slop/no-runtime-typeof -- Chat history and tool-choice inputs can contain runtime variants that select different runner behavior.
-        typeof message2.content === "string" && this.messages.some((x3) => x3.role === "assistant" && x3.tool_calls?.some((y2) => y2.type === "function" && y2.id === message2.tool_call_id))) {
-          return message2.content;
+        const message3 = this.messages[i2];
+        if (isToolMessage(message3) && message3.content != null && // oxlint-disable-next-line anti-slop/no-runtime-typeof -- Chat history and tool-choice inputs can contain runtime variants that select different runner behavior.
+        typeof message3.content === "string" && this.messages.some((x3) => x3.role === "assistant" && x3.tool_calls?.some((y2) => y2.type === "function" && y2.id === message3.tool_call_id))) {
+          return message3.content;
         }
       }
       return void 0;
@@ -104606,10 +104606,10 @@ var init_ChatCompletionRunner = __esm({
        * Appends a conversation message and emits text content for assistant replies.
        * @param normalizeContent Defaults to true; initial history passes false to preserve caller-owned messages.
        */
-      _addMessage(message2, emit = true, normalizeContent = true) {
-        super._addMessage(message2, emit, normalizeContent);
-        if (emit && isAssistantMessage(message2) && message2.content) {
-          this._emit("content", message2.content);
+      _addMessage(message3, emit = true, normalizeContent = true) {
+        super._addMessage(message3, emit, normalizeContent);
+        if (emit && isAssistantMessage(message3) && message3.content) {
+          this._emit("content", message3.content);
         }
       }
     };
@@ -104864,10 +104864,10 @@ function parseStructuredStreamingJSON(content) {
     throw error2;
   }
 }
-function makeChatCompletionReadableStreamMessageChunk(chunk, message2, toolCallIds) {
+function makeChatCompletionReadableStreamMessageChunk(chunk, message3, toolCallIds) {
   const payload = {
     type: "message",
-    message: message2,
+    message: message3,
     // Spread creates an own data property without invoking inherited setters or changing the object prototype.
     ...toolCallIds ? { tool_call_ids: toolCallIds } : {}
   };
@@ -105540,7 +105540,7 @@ function finalizeChatCompletion(snapshot, params, audioDoneChoiceIndexes, valida
         }
       });
       const { message: sourceMessage, finish_reason, index: index3, logprobs, ...choiceRest } = stableChoice;
-      const message2 = new Proxy(sourceMessage, {
+      const message3 = new Proxy(sourceMessage, {
         get(target, property, receiver) {
           if (property === "content") {
             return validated.content;
@@ -105554,13 +105554,13 @@ function finalizeChatCompletion(snapshot, params, audioDoneChoiceIndexes, valida
           return Reflect.get(target, property, receiver);
         }
       });
-      const { content = null, function_call, tool_calls, audio, ...messageRest } = message2;
+      const { content = null, function_call, tool_calls, audio, ...messageRest } = message3;
       const finishReason = finish_reason ?? (audioDoneChoiceIndexes.has(index3) && isCompleteAudio(audio) ? "stop" : null);
       if (!finishReason) {
         throw new OpenAIError(`missing finish_reason for choice ${index3}`);
       }
       const audioResponse = audio ? { audio } : {};
-      const role = message2.role;
+      const role = message3.role;
       if (!role) {
         throw new OpenAIError(`missing role for choice ${index3}`);
       }
@@ -105579,7 +105579,7 @@ function finalizeChatCompletion(snapshot, params, audioDoneChoiceIndexes, valida
             content,
             function_call: { arguments: args, name },
             role,
-            refusal: message2.refusal ?? null
+            refusal: message3.refusal ?? null
           },
           finish_reason: finishReason,
           index: index3,
@@ -105597,7 +105597,7 @@ function finalizeChatCompletion(snapshot, params, audioDoneChoiceIndexes, valida
             ...audioResponse,
             role,
             content,
-            refusal: message2.refusal ?? null,
+            refusal: message3.refusal ?? null,
             tool_calls: mapCapturedSnapshotArray(tool_calls, MAX_STREAM_TOOL_CALLS, "tool-call", (tool_call, i2) => {
               const captured = validated.toolCalls.get(i2);
               if (!captured) {
@@ -105670,7 +105670,7 @@ function finalizeChatCompletion(snapshot, params, audioDoneChoiceIndexes, valida
       }
       return {
         ...choiceRest,
-        message: { ...messageRest, ...audioResponse, content, role, refusal: message2.refusal ?? null },
+        message: { ...messageRest, ...audioResponse, content, role, refusal: message3.refusal ?? null },
         finish_reason: finishReason,
         index: index3,
         logprobs
@@ -105816,10 +105816,10 @@ var init_ChatCompletionStream = __esm({
             throw new APIError2(void 0, item.error, void 0, void 0);
           }
           if (isChatCompletionReadableStreamMessage(item)) {
-            const message2 = getChatCompletionReadableStreamMessage(item);
+            const message3 = getChatCompletionReadableStreamMessage(item);
             if (__classPrivateFieldGet3(this, _ChatCompletionStream_currentChatCompletionSnapshot, "f")) {
               const toolCalls = __classPrivateFieldGet3(this, _ChatCompletionStream_currentChatCompletionSnapshot, "f").choices[0]?.message.tool_calls;
-              for (const [index3, id] of message2.tool_call_ids?.entries() ?? []) {
+              for (const [index3, id] of message3.tool_call_ids?.entries() ?? []) {
                 const toolCall = toolCalls?.[index3];
                 if (toolCall && id) {
                   toolCall.id = id;
@@ -105828,7 +105828,7 @@ var init_ChatCompletionStream = __esm({
               this._addChatCompletion(__classPrivateFieldGet3(this, _ChatCompletionStream_instances, "m", _ChatCompletionStream_endRequest).call(this));
               chatId = void 0;
             }
-            this._addMessage(message2.message);
+            this._addMessage(message3.message);
             continue;
           }
           const chunk = item;
@@ -106061,13 +106061,13 @@ var init_ChatCompletionStream = __esm({
           if (!choice) {
             continue;
           }
-          const message2 = captureStructuredMessageSnapshot(choice);
-          const refusal = captureStructuredJSONSnapshot(message2, "refusal");
-          const content = captureStructuredJSONSnapshot(message2, "content");
+          const message3 = captureStructuredMessageSnapshot(choice);
+          const refusal = captureStructuredJSONSnapshot(message3, "refusal");
+          const content = captureStructuredJSONSnapshot(message3, "content");
           const validatedTools = /* @__PURE__ */ new Map();
-          const toolCalls = captureSnapshotArray(message2, "tool_calls", MAX_STREAM_TOOL_CALLS, "tool-call");
+          const toolCalls = captureSnapshotArray(message3, "tool_calls", MAX_STREAM_TOOL_CALLS, "tool-call");
           validatedMessages.set(choice, Object.freeze({
-            message: message2,
+            message: message3,
             content,
             refusal,
             toolCallCollection: toolCalls,
@@ -106419,16 +106419,16 @@ var init_ChatCompletionStreamingRunner = __esm({
             lastChunk = chunk;
             push(chunk);
           };
-          const onMessage = (message2) => {
-            if (isAssistantMessage(message2)) {
-              toolCallIds = message2.tool_calls?.map((toolCall) => toolCall.id);
+          const onMessage = (message3) => {
+            if (isAssistantMessage(message3)) {
+              toolCallIds = message3.tool_calls?.map((toolCall) => toolCall.id);
               return;
             }
-            if (isToolMessage(message2)) {
+            if (isToolMessage(message3)) {
               if (!lastChunk) {
                 throw new OpenAIError("cannot serialize a tool message before receiving any chunks");
               }
-              push(makeChatCompletionReadableStreamMessageChunk(lastChunk, message2, toolCallIds));
+              push(makeChatCompletionReadableStreamMessageChunk(lastChunk, message3, toolCallIds));
               toolCallIds = void 0;
             }
           };
@@ -117653,9 +117653,9 @@ var init_client2 = __esm({
       defaultIdempotencyKey() {
         return `stainless-node-retry-${uuid42()}`;
       }
-      makeStatusError(status, error2, message2, headers) {
+      makeStatusError(status, error2, message3, headers) {
         const normalizedError = error2 && typeof error2 === "object" && error2.error == null ? { error: error2 } : error2;
-        return APIError2.generate(status, normalizedError, message2, headers);
+        return APIError2.generate(status, normalizedError, message3, headers);
       }
       _hasApiKeyProvider() {
         return typeof this._options.apiKey === "function";
@@ -118892,8 +118892,8 @@ function convertResponsesMessages(model2, context4, allowedToolCallProviders, op
   const transcriptTools = resolveTranscriptTools(normalizedContext.messages, toolSupport);
   let declaredAdditionalTools = false;
   const unavailableTools = /* @__PURE__ */ new Set();
-  const appendSystemToolAdditions = (message2, seed) => {
-    const tools = message2.toolsAdded ?? [];
+  const appendSystemToolAdditions = (message3, seed) => {
+    const tools = message3.toolsAdded ?? [];
     for (const tool of tools)
       unavailableTools.delete(tool.name);
     if (tools.length === 0)
@@ -119836,9 +119836,9 @@ var require_retry_operation2 = __commonJS({
       var mainErrorCount = 0;
       for (var i2 = 0; i2 < this._errors.length; i2++) {
         var error2 = this._errors[i2];
-        var message2 = error2.message;
-        var count = (counts[message2] || 0) + 1;
-        counts[message2] = count;
+        var message3 = error2.message;
+        var count = (counts[message3] || 0) + 1;
+        counts[message3] = count;
         if (count >= mainErrorCount) {
           mainError = error2;
           mainErrorCount = count;
@@ -119958,17 +119958,17 @@ var require_p_retry = __commonJS({
       // `cross-fetch`
     ];
     var AbortError2 = class extends Error {
-      constructor(message2) {
+      constructor(message3) {
         super();
-        if (message2 instanceof Error) {
-          this.originalError = message2;
-          ({ message: message2 } = message2);
+        if (message3 instanceof Error) {
+          this.originalError = message3;
+          ({ message: message3 } = message3);
         } else {
-          this.originalError = new Error(message2);
+          this.originalError = new Error(message3);
           this.originalError.stack = this.stack;
         }
         this.name = "AbortError";
-        this.message = message2;
+        this.message = message3;
       }
     };
     var decorateErrorWithCounts = (error2, attemptNumber, options) => {
@@ -120312,8 +120312,8 @@ var require_common = __commonJS({
         }
         return Function.prototype[Symbol.hasInstance].call(_GaxiosError, instance);
       }
-      constructor(message2, config, response, cause) {
-        super(message2, { cause });
+      constructor(message3, config, response, cause) {
+        super(message3, { cause });
         this.config = config;
         this.response = response;
         this.error = cause instanceof Error ? cause : void 0;
@@ -120350,9 +120350,9 @@ var require_common = __commonJS({
        * @returns the extracted error information
        */
       static extractAPIErrorFromResponse(res, defaultErrorMessage = "The request failed") {
-        let message2 = defaultErrorMessage;
+        let message3 = defaultErrorMessage;
         if (typeof res.data === "string") {
-          message2 = res.data;
+          message3 = res.data;
         }
         if (res.data && typeof res.data === "object" && "error" in res.data && res.data.error && !res.ok) {
           if (typeof res.data.error === "string") {
@@ -120363,7 +120363,7 @@ var require_common = __commonJS({
             };
           }
           if (typeof res.data.error === "object") {
-            message2 = "message" in res.data.error && typeof res.data.error.message === "string" ? res.data.error.message : message2;
+            message3 = "message" in res.data.error && typeof res.data.error.message === "string" ? res.data.error.message : message3;
             const status = "status" in res.data.error && typeof res.data.error.status === "string" ? res.data.error.status : res.statusText;
             const code = "code" in res.data.error && typeof res.data.error.code === "number" ? res.data.error.code : res.status;
             if ("errors" in res.data.error && Array.isArray(res.data.error.errors)) {
@@ -120374,20 +120374,20 @@ var require_common = __commonJS({
                 }
               }
               return Object.assign({
-                message: errorMessages.join("\n") || message2,
+                message: errorMessages.join("\n") || message3,
                 code,
                 status
               }, res.data.error);
             }
             return Object.assign({
-              message: message2,
+              message: message3,
               code,
               status
             }, res.data.error);
           }
         }
         return {
-          message: message2,
+          message: message3,
           code: res.status,
           status: res.statusText
         };
@@ -124443,8 +124443,8 @@ var require_ponyfill_es2018 = __commonJS({
         return isDOMExceptionConstructor(ctor) ? ctor : void 0;
       }
       function createPolyfill() {
-        const ctor = function DOMException4(message2, name) {
-          this.message = message2 || "";
+        const ctor = function DOMException4(message3, name) {
+          this.message = message3 || "";
           this.name = name || "Error";
           if (Error.captureStackTrace) {
             Error.captureStackTrace(this, this.constructor);
@@ -126541,8 +126541,8 @@ var FetchBaseError;
 var init_base = __esm({
   "node_modules/node-fetch/src/errors/base.js"() {
     FetchBaseError = class extends Error {
-      constructor(message2, type) {
-        super(message2);
+      constructor(message3, type) {
+        super(message3);
         Error.captureStackTrace(this, this.constructor);
         this.type = type;
       }
@@ -126567,8 +126567,8 @@ var init_fetch_error = __esm({
        * @param  {string} [type] -        Error type for machine
        * @param  {SystemError} [systemError] - For Node.js system error
        */
-      constructor(message2, type, systemError) {
-        super(message2, type);
+      constructor(message3, type, systemError) {
+        super(message3, type);
         if (systemError) {
           this.code = this.errno = systemError.code;
           this.erroredSysCall = systemError.syscall;
@@ -128003,8 +128003,8 @@ var init_abort_error = __esm({
   "node_modules/node-fetch/src/errors/abort-error.js"() {
     init_base();
     AbortError = class extends FetchBaseError {
-      constructor(message2, type = "aborted") {
-        super(message2, type);
+      constructor(message3, type = "aborted") {
+        super(message3, type);
       }
     };
   }
@@ -133851,8 +133851,8 @@ var require_errorWithCode = __commonJS({
     exports.ErrorWithCode = void 0;
     var ErrorWithCode = class extends Error {
       code;
-      constructor(message2, code) {
-        super(message2);
+      constructor(message3, code) {
+        super(message3);
         this.code = code;
       }
     };
@@ -134879,13 +134879,13 @@ var require_impersonated = __commonJS({
           if (!(error2 instanceof Error))
             throw error2;
           let status = 0;
-          let message2 = "";
+          let message3 = "";
           if (error2 instanceof gaxios_1.GaxiosError) {
             status = error2?.response?.data?.error?.status;
-            message2 = error2?.response?.data?.error?.message;
+            message3 = error2?.response?.data?.error?.message;
           }
-          if (status && message2) {
-            error2.message = `${status}: unable to impersonate: ${message2}`;
+          if (status && message3) {
+            error2.message = `${status}: unable to impersonate: ${message3}`;
             throw error2;
           } else {
             error2.message = `unable to impersonate: ${error2}`;
@@ -135045,14 +135045,14 @@ var require_oauth2common = __commonJS({
       const errorCode = resp.error;
       const errorDescription = resp.error_description;
       const errorUri = resp.error_uri;
-      let message2 = `Error code ${errorCode}`;
+      let message3 = `Error code ${errorCode}`;
       if (typeof errorDescription !== "undefined") {
-        message2 += `: ${errorDescription}`;
+        message3 += `: ${errorDescription}`;
       }
       if (typeof errorUri !== "undefined") {
-        message2 += ` - ${errorUri}`;
+        message3 += ` - ${errorUri}`;
       }
-      const newError = new Error(message2);
+      const newError = new Error(message3);
       if (err) {
         const keys = Object.keys(err);
         if (err.stack) {
@@ -135675,15 +135675,15 @@ var require_certificatesubjecttokensupplier = __commonJS({
     var https2 = __require("https");
     exports.CERTIFICATE_CONFIGURATION_ENV_VARIABLE = "GOOGLE_API_CERTIFICATE_CONFIG";
     var CertificateSourceUnavailableError = class extends Error {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "CertificateSourceUnavailableError";
       }
     };
     exports.CertificateSourceUnavailableError = CertificateSourceUnavailableError;
     var InvalidConfigurationError = class extends Error {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "InvalidConfigurationError";
       }
     };
@@ -135792,15 +135792,15 @@ var require_certificatesubjecttokensupplier = __commonJS({
           cert = await fs16.promises.readFile(certPath);
           new crypto_1.X509Certificate(cert);
         } catch (err) {
-          const message2 = err instanceof Error ? err.message : String(err);
-          throw new CertificateSourceUnavailableError(`Failed to read certificate file at ${certPath}: ${message2}`);
+          const message3 = err instanceof Error ? err.message : String(err);
+          throw new CertificateSourceUnavailableError(`Failed to read certificate file at ${certPath}: ${message3}`);
         }
         try {
           key = await fs16.promises.readFile(keyPath);
           (0, crypto_1.createPrivateKey)(key);
         } catch (err) {
-          const message2 = err instanceof Error ? err.message : String(err);
-          throw new CertificateSourceUnavailableError(`Failed to read private key file at ${keyPath}: ${message2}`);
+          const message3 = err instanceof Error ? err.message : String(err);
+          throw new CertificateSourceUnavailableError(`Failed to read private key file at ${keyPath}: ${message3}`);
         }
         return { cert, key };
       }
@@ -135821,8 +135821,8 @@ var require_certificatesubjecttokensupplier = __commonJS({
             try {
               return new crypto_1.X509Certificate(pem);
             } catch (err) {
-              const message2 = err instanceof Error ? err.message : String(err);
-              throw new InvalidConfigurationError(`Failed to parse certificate at index ${index3} in trust chain file ${this.trustChainPath}: ${message2}`);
+              const message3 = err instanceof Error ? err.message : String(err);
+              throw new InvalidConfigurationError(`Failed to parse certificate at index ${index3} in trust chain file ${this.trustChainPath}: ${message3}`);
             }
           });
           const leafIndex = chainCerts.findIndex((chainCert) => leafCert.raw.equals(chainCert.raw));
@@ -135838,8 +135838,8 @@ var require_certificatesubjecttokensupplier = __commonJS({
         } catch (err) {
           if (err instanceof InvalidConfigurationError)
             throw err;
-          const message2 = err instanceof Error ? err.message : String(err);
-          throw new CertificateSourceUnavailableError(`Failed to process certificate chain from ${this.trustChainPath}: ${message2}`);
+          const message3 = err instanceof Error ? err.message : String(err);
+          throw new CertificateSourceUnavailableError(`Failed to process certificate chain from ${this.trustChainPath}: ${message3}`);
         }
       }
     };
@@ -136479,8 +136479,8 @@ var require_executable_response = __commonJS({
     };
     exports.ExecutableResponse = ExecutableResponse;
     var ExecutableResponseError = class extends Error {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         Object.setPrototypeOf(this, new.target.prototype);
       }
     };
@@ -136523,8 +136523,8 @@ var require_pluggable_auth_handler = __commonJS({
        * The exit code returned by the executable.
        */
       code;
-      constructor(message2, code) {
-        super(`The executable failed with exit code: ${code} and error message: ${message2}.`);
+      constructor(message3, code) {
+        super(`The executable failed with exit code: ${code} and error message: ${message3}.`);
         this.code = code;
         Object.setPrototypeOf(this, new.target.prototype);
       }
@@ -139855,11 +139855,11 @@ var require_receiver3 = __commonJS({
        * @return {(Error|RangeError)} The error
        * @private
        */
-      createError(ErrorCtor, message2, prefix2, statusCode, errorCode) {
+      createError(ErrorCtor, message3, prefix2, statusCode, errorCode) {
         this._loop = false;
         this._errored = true;
         const err = new ErrorCtor(
-          prefix2 ? `Invalid WebSocket frame: ${message2}` : message2
+          prefix2 ? `Invalid WebSocket frame: ${message3}` : message3
         );
         Error.captureStackTrace(err, this.createError);
         err.code = errorCode;
@@ -140528,10 +140528,10 @@ var require_event_target = __commonJS({
             callListener(handler2, this, event);
           };
         } else if (type === "close") {
-          wrapper = function onClose(code, message2) {
+          wrapper = function onClose(code, message3) {
             const event = new CloseEvent("close", {
               code,
-              reason: message2.toString(),
+              reason: message3.toString(),
               wasClean: this._closeFrameReceived && this._closeFrameSent
             });
             event[kTarget] = this;
@@ -140758,7 +140758,7 @@ var require_websocket3 = __commonJS({
     var http3 = __require("http");
     var net = __require("net");
     var tls = __require("tls");
-    var { randomBytes: randomBytes2, createHash: createHash5 } = __require("crypto");
+    var { randomBytes: randomBytes2, createHash: createHash6 } = __require("crypto");
     var { Duplex, Readable: Readable3 } = __require("stream");
     var { URL: URL2 } = __require("url");
     var PerMessageDeflate2 = require_permessage_deflate3();
@@ -141444,7 +141444,7 @@ var require_websocket3 = __commonJS({
           abortHandshake(websocket, socket, "Invalid Upgrade header");
           return;
         }
-        const digest = createHash5("sha1").update(key + GUID).digest("base64");
+        const digest = createHash6("sha1").update(key + GUID).digest("base64");
         if (res.headers["sec-websocket-accept"] !== digest) {
           abortHandshake(websocket, socket, "Invalid Sec-WebSocket-Accept header");
           return;
@@ -141468,29 +141468,29 @@ var require_websocket3 = __commonJS({
         const secWebSocketExtensions = res.headers["sec-websocket-extensions"];
         if (secWebSocketExtensions !== void 0) {
           if (!perMessageDeflate) {
-            const message2 = "Server sent a Sec-WebSocket-Extensions header but no extension was requested";
-            abortHandshake(websocket, socket, message2);
+            const message3 = "Server sent a Sec-WebSocket-Extensions header but no extension was requested";
+            abortHandshake(websocket, socket, message3);
             return;
           }
           let extensions;
           try {
             extensions = parse5(secWebSocketExtensions);
           } catch (err) {
-            const message2 = "Invalid Sec-WebSocket-Extensions header";
-            abortHandshake(websocket, socket, message2);
+            const message3 = "Invalid Sec-WebSocket-Extensions header";
+            abortHandshake(websocket, socket, message3);
             return;
           }
           const extensionNames = Object.keys(extensions);
           if (extensionNames.length !== 1 || extensionNames[0] !== PerMessageDeflate2.extensionName) {
-            const message2 = "Server indicated an extension that was not requested";
-            abortHandshake(websocket, socket, message2);
+            const message3 = "Server indicated an extension that was not requested";
+            abortHandshake(websocket, socket, message3);
             return;
           }
           try {
             perMessageDeflate.accept(extensions[PerMessageDeflate2.extensionName]);
           } catch (err) {
-            const message2 = "Invalid Sec-WebSocket-Extensions header";
-            abortHandshake(websocket, socket, message2);
+            const message3 = "Invalid Sec-WebSocket-Extensions header";
+            abortHandshake(websocket, socket, message3);
             return;
           }
           websocket._extensions[PerMessageDeflate2.extensionName] = perMessageDeflate;
@@ -141527,9 +141527,9 @@ var require_websocket3 = __commonJS({
       }
       return tls.connect(options);
     }
-    function abortHandshake(websocket, stream12, message2) {
+    function abortHandshake(websocket, stream12, message3) {
       websocket._readyState = WebSocket3.CLOSING;
-      const err = new Error(message2);
+      const err = new Error(message3);
       Error.captureStackTrace(err, abortHandshake);
       if (stream12.setHeader) {
         stream12[kAborted] = true;
@@ -141693,7 +141693,7 @@ var require_stream = __commonJS({
         objectMode: false,
         writableObjectMode: false
       });
-      ws.on("message", function message2(msg, isBinary) {
+      ws.on("message", function message3(msg, isBinary) {
         const data = !isBinary && duplex._readableState.objectMode ? msg.toString() : msg;
         if (!duplex.push(data)) ws.pause();
       });
@@ -141813,7 +141813,7 @@ var require_websocket_server = __commonJS({
     var EventEmitter4 = __require("events");
     var http3 = __require("http");
     var { Duplex } = __require("stream");
-    var { createHash: createHash5 } = __require("crypto");
+    var { createHash: createHash6 } = __require("crypto");
     var extension2 = require_extension();
     var PerMessageDeflate2 = require_permessage_deflate3();
     var subprotocol2 = require_subprotocol();
@@ -142016,23 +142016,23 @@ var require_websocket_server = __commonJS({
         const upgrade = req.headers.upgrade;
         const version2 = +req.headers["sec-websocket-version"];
         if (req.method !== "GET") {
-          const message2 = "Invalid HTTP method";
-          abortHandshakeOrEmitwsClientError(this, req, socket, 405, message2);
+          const message3 = "Invalid HTTP method";
+          abortHandshakeOrEmitwsClientError(this, req, socket, 405, message3);
           return;
         }
         if (upgrade === void 0 || upgrade.toLowerCase() !== "websocket") {
-          const message2 = "Invalid Upgrade header";
-          abortHandshakeOrEmitwsClientError(this, req, socket, 400, message2);
+          const message3 = "Invalid Upgrade header";
+          abortHandshakeOrEmitwsClientError(this, req, socket, 400, message3);
           return;
         }
         if (key === void 0 || !keyRegex.test(key)) {
-          const message2 = "Missing or invalid Sec-WebSocket-Key header";
-          abortHandshakeOrEmitwsClientError(this, req, socket, 400, message2);
+          const message3 = "Missing or invalid Sec-WebSocket-Key header";
+          abortHandshakeOrEmitwsClientError(this, req, socket, 400, message3);
           return;
         }
         if (version2 !== 13 && version2 !== 8) {
-          const message2 = "Missing or invalid Sec-WebSocket-Version header";
-          abortHandshakeOrEmitwsClientError(this, req, socket, 400, message2, {
+          const message3 = "Missing or invalid Sec-WebSocket-Version header";
+          abortHandshakeOrEmitwsClientError(this, req, socket, 400, message3, {
             "Sec-WebSocket-Version": "13, 8"
           });
           return;
@@ -142047,8 +142047,8 @@ var require_websocket_server = __commonJS({
           try {
             protocols = subprotocol2.parse(secWebSocketProtocol);
           } catch (err) {
-            const message2 = "Invalid Sec-WebSocket-Protocol header";
-            abortHandshakeOrEmitwsClientError(this, req, socket, 400, message2);
+            const message3 = "Invalid Sec-WebSocket-Protocol header";
+            abortHandshakeOrEmitwsClientError(this, req, socket, 400, message3);
             return;
           }
         }
@@ -142067,8 +142067,8 @@ var require_websocket_server = __commonJS({
               extensions[PerMessageDeflate2.extensionName] = perMessageDeflate;
             }
           } catch (err) {
-            const message2 = "Invalid or unacceptable Sec-WebSocket-Extensions header";
-            abortHandshakeOrEmitwsClientError(this, req, socket, 400, message2);
+            const message3 = "Invalid or unacceptable Sec-WebSocket-Extensions header";
+            abortHandshakeOrEmitwsClientError(this, req, socket, 400, message3);
             return;
           }
         }
@@ -142079,9 +142079,9 @@ var require_websocket_server = __commonJS({
             req
           };
           if (this.options.verifyClient.length === 2) {
-            this.options.verifyClient(info2, (verified, code, message2, headers) => {
+            this.options.verifyClient(info2, (verified, code, message3, headers) => {
               if (!verified) {
-                return abortHandshake(socket, code || 401, message2, headers);
+                return abortHandshake(socket, code || 401, message3, headers);
               }
               this.completeUpgrade(
                 extensions,
@@ -142120,7 +142120,7 @@ var require_websocket_server = __commonJS({
           );
         }
         if (this._state > RUNNING) return abortHandshake(socket, 503);
-        const digest = createHash5("sha1").update(key + GUID).digest("base64");
+        const digest = createHash6("sha1").update(key + GUID).digest("base64");
         const headers = [
           "HTTP/1.1 101 Switching Protocols",
           "Upgrade: websocket",
@@ -142181,27 +142181,27 @@ var require_websocket_server = __commonJS({
     function socketOnError() {
       this.destroy();
     }
-    function abortHandshake(socket, code, message2, headers) {
-      message2 = message2 || http3.STATUS_CODES[code];
+    function abortHandshake(socket, code, message3, headers) {
+      message3 = message3 || http3.STATUS_CODES[code];
       headers = {
         Connection: "close",
         "Content-Type": "text/html",
-        "Content-Length": Buffer.byteLength(message2),
+        "Content-Length": Buffer.byteLength(message3),
         ...headers
       };
       socket.once("finish", socket.destroy);
       socket.end(
         `HTTP/1.1 ${code} ${http3.STATUS_CODES[code]}\r
-` + Object.keys(headers).map((h2) => `${h2}: ${headers[h2]}`).join("\r\n") + "\r\n\r\n" + message2
+` + Object.keys(headers).map((h2) => `${h2}: ${headers[h2]}`).join("\r\n") + "\r\n\r\n" + message3
       );
     }
-    function abortHandshakeOrEmitwsClientError(server, req, socket, code, message2, headers) {
+    function abortHandshakeOrEmitwsClientError(server, req, socket, code, message3, headers) {
       if (server.listenerCount("wsClientError")) {
-        const err = new Error(message2);
+        const err = new Error(message3);
         Error.captureStackTrace(err, abortHandshakeOrEmitwsClientError);
         server.emit("wsClientError", err, socket, req);
       } else {
-        abortHandshake(socket, code, message2, headers);
+        abortHandshake(socket, code, message3, headers);
       }
     }
   }
@@ -162295,8 +162295,8 @@ var init_node3 = __esm({
       }
     };
     HTTPClientError = class extends Error {
-      constructor(message2, opts) {
-        let msg = message2;
+      constructor(message3, opts) {
+        let msg = message3;
         if (opts === null || opts === void 0 ? void 0 : opts.cause) {
           msg += `: ${opts.cause}`;
         }
@@ -162338,9 +162338,9 @@ var init_node3 = __esm({
       }
     };
     GoogleGenAiError = class extends Error {
-      constructor(message2, httpMeta) {
+      constructor(message3, httpMeta) {
         var _a7, _b, _c, _d;
-        super(message2);
+        super(message3);
         this.statusCode = (_a7 = httpMeta === null || httpMeta === void 0 ? void 0 : httpMeta.response) === null || _a7 === void 0 ? void 0 : _a7.status;
         this.body = (_b = httpMeta === null || httpMeta === void 0 ? void 0 : httpMeta.body) !== null && _b !== void 0 ? _b : "";
         this.headers = (_c = httpMeta === null || httpMeta === void 0 ? void 0 : httpMeta.response) === null || _c === void 0 ? void 0 : _c.headers;
@@ -162352,8 +162352,8 @@ var init_node3 = __esm({
     GeminiNextGenAPIClientError = class extends Error {
     };
     APIError3 = class _APIError extends GeminiNextGenAPIClientError {
-      constructor(status, error2, message2, headers) {
-        super(_APIError.makeMessage(status, error2, message2));
+      constructor(status, error2, message3, headers) {
+        super(_APIError.makeMessage(status, error2, message3));
         this.status = status;
         this.headers = headers;
         this.error = error2;
@@ -162365,63 +162365,63 @@ var init_node3 = __esm({
         this.name = this.constructor.name;
         Object.setPrototypeOf(this, new.target.prototype);
       }
-      static makeMessage(status, error2, message2) {
+      static makeMessage(status, error2, message3) {
         var _a7;
         const errorMessage9 = error2 && isPlainObject$2(error2) && typeof error2["message"] === "string" ? error2["message"] : void 0;
         const errorBody = stringifyErrorBody(error2);
-        const msg = (_a7 = errorMessage9 !== null && errorMessage9 !== void 0 ? errorMessage9 : message2) !== null && _a7 !== void 0 ? _a7 : errorBody || "An error occurred";
+        const msg = (_a7 = errorMessage9 !== null && errorMessage9 !== void 0 ? errorMessage9 : message3) !== null && _a7 !== void 0 ? _a7 : errorBody || "An error occurred";
         const statusText = status ? `${status} ` : "";
         return `${statusText}${msg}`;
       }
-      static generate(status, errorResponse, message2, headers) {
+      static generate(status, errorResponse, message3, headers) {
         if (!status || !headers) {
           return new APIConnectionError3({
-            message: message2,
+            message: message3,
             cause: errorResponse instanceof Error ? errorResponse : void 0
           });
         }
         if (status === 400) {
-          return new BadRequestError3(status, errorResponse, message2, headers);
+          return new BadRequestError3(status, errorResponse, message3, headers);
         }
         if (status === 401) {
-          return new AuthenticationError3(status, errorResponse, message2, headers);
+          return new AuthenticationError3(status, errorResponse, message3, headers);
         }
         if (status === 403) {
-          return new PermissionDeniedError3(status, errorResponse, message2, headers);
+          return new PermissionDeniedError3(status, errorResponse, message3, headers);
         }
         if (status === 404) {
-          return new NotFoundError3(status, errorResponse, message2, headers);
+          return new NotFoundError3(status, errorResponse, message3, headers);
         }
         if (status === 409) {
-          return new ConflictError3(status, errorResponse, message2, headers);
+          return new ConflictError3(status, errorResponse, message3, headers);
         }
         if (status === 422) {
-          return new UnprocessableEntityError3(status, errorResponse, message2, headers);
+          return new UnprocessableEntityError3(status, errorResponse, message3, headers);
         }
         if (status === 429) {
-          return new RateLimitError3(status, errorResponse, message2, headers);
+          return new RateLimitError3(status, errorResponse, message3, headers);
         }
         if (status >= 500) {
-          return new InternalServerError3(status, errorResponse, message2, headers);
+          return new InternalServerError3(status, errorResponse, message3, headers);
         }
-        return new _APIError(status, errorResponse, message2, headers);
+        return new _APIError(status, errorResponse, message3, headers);
       }
     };
     APIUserAbortError3 = class extends APIError3 {
-      constructor({ message: message2 } = {}) {
-        super(void 0, void 0, message2 || "Request was aborted.", void 0);
+      constructor({ message: message3 } = {}) {
+        super(void 0, void 0, message3 || "Request was aborted.", void 0);
       }
     };
     APIConnectionError3 = class extends APIError3 {
-      constructor({ message: message2, cause }) {
-        super(void 0, void 0, message2 || "Connection error.", void 0);
+      constructor({ message: message3, cause }) {
+        super(void 0, void 0, message3 || "Connection error.", void 0);
         this.cause = cause;
       }
     };
     APIConnectionTimeoutError3 = class extends APIConnectionError3 {
-      constructor({ message: message2 } = {}) {
+      constructor({ message: message3 } = {}) {
         super({
-          message: message2 || "Request timed out. This is a client-side timeout. You can increase the timeout by setting the `timeout` argument in your request or client http options."
+          message: message3 || "Request timed out. This is a client-side timeout. You can increase the timeout by setting the `timeout` argument in your request or client http options."
         });
       }
     };
@@ -162642,8 +162642,8 @@ var init_node3 = __esm({
       maxElapsedTime: 36e5
     };
     PermanentError = class _PermanentError extends Error {
-      constructor(message2, options) {
-        let msg = message2;
+      constructor(message3, options) {
+        let msg = message3;
         if (options === null || options === void 0 ? void 0 : options.cause) {
           msg += `: ${options.cause}`;
         }
@@ -162656,8 +162656,8 @@ var init_node3 = __esm({
       }
     };
     TemporaryError = class _TemporaryError extends Error {
-      constructor(message2, response) {
-        super(message2);
+      constructor(message3, response) {
+        super(message3);
         this.response = response;
         this.name = "TemporaryError";
         Object.setPrototypeOf(this, _TemporaryError.prototype);
@@ -162867,26 +162867,26 @@ var init_node3 = __esm({
     jsonLikeContentTypeRE = /^(application|text)\/([^+]+\+)*json.*/;
     jsonlLikeContentTypeRE = /^(application|text)\/([^+]+\+)*(jsonl|x-ndjson)\b.*/;
     GoogleGenAiDefaultError = class extends GoogleGenAiError {
-      constructor(message2, httpMeta) {
-        if (message2) {
-          message2 += `: `;
+      constructor(message3, httpMeta) {
+        if (message3) {
+          message3 += `: `;
         }
-        message2 += `Status ${httpMeta.response.status}`;
+        message3 += `Status ${httpMeta.response.status}`;
         const contentType2 = httpMeta.response.headers.get("content-type") || `""`;
         if (contentType2 !== "application/json") {
-          message2 += ` Content-Type ${contentType2.includes(" ") ? `"${contentType2}"` : contentType2}`;
+          message3 += ` Content-Type ${contentType2.includes(" ") ? `"${contentType2}"` : contentType2}`;
         }
         const body = httpMeta.body || `""`;
-        message2 += body.length > 100 ? "\n" : ". ";
+        message3 += body.length > 100 ? "\n" : ". ";
         let bodyDisplay = body;
         if (body.length > 1e4) {
           const truncated = body.substring(0, 1e4);
           const remaining = body.length - 1e4;
           bodyDisplay = `${truncated}...and ${remaining} more chars`;
         }
-        message2 += `Body: ${bodyDisplay}`;
-        message2 = message2.trim();
-        super(message2, httpMeta);
+        message3 += `Body: ${bodyDisplay}`;
+        message3 = message3.trim();
+        super(message3, httpMeta);
         this.name = "GoogleGenAiDefaultError";
       }
     };
@@ -162918,7 +162918,7 @@ var init_node3 = __esm({
                   bufferLen += chunk.value.length;
                   continue;
                 }
-                const message2 = buffer.slice(0, match3.index);
+                const message3 = buffer.slice(0, match3.index);
                 buffer.copyWithin(0, match3.index + match3.length, bufferLen);
                 bufferLen -= match3.index + match3.length;
                 if (buffer.length > 4096 && bufferLen <= buffer.length >> 2) {
@@ -162927,7 +162927,7 @@ var init_node3 = __esm({
                   buffer = shrunk;
                 }
                 searchStart = 0;
-                const item = parseMessage2(message2, parse5, state3, dataRequired);
+                const item = parseMessage2(message3, parse5, state3, dataRequired);
                 if (item && !item.done)
                   return downstream.enqueue(item.value);
                 if (item === null || item === void 0 ? void 0 : item.done) {
@@ -163021,8 +163021,8 @@ var init_node3 = __esm({
       UnrecognisedSecurityType: "unrecognized_security_type"
     };
     SecurityError = class _SecurityError extends Error {
-      constructor(code, message2) {
-        super(message2);
+      constructor(code, message3) {
+        super(message3);
         this.code = code;
         this.name = "SecurityError";
       }
@@ -163150,8 +163150,8 @@ var init_node3 = __esm({
     CancelInteractionByIdServerError = class extends GoogleGenAiError {
       constructor(err, httpMeta) {
         var _a7;
-        const message2 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
-        super(message2, httpMeta);
+        const message3 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
+        super(message3, httpMeta);
         this.data$ = err;
         this.error = err.error;
         this.name = "CancelInteractionByIdServerError";
@@ -163160,8 +163160,8 @@ var init_node3 = __esm({
     CancelInteractionByIdClientError = class extends GoogleGenAiError {
       constructor(err, httpMeta) {
         var _a7;
-        const message2 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
-        super(message2, httpMeta);
+        const message3 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
+        super(message3, httpMeta);
         this.data$ = err;
         this.error = err.error;
         this.name = "CancelInteractionByIdClientError";
@@ -163170,8 +163170,8 @@ var init_node3 = __esm({
     CreateInteractionServerError = class extends GoogleGenAiError {
       constructor(err, httpMeta) {
         var _a7;
-        const message2 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
-        super(message2, httpMeta);
+        const message3 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
+        super(message3, httpMeta);
         this.data$ = err;
         this.error = err.error;
         this.name = "CreateInteractionServerError";
@@ -163180,8 +163180,8 @@ var init_node3 = __esm({
     CreateInteractionClientError = class extends GoogleGenAiError {
       constructor(err, httpMeta) {
         var _a7;
-        const message2 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
-        super(message2, httpMeta);
+        const message3 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
+        super(message3, httpMeta);
         this.data$ = err;
         this.error = err.error;
         this.name = "CreateInteractionClientError";
@@ -163190,8 +163190,8 @@ var init_node3 = __esm({
     DeleteInteractionServerError = class extends GoogleGenAiError {
       constructor(err, httpMeta) {
         var _a7;
-        const message2 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
-        super(message2, httpMeta);
+        const message3 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
+        super(message3, httpMeta);
         this.data$ = err;
         this.error = err.error;
         this.name = "DeleteInteractionServerError";
@@ -163200,8 +163200,8 @@ var init_node3 = __esm({
     DeleteInteractionClientError = class extends GoogleGenAiError {
       constructor(err, httpMeta) {
         var _a7;
-        const message2 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
-        super(message2, httpMeta);
+        const message3 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
+        super(message3, httpMeta);
         this.data$ = err;
         this.error = err.error;
         this.name = "DeleteInteractionClientError";
@@ -163210,8 +163210,8 @@ var init_node3 = __esm({
     GetInteractionByIdServerError = class extends GoogleGenAiError {
       constructor(err, httpMeta) {
         var _a7;
-        const message2 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
-        super(message2, httpMeta);
+        const message3 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
+        super(message3, httpMeta);
         this.data$ = err;
         this.error = err.error;
         this.name = "GetInteractionByIdServerError";
@@ -163220,8 +163220,8 @@ var init_node3 = __esm({
     GetInteractionByIdClientError = class extends GoogleGenAiError {
       constructor(err, httpMeta) {
         var _a7;
-        const message2 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
-        super(message2, httpMeta);
+        const message3 = ((_a7 = err.error) === null || _a7 === void 0 ? void 0 : _a7.message) || `API error occurred: ${JSON.stringify(err)}`;
+        super(message3, httpMeta);
         this.data$ = err;
         this.error = err.error;
         this.name = "GetInteractionByIdClientError";
@@ -163638,11 +163638,11 @@ var init_node3 = __esm({
         this.ws.onclose = this.callbacks.onclose;
         this.ws.onmessage = this.callbacks.onmessage;
       }
-      send(message2) {
+      send(message3) {
         if (this.ws === void 0) {
           throw new Error("WebSocket is not connected");
         }
-        this.ws.send(message2);
+        this.ws.send(message3);
       }
       close() {
         if (this.ws === void 0) {
@@ -165707,7 +165707,7 @@ function toMistralWirePayload(payload) {
   ]) {
     remapMistralProperty(wirePayload, source, target);
   }
-  wirePayload.messages = payload.messages.map((message2) => toMistralWireMessage(message2));
+  wirePayload.messages = payload.messages.map((message3) => toMistralWireMessage(message3));
   const responseFormat = wirePayload.response_format;
   if (isMistralRecord(responseFormat)) {
     const wireResponseFormat = { ...responseFormat };
@@ -165722,12 +165722,12 @@ function toMistralWirePayload(payload) {
   }
   return wirePayload;
 }
-function toMistralWireMessage(message2) {
-  const wireMessage = { ...message2 };
+function toMistralWireMessage(message3) {
+  const wireMessage = { ...message3 };
   remapMistralProperty(wireMessage, "toolCalls", "tool_calls");
   remapMistralProperty(wireMessage, "toolCallId", "tool_call_id");
-  if (Array.isArray(message2.content)) {
-    wireMessage.content = message2.content.map((chunk) => toMistralWireContentChunk(chunk));
+  if (Array.isArray(message3.content)) {
+    wireMessage.content = message3.content.map((chunk) => toMistralWireContentChunk(chunk));
   }
   return wireMessage;
 }
@@ -166626,8 +166626,8 @@ async function* mapCodexEvents(events, output, model2, onProviderStreamEvent) {
     if (!type)
       continue;
     if (type === "error") {
-      const { code, message: message2 } = extractCodexEventError(event);
-      throw new CodexApiError(`Codex error: ${message2 || code || JSON.stringify(event)}`, {
+      const { code, message: message3 } = extractCodexEventError(event);
+      throw new CodexApiError(`Codex error: ${message3 || code || JSON.stringify(event)}`, {
         code,
         payload: event
       });
@@ -166635,8 +166635,8 @@ async function* mapCodexEvents(events, output, model2, onProviderStreamEvent) {
     if (type === "response.failed") {
       const response = event.response;
       const code = response?.error?.code;
-      const message2 = response?.error?.message;
-      throw new CodexApiError(message2 || "Codex response failed", { code, payload: event });
+      const message3 = response?.error?.message;
+      throw new CodexApiError(message3 || "Codex response failed", { code, payload: event });
     }
     if (type === "response.done" || type === "response.completed" || type === "response.incomplete") {
       const response = event.response;
@@ -166997,9 +166997,9 @@ async function acquireWebSocket(url, headers, sessionId, accountId, signal, conn
 }
 function extractWebSocketError(event) {
   if (event && typeof event === "object") {
-    const message2 = "message" in event ? event.message : void 0;
-    if (typeof message2 === "string" && message2.length > 0) {
-      return new Error(message2);
+    const message3 = "message" in event ? event.message : void 0;
+    if (typeof message3 === "string" && message3.length > 0) {
+      return new Error(message3);
     }
     const nestedError = "error" in event ? event.error : void 0;
     if (nestedError instanceof Error && nestedError.message.length > 0) {
@@ -167270,7 +167270,7 @@ async function processWebSocketStream(url, body, headers, output, stream12, mode
 }
 async function parseErrorResponse(response) {
   const raw = await response.text();
-  let message2 = raw || response.statusText || "Request failed";
+  let message3 = raw || response.statusText || "Request failed";
   let friendlyMessage;
   try {
     const parsed = JSON.parse(raw);
@@ -167283,11 +167283,11 @@ async function parseErrorResponse(response) {
         const when = mins !== void 0 ? ` Try again in ~${mins} min.` : "";
         friendlyMessage = `You have hit your ChatGPT usage limit${plan}.${when}`.trim();
       }
-      message2 = err.message || friendlyMessage || message2;
+      message3 = err.message || friendlyMessage || message3;
     }
   } catch {
   }
-  return { message: message2, friendlyMessage };
+  return { message: message3, friendlyMessage };
 }
 function extractAccountId(token) {
   try {
@@ -167592,8 +167592,8 @@ var init_openai_codex_responses = __esm({
     CodexApiError = class extends Error {
       code;
       payload;
-      constructor(message2, options) {
-        super(message2);
+      constructor(message3, options) {
+        super(message3);
         this.name = "CodexApiError";
         this.code = options?.code;
         this.payload = options?.payload;
@@ -167602,8 +167602,8 @@ var init_openai_codex_responses = __esm({
     };
     CodexProtocolError = class extends Error {
       payload;
-      constructor(message2, options) {
-        super(message2);
+      constructor(message3, options) {
+        super(message3);
         this.name = "CodexProtocolError";
         this.payload = options?.payload;
         this.cause = options?.cause;
@@ -167628,8 +167628,8 @@ var init_openai_codex_responses = __esm({
       code;
       reason;
       wasClean;
-      constructor(message2, options) {
-        super(message2);
+      constructor(message3, options) {
+        super(message3);
         this.name = "WebSocketCloseError";
         this.code = options?.code;
         this.reason = options?.reason;
@@ -168013,18 +168013,18 @@ function applyAnthropicCacheControl(messages, tools, cacheControl) {
   addCacheControlToLastConversationMessage(messages, cacheControl);
 }
 function addCacheControlToSystemPrompt(messages, cacheControl) {
-  for (const message2 of messages) {
-    if (message2.role === "system" || message2.role === "developer") {
-      addCacheControlToInstructionMessage(message2, cacheControl);
+  for (const message3 of messages) {
+    if (message3.role === "system" || message3.role === "developer") {
+      addCacheControlToInstructionMessage(message3, cacheControl);
       return;
     }
   }
 }
 function addCacheControlToLastConversationMessage(messages, cacheControl) {
   for (let i2 = messages.length - 1; i2 >= 0; i2--) {
-    const message2 = messages[i2];
-    if (message2.role === "user" || message2.role === "assistant" || message2.role === "tool") {
-      if (addCacheControlToMessage(message2, cacheControl)) {
+    const message3 = messages[i2];
+    if (message3.role === "user" || message3.role === "assistant" || message3.role === "tool") {
+      if (addCacheControlToMessage(message3, cacheControl)) {
         return;
       }
     }
@@ -168037,22 +168037,22 @@ function addCacheControlToLastTool(tools, cacheControl) {
   const lastTool = tools[tools.length - 1];
   lastTool.cache_control = cacheControl;
 }
-function addCacheControlToInstructionMessage(message2, cacheControl) {
-  return addCacheControlToTextContent(message2, cacheControl);
+function addCacheControlToInstructionMessage(message3, cacheControl) {
+  return addCacheControlToTextContent(message3, cacheControl);
 }
-function addCacheControlToMessage(message2, cacheControl) {
-  if (message2.role === "user" || message2.role === "assistant" || message2.role === "tool") {
-    return addCacheControlToTextContent(message2, cacheControl);
+function addCacheControlToMessage(message3, cacheControl) {
+  if (message3.role === "user" || message3.role === "assistant" || message3.role === "tool") {
+    return addCacheControlToTextContent(message3, cacheControl);
   }
   return false;
 }
-function addCacheControlToTextContent(message2, cacheControl) {
-  const content = message2.content;
+function addCacheControlToTextContent(message3, cacheControl) {
+  const content = message3.content;
   if (typeof content === "string") {
     if (content.length === 0) {
       return false;
     }
-    message2.content = [
+    message3.content = [
       {
         type: "text",
         text: content,
@@ -169146,9 +169146,9 @@ function truncateDiagnosticString(value2) {
   return value2.length > maxLength ? `${ownedSlice(value2, 0, maxLength)}\u2026` : value2;
 }
 function formatPiMessagesResponseError(response, body, errorBody) {
-  const message2 = typeof errorBody?.error?.message === "string" ? errorBody.error.message : void 0;
+  const message3 = typeof errorBody?.error?.message === "string" ? errorBody.error.message : void 0;
   const code = typeof errorBody?.error?.code === "string" ? errorBody.error.code : void 0;
-  const suffix = message2 ?? body;
+  const suffix = message3 ?? body;
   const codeSuffix = code ? ` (${code})` : "";
   return `${response.status} ${response.statusText}: ${suffix}${codeSuffix}`;
 }
@@ -169177,11 +169177,11 @@ function createEmptyUsage() {
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 }
   };
 }
-function appendRewriteDiagnostic(message2, rewrite) {
+function appendRewriteDiagnostic(message3, rewrite) {
   if (!rewrite) {
     return;
   }
-  appendAssistantMessageDiagnostic(message2, {
+  appendAssistantMessageDiagnostic(message3, {
     type: "pi_messages_rewrite",
     timestamp: Date.now(),
     details: { ...rewrite }
@@ -169365,8 +169365,8 @@ var init_pi_messages = __esm({
     PiMessagesResponseError = class extends Error {
       code;
       diagnosticDetails;
-      constructor(message2, code, diagnosticDetails) {
-        super(message2);
+      constructor(message3, code, diagnosticDetails) {
+        super(message3);
         this.name = "PiMessagesResponseError";
         this.code = code;
         this.diagnosticDetails = diagnosticDetails;
@@ -171510,7 +171510,7 @@ __export(cloudflare_workers_ai_system_one_exports, {
 });
 function cloudflareErrorMessage(errors) {
   if (Array.isArray(errors)) {
-    const messages = errors.map((error2) => isRecord(error2) && typeof error2.message === "string" ? error2.message : void 0).filter((message2) => message2 !== void 0);
+    const messages = errors.map((error2) => isRecord(error2) && typeof error2.message === "string" ? error2.message : void 0).filter((message3) => message3 !== void 0);
     if (messages.length > 0)
       return `${LABEL} error: ${messages.join("; ")}`;
   }
@@ -178972,20 +178972,20 @@ var init_tui = __esm({
       /** Dispatch to the visually topmost overlay under the pointer. */
       dispatchMouseToOverlay(event) {
         for (let index3 = this.renderedOverlayLayouts.length - 1; index3 >= 0; index3--) {
-          const layout = this.renderedOverlayLayouts[index3];
-          if (event.screenX < layout.col || event.screenX >= layout.col + layout.width || event.screenY < layout.row || event.screenY >= layout.row + layout.height) {
+          const layout2 = this.renderedOverlayLayouts[index3];
+          if (event.screenX < layout2.col || event.screenX >= layout2.col + layout2.width || event.screenY < layout2.row || event.screenY >= layout2.row + layout2.height) {
             continue;
           }
-          const result = dispatchMouseEvent(layout.entry.component, {
+          const result = dispatchMouseEvent(layout2.entry.component, {
             ...event,
-            x: event.screenX - layout.col,
-            y: event.screenY - layout.row,
-            width: layout.width,
-            height: layout.height
+            x: event.screenX - layout2.col,
+            y: event.screenY - layout2.row,
+            width: layout2.width,
+            height: layout2.height
           });
           return result ? {
             hit: true,
-            result: result.focus ? { ...result, focusTarget: layout.entry.component } : result
+            result: result.focus ? { ...result, focusTarget: layout2.entry.component } : result
           } : { hit: true };
         }
         return { hit: false };
@@ -179963,12 +179963,12 @@ var init_loader = __esm({
       spinnerColorFn;
       messageColorFn;
       message = "Loading...";
-      constructor(ui, spinnerColorFn, messageColorFn, message2 = "Loading...", indicator) {
+      constructor(ui, spinnerColorFn, messageColorFn, message3 = "Loading...", indicator) {
         super("", 1, 0);
         this.ui = ui;
         this.spinnerColorFn = spinnerColorFn;
         this.messageColorFn = messageColorFn;
-        this.message = message2;
+        this.message = message3;
         this.setIndicator(indicator);
       }
       render(width) {
@@ -179984,8 +179984,8 @@ var init_loader = __esm({
           this.intervalId = null;
         }
       }
-      setMessage(message2) {
-        this.message = message2;
+      setMessage(message3) {
+        this.message = message3;
         this.updateDisplay();
       }
       invalidate() {
@@ -180216,12 +180216,12 @@ var init_select_list = __esm({
       onSelect;
       onCancel;
       onSelectionChange;
-      constructor(items, maxVisible, theme2, layout = {}) {
+      constructor(items, maxVisible, theme2, layout2 = {}) {
         this.items = items;
         this.filteredItems = items;
         this.maxVisible = maxVisible;
         this.theme = theme2;
-        this.layout = layout;
+        this.layout = layout2;
       }
       setFilter(filter2) {
         this.filteredItems = this.items.filter((item) => item.value.toLowerCase().startsWith(filter2.toLowerCase()));
@@ -181976,8 +181976,8 @@ var init_editor = __esm({
         return firstPrefixIndex;
       }
       createAutocompleteList(prefix2, items) {
-        const layout = prefix2.startsWith("/") ? SLASH_COMMAND_SELECT_LIST_LAYOUT : void 0;
-        const list2 = new SelectList(items, this.autocompleteMaxVisible, this.theme.selectList, layout);
+        const layout2 = prefix2.startsWith("/") ? SLASH_COMMAND_SELECT_LIST_LAYOUT : void 0;
+        const list2 = new SelectList(items, this.autocompleteMaxVisible, this.theme.selectList, layout2);
         list2.onSelect = (selected) => {
           if (!this.autocompleteProvider)
             return;
@@ -183036,20 +183036,20 @@ function joinLayouts(layouts) {
   if (layouts.length === 0) {
     return { lines: [""], width: 0, baseline: 0 };
   }
-  const baseline = Math.max(...layouts.map((layout) => layout.baseline));
-  const below = Math.max(...layouts.map((layout) => layout.lines.length - layout.baseline - 1));
+  const baseline = Math.max(...layouts.map((layout2) => layout2.baseline));
+  const below = Math.max(...layouts.map((layout2) => layout2.lines.length - layout2.baseline - 1));
   const lines = [];
   for (let row = 0; row <= baseline + below; row++) {
     let line = "";
-    for (const layout of layouts) {
-      const sourceRow = row - baseline + layout.baseline;
-      line += sourceRow >= 0 && sourceRow < layout.lines.length ? padLayoutLine(layout.lines[sourceRow] ?? "", layout.width) : " ".repeat(layout.width);
+    for (const layout2 of layouts) {
+      const sourceRow = row - baseline + layout2.baseline;
+      line += sourceRow >= 0 && sourceRow < layout2.lines.length ? padLayoutLine(layout2.lines[sourceRow] ?? "", layout2.width) : " ".repeat(layout2.width);
     }
     lines.push(line.trimEnd());
   }
   return {
     lines,
-    width: layouts.reduce((width, layout) => width + layout.width, 0),
+    width: layouts.reduce((width, layout2) => width + layout2.width, 0),
     baseline
   };
 }
@@ -185763,9 +185763,9 @@ function formatProgramStatus(status) {
     pairs.push(`app=${status.app}`);
   if (status.state === "blocked" && status.kind)
     pairs.push(`kind=${status.kind}`);
-  const message2 = truncateUtf8(replaceControlCharacters(status.message ?? "").trim(), MAX_MESSAGE_BYTES);
-  if (message2)
-    pairs.push(`msg=${Buffer.from(message2, "utf8").toString("base64")}`);
+  const message3 = truncateUtf8(replaceControlCharacters(status.message ?? "").trim(), MAX_MESSAGE_BYTES);
+  if (message3)
+    pairs.push(`msg=${Buffer.from(message3, "utf8").toString("base64")}`);
   return `\x1B]7501;${pairs.join(":")}\x1B\\`;
 }
 var PROGRAM_STATUS_QUERY, APP_PATTERN, MAX_MESSAGE_BYTES;
@@ -186522,8 +186522,8 @@ var init_terminal = __esm({
       clearScreen() {
         process.stdout.write("\x1B[2J\x1B[H");
       }
-      setTitle(title) {
-        process.stdout.write(`\x1B]0;${replaceControlCharacters(title)}\x07`);
+      setTitle(title2) {
+        process.stdout.write(`\x1B]0;${replaceControlCharacters(title2)}\x07`);
       }
       setProgramStatus(status) {
         this.programStatus = status.state === "clear" ? void 0 : status;
@@ -186836,7 +186836,7 @@ var init_alt_screen_flash = __esm({
       constructor(requestRender) {
         this.requestRender = requestRender;
       }
-      flash(message2, durationMs = DEFAULT_DURATION_MS) {
+      flash(message3, durationMs = DEFAULT_DURATION_MS) {
         const id = this.nextId++;
         const timer = setTimeout(() => {
           const index3 = this.entries.findIndex((entry) => entry.id === id);
@@ -186846,7 +186846,7 @@ var init_alt_screen_flash = __esm({
           this.requestRender();
         }, Math.max(0, durationMs));
         timer.unref();
-        this.entries.push({ id, message: message2, timer });
+        this.entries.push({ id, message: message3, timer });
         this.requestRender();
       }
       dispose() {
@@ -186858,8 +186858,8 @@ var init_alt_screen_flash = __esm({
       }
       render(width) {
         return this.entries.map((entry) => {
-          const message2 = truncateToWidth(` ${entry.message} `, width, "");
-          return `\x1B[7m${message2}\x1B[27m`;
+          const message3 = truncateToWidth(` ${entry.message} `, width, "");
+          return `\x1B[7m${message3}\x1B[27m`;
         });
       }
     };
@@ -187507,20 +187507,20 @@ var init_tui_alt_screen = __esm({
       prepareKittyScreen(screen) {
         const visibleImageIds = /* @__PURE__ */ new Set();
         const lines = screen.map((line) => {
-          const placement = getKittyImagePlacement(line);
-          if (!placement)
+          const placement2 = getKittyImagePlacement(line);
+          if (!placement2)
             return line;
-          visibleImageIds.add(placement.imageId);
-          const cachedImage = this.uploadedKittyImages.get(placement.imageId);
+          visibleImageIds.add(placement2.imageId);
+          const cachedImage = this.uploadedKittyImages.get(placement2.imageId);
           const nextCachedImage = {
-            transmissionGeneration: placement.transmissionGeneration,
-            transmissionBytes: placement.transmissionBytes,
-            estimatedDecodedBytes: placement.estimatedDecodedBytes
+            transmissionGeneration: placement2.transmissionGeneration,
+            transmissionBytes: placement2.transmissionBytes,
+            estimatedDecodedBytes: placement2.estimatedDecodedBytes
           };
           if (cachedImage)
-            this.uploadedKittyImages.delete(placement.imageId);
-          this.uploadedKittyImages.set(placement.imageId, nextCachedImage);
-          return cachedImage?.transmissionGeneration === placement.transmissionGeneration ? placement.replacementLine : line;
+            this.uploadedKittyImages.delete(placement2.imageId);
+          this.uploadedKittyImages.set(placement2.imageId, nextCachedImage);
+          return cachedImage?.transmissionGeneration === placement2.transmissionGeneration ? placement2.replacementLine : line;
         });
         let cachedOffscreenImageCount = 0;
         let cachedOffscreenTransmissionBytes = 0;
@@ -187652,12 +187652,12 @@ var init_tui_alt_screen = __esm({
         this.navigateSearch(direction);
         return true;
       }
-      refreshSearch(layout) {
+      refreshSearch(layout2) {
         const search = this.activeSearch;
         if (!search)
           return false;
-        const scrollView = layout.primaryScrollView ?? this.implicitScrollView;
-        const box2 = getScrollViewBox(layout, scrollView);
+        const scrollView = layout2.primaryScrollView ?? this.implicitScrollView;
+        const box2 = getScrollViewBox(layout2, scrollView);
         const lines = box2?.scrollContentLines;
         if (!lines || !search.query.trim()) {
           search.matches = [];
@@ -187718,8 +187718,8 @@ var init_tui_alt_screen = __esm({
         return scrollView.scrollTop !== before;
       }
       /** Show a transient message in the alternate-screen flash stack. */
-      flash(message2, durationMs) {
-        this.flashes.flash(message2, durationMs);
+      flash(message3, durationMs) {
+        this.flashes.flash(message3, durationMs);
       }
       /** Focused overlays and components that capture viewport input receive viewport keys instead of the transcript. */
       shouldDeferViewportInput() {
@@ -188459,12 +188459,12 @@ var init_tui_alt_screen = __esm({
           result += style(text.slice(plainStart));
         return result;
       }
-      applySearchHighlights(screen, layout) {
+      applySearchHighlights(screen, layout2) {
         const search = this.activeSearch;
         if (!search || search.selectedIndex < 0 || search.matches.length === 0)
           return screen;
-        const scrollView = layout.primaryScrollView ?? this.implicitScrollView;
-        const box2 = getScrollViewBox(layout, scrollView);
+        const scrollView = layout2.primaryScrollView ?? this.implicitScrollView;
+        const box2 = getScrollViewBox(layout2, scrollView);
         if (!box2)
           return screen;
         const rangesByRow = /* @__PURE__ */ new Map();
@@ -188540,7 +188540,7 @@ var init_tui_alt_screen = __esm({
         }
         return `${result}\x1B[27m`;
       }
-      applySelection(screen, layout = this.currentLayout) {
+      applySelection(screen, layout2 = this.currentLayout) {
         const selection = this.getSelectionBounds();
         if (!selection)
           return screen;
@@ -188550,9 +188550,9 @@ var init_tui_alt_screen = __esm({
         let minColumn = 0;
         let maxColumn = this.terminal.columns;
         if (selection.start.scrollView) {
-          if (!layout)
+          if (!layout2)
             return screen;
-          const box2 = getScrollViewBox(layout, selection.start.scrollView);
+          const box2 = getScrollViewBox(layout2, selection.start.scrollView);
           if (!box2)
             return screen;
           minRow = Math.max(0, box2.rect.y, box2.clip.y);
@@ -188589,12 +188589,12 @@ var init_tui_alt_screen = __esm({
       isMouseSequence(data) {
         return /^\x1b\[<\d+;\d+;\d+[Mm]$/.test(data) || data.length === 6 && data.startsWith("\x1B[M");
       }
-      compositeScrollToEndIndicator(screen, layout, width) {
+      compositeScrollToEndIndicator(screen, layout2, width) {
         this.scrollToEndIndicatorRect = void 0;
-        const scrollView = layout.primaryScrollView ?? this.implicitScrollView;
+        const scrollView = layout2.primaryScrollView ?? this.implicitScrollView;
         if (!this.scrollToEndIndicator || !scrollView.followEnd || scrollView.isFollowingEnd)
           return screen;
-        const box2 = getScrollViewBox(layout, scrollView);
+        const box2 = getScrollViewBox(layout2, scrollView);
         const clip = box2?.clip;
         if (!clip || clip.width <= 0 || clip.height <= 0)
           return screen;
@@ -190321,16 +190321,16 @@ var require_core = __commonJS({
       return result + escapeHTML(value2.substr(processed));
     }
     var seenDeprecations = {};
-    var error2 = (message2) => {
-      console.error(message2);
+    var error2 = (message3) => {
+      console.error(message3);
     };
-    var warn = (message2, ...args) => {
-      console.log(`WARN: ${message2}`, ...args);
+    var warn = (message3, ...args) => {
+      console.log(`WARN: ${message3}`, ...args);
     };
-    var deprecated = (version3, message2) => {
-      if (seenDeprecations[`${version3}/${message2}`]) return;
-      console.log(`Deprecated as of ${version3}. ${message2}`);
-      seenDeprecations[`${version3}/${message2}`] = true;
+    var deprecated = (version3, message3) => {
+      if (seenDeprecations[`${version3}/${message3}`]) return;
+      console.log(`Deprecated as of ${version3}. ${message3}`);
+      seenDeprecations[`${version3}/${message3}`] = true;
     };
     var escape$1 = escapeHTML;
     var inherit$1 = inherit;
@@ -229553,22 +229553,22 @@ var require_errors3 = __commonJS({
   "node_modules/@earendil-works/pi-coding-agent/node_modules/yaml/dist/errors.js"(exports) {
     "use strict";
     var YAMLError = class extends Error {
-      constructor(name, pos, code, message2) {
+      constructor(name, pos, code, message3) {
         super();
         this.name = name;
         this.code = code;
-        this.message = message2;
+        this.message = message3;
         this.pos = pos;
       }
     };
     var YAMLParseError = class extends YAMLError {
-      constructor(pos, code, message2) {
-        super("YAMLParseError", pos, code, message2);
+      constructor(pos, code, message3) {
+        super("YAMLParseError", pos, code, message3);
       }
     };
     var YAMLWarning = class extends YAMLError {
-      constructor(pos, code, message2) {
-        super("YAMLWarning", pos, code, message2);
+      constructor(pos, code, message3) {
+        super("YAMLWarning", pos, code, message3);
       }
     };
     var prettifyError = (src, lc) => (error2) => {
@@ -230248,8 +230248,8 @@ var require_compose_collection = __commonJS({
         const { anchor, newlineAfterProp: nl } = props;
         const lastProp = anchor && tagToken ? anchor.offset > tagToken.offset ? anchor : tagToken : anchor ?? tagToken;
         if (lastProp && (!nl || nl.offset < lastProp.offset)) {
-          const message2 = "Missing newline after block sequence props";
-          onError3(lastProp, "MISSING_CHAR", message2);
+          const message3 = "Missing newline after block sequence props";
+          onError3(lastProp, "MISSING_CHAR", message3);
         }
       }
       const expType = token.type === "block-map" ? "map" : token.type === "block-seq" ? "seq" : token.start.source === "{" ? "map" : "seq";
@@ -230321,15 +230321,15 @@ var require_resolve_block_scalar = __commonJS({
             trimIndent = indent.length;
         } else {
           if (indent.length < trimIndent) {
-            const message2 = "Block scalars with more-indented leading empty lines must use an explicit indentation indicator";
-            onError3(offset + indent.length, "MISSING_CHAR", message2);
+            const message3 = "Block scalars with more-indented leading empty lines must use an explicit indentation indicator";
+            onError3(offset + indent.length, "MISSING_CHAR", message3);
           }
           if (header.indent === 0)
             trimIndent = indent.length;
           contentStart = i2;
           if (trimIndent === 0 && !ctx.atRoot) {
-            const message2 = "Block scalar values in collections must be indented";
-            onError3(offset, "BAD_INDENT", message2);
+            const message3 = "Block scalar values in collections must be indented";
+            onError3(offset, "BAD_INDENT", message3);
           }
           break;
         }
@@ -230352,8 +230352,8 @@ var require_resolve_block_scalar = __commonJS({
           content = content.slice(0, -1);
         if (content && indent.length < trimIndent) {
           const src = header.indent ? "explicit indentation indicator" : "first line";
-          const message2 = `Block scalar lines must not be less indented than their ${src}`;
-          onError3(offset - content.length - (crlf ? 2 : 1), "BAD_INDENT", message2);
+          const message3 = `Block scalar lines must not be less indented than their ${src}`;
+          onError3(offset - content.length - (crlf ? 2 : 1), "BAD_INDENT", message3);
           indent = "";
         }
         if (type === Scalar.Scalar.BLOCK_LITERAL) {
@@ -230431,8 +230431,8 @@ var require_resolve_block_scalar = __commonJS({
             break;
           case "comment":
             if (strict && !hasSpace) {
-              const message2 = "Comments must be separated from other tokens by white space characters";
-              onError3(token, "MISSING_CHAR", message2);
+              const message3 = "Comments must be separated from other tokens by white space characters";
+              onError3(token, "MISSING_CHAR", message3);
             }
             length += token.source.length;
             comment = token.source.substring(1);
@@ -230443,8 +230443,8 @@ var require_resolve_block_scalar = __commonJS({
             break;
           /* istanbul ignore next should not happen */
           default: {
-            const message2 = `Unexpected token in block scalar header: ${token.type}`;
-            onError3(token, "UNEXPECTED_TOKEN", message2);
+            const message3 = `Unexpected token in block scalar header: ${token.type}`;
+            onError3(token, "UNEXPECTED_TOKEN", message3);
             const ts = token.source;
             if (ts && typeof ts === "string")
               length += ts.length;
@@ -230836,13 +230836,13 @@ var require_compose_node = __commonJS({
             if (anchor)
               node.anchor = anchor.source.substring(1);
           } catch (error2) {
-            const message2 = error2 instanceof Error ? error2.message : String(error2);
-            onError3(token, "RESOURCE_EXHAUSTION", message2);
+            const message3 = error2 instanceof Error ? error2.message : String(error2);
+            onError3(token, "RESOURCE_EXHAUSTION", message3);
           }
           break;
         default: {
-          const message2 = token.type === "error" ? token.message : `Unsupported token (type: ${token.type})`;
-          onError3(token, "UNEXPECTED_TOKEN", message2);
+          const message3 = token.type === "error" ? token.message : `Unsupported token (type: ${token.type})`;
+          onError3(token, "UNEXPECTED_TOKEN", message3);
           isSrcToken = false;
         }
       }
@@ -230998,12 +230998,12 @@ var require_composer = __commonJS({
         this.prelude = [];
         this.errors = [];
         this.warnings = [];
-        this.onError = (source, code, message2, warning2) => {
+        this.onError = (source, code, message3, warning2) => {
           const pos = getErrorPos(source);
           if (warning2)
-            this.warnings.push(new errors.YAMLWarning(pos, code, message2));
+            this.warnings.push(new errors.YAMLWarning(pos, code, message3));
           else
-            this.errors.push(new errors.YAMLParseError(pos, code, message2));
+            this.errors.push(new errors.YAMLParseError(pos, code, message3));
         };
         this.directives = new directives.Directives({ version: options.version || "1.2" });
         this.options = options;
@@ -231073,10 +231073,10 @@ ${cb}` : comment;
           console.dir(token, { depth: null });
         switch (token.type) {
           case "directive":
-            this.directives.add(token.source, (offset, message2, warning2) => {
+            this.directives.add(token.source, (offset, message3, warning2) => {
               const pos = getErrorPos(token);
               pos[0] += offset;
-              this.onError(pos, "BAD_DIRECTIVE", message2, warning2);
+              this.onError(pos, "BAD_DIRECTIVE", message3, warning2);
             });
             this.prelude.push(token.source);
             this.atDirectives = true;
@@ -231165,12 +231165,12 @@ var require_cst_scalar = __commonJS({
     var stringifyString = require_stringifyString();
     function resolveAsScalar(token, strict = true, onError3) {
       if (token) {
-        const _onError = (pos, code, message2) => {
+        const _onError = (pos, code, message3) => {
           const offset = typeof pos === "number" ? pos : Array.isArray(pos) ? pos[0] : pos.offset;
           if (onError3)
-            onError3(offset, code, message2);
+            onError3(offset, code, message3);
           else
-            throw new errors.YAMLParseError([offset, offset + 1], code, message2);
+            throw new errors.YAMLParseError([offset, offset + 1], code, message3);
         };
         switch (token.type) {
           case "scalar":
@@ -232330,8 +232330,8 @@ var require_parser = __commonJS({
         }
         const type = cst.tokenType(source);
         if (!type) {
-          const message2 = `Not a YAML token: ${source}`;
-          yield* this.pop({ type: "error", offset: this.offset, message: message2, source });
+          const message3 = `Not a YAML token: ${source}`;
+          yield* this.pop({ type: "error", offset: this.offset, message: message3, source });
           this.offset += source.length;
         } else if (type === "scalar") {
           this.atNewLine = false;
@@ -232421,8 +232421,8 @@ var require_parser = __commonJS({
       *pop(error2) {
         const token = error2 ?? this.stack.pop();
         if (!token) {
-          const message2 = "Tried to pop an empty stack";
-          yield { type: "error", offset: this.offset, source: "", message: message2 };
+          const message3 = "Tried to pop an empty stack";
+          yield { type: "error", offset: this.offset, source: "", message: message3 };
         } else if (this.stack.length === 0) {
           yield token;
         } else {
@@ -235117,13 +235117,13 @@ async function resizeImageInWorker(workerSpecifier, inputBytes, mimeType, option
         settled = true;
         reject(error2);
       };
-      worker.on("message", (message2) => {
-        if (!isResizeImageWorkerResponse(message2))
+      worker.on("message", (message3) => {
+        if (!isResizeImageWorkerResponse(message3))
           return;
-        if ("error" in message2)
-          fail2(new Error(message2.error));
+        if ("error" in message3)
+          fail2(new Error(message3.error));
         else
-          settle(message2.result);
+          settle(message3.result);
       });
       worker.once("error", fail2);
       worker.once("exit", (code) => {
@@ -236208,13 +236208,13 @@ function getSessionContextSettings(path19) {
 }
 function sessionEntryToContextMessages(entry) {
   if (entry.type === "message") {
-    const message2 = entry.message;
-    if (message2.role === "system" && message2.content == null)
-      return [{ ...message2, content: "" }];
-    if ((message2.role === "user" || message2.role === "assistant" || message2.role === "toolResult") && message2.content == null) {
-      return [{ ...message2, content: [] }];
+    const message3 = entry.message;
+    if (message3.role === "system" && message3.content == null)
+      return [{ ...message3, content: "" }];
+    if ((message3.role === "user" || message3.role === "assistant" || message3.role === "toolResult") && message3.content == null) {
+      return [{ ...message3, content: [] }];
     }
-    return [message2];
+    return [message3];
   }
   if (entry.type === "custom_message") {
     return [
@@ -236266,12 +236266,12 @@ function projectContextEntry(entry, edit) {
   const replacement = edit.replacement;
   if (replacement === null)
     return [];
-  return messages.map((message2) => {
-    if (message2.role !== "user" && message2.role !== "assistant" && message2.role !== "toolResult" && message2.role !== "custom") {
-      return message2;
+  return messages.map((message3) => {
+    if (message3.role !== "user" && message3.role !== "assistant" && message3.role !== "toolResult" && message3.role !== "custom") {
+      return message3;
     }
-    const content = (message2.role === "assistant" || message2.role === "toolResult") && typeof replacement.content === "string" ? [{ type: "text", text: replacement.content }] : replacement.content;
-    return { ...message2, content };
+    const content = (message3.role === "assistant" || message3.role === "toolResult") && typeof replacement.content === "string" ? [{ type: "text", text: replacement.content }] : replacement.content;
+    return { ...message3, content };
   });
 }
 function buildSessionProjection(entries2, leafId, byId) {
@@ -236444,23 +236444,23 @@ function findMostRecentSession(sessionDir, cwd) {
     return null;
   }
 }
-function isMessageWithContent(message2) {
-  return typeof message2.role === "string" && "content" in message2;
+function isMessageWithContent(message3) {
+  return typeof message3.role === "string" && "content" in message3;
 }
-function extractTextContent(message2) {
-  const content = message2.content;
+function extractTextContent(message3) {
+  const content = message3.content;
   if (typeof content === "string") {
     return content;
   }
   return content.filter((block) => block.type === "text").map((block) => block.text).join(" ");
 }
 function getMessageActivityTime(entry) {
-  const message2 = entry.message;
-  if (!isMessageWithContent(message2))
+  const message3 = entry.message;
+  if (!isMessageWithContent(message3))
     return void 0;
-  if (message2.role !== "user" && message2.role !== "assistant")
+  if (message3.role !== "user" && message3.role !== "assistant")
     return void 0;
-  const msgTimestamp = message2.timestamp;
+  const msgTimestamp = message3.timestamp;
   if (typeof msgTimestamp === "number") {
     return msgTimestamp;
   }
@@ -236500,16 +236500,16 @@ async function buildSessionInfo(filePath, signal, fileStats) {
       if (typeof activityTime === "number") {
         lastActivityTime = Math.max(lastActivityTime ?? 0, activityTime);
       }
-      const message2 = entry.message;
-      if (!isMessageWithContent(message2))
+      const message3 = entry.message;
+      if (!isMessageWithContent(message3))
         continue;
-      if (message2.role !== "user" && message2.role !== "assistant")
+      if (message3.role !== "user" && message3.role !== "assistant")
         continue;
-      const textContent = extractTextContent(message2);
+      const textContent = extractTextContent(message3);
       if (!textContent)
         continue;
       allMessages.push(textContent);
-      if (!firstMessage && message2.role === "user") {
+      if (!firstMessage && message3.role === "user") {
         firstMessage = textContent;
       }
     }
@@ -236799,13 +236799,13 @@ var init_session_manager = __esm({
        * so it is easier to find them.
        * These need to be appended via appendCompaction() and appendBranchSummary() methods.
        */
-      appendMessage(message2) {
+      appendMessage(message3) {
         const entry = {
           type: "message",
           id: generateId(this.byId),
           parentId: this.leafId,
           timestamp: (/* @__PURE__ */ new Date()).toISOString(),
-          message: message2
+          message: message3
         };
         this._appendEntry(entry);
         return entry.id;
@@ -237529,17 +237529,17 @@ function createFileOps() {
     edited: /* @__PURE__ */ new Set()
   };
 }
-function extractFileOpsFromMessage(message2, fileOps) {
-  if (message2.role === "toolResult") {
-    for (const call of message2.nestedCalls?.calls ?? [])
+function extractFileOpsFromMessage(message3, fileOps) {
+  if (message3.role === "toolResult") {
+    for (const call of message3.nestedCalls?.calls ?? [])
       addFileOp(call.name, call.arguments, fileOps);
     return;
   }
-  if (message2.role !== "assistant")
+  if (message3.role !== "assistant")
     return;
-  if (!("content" in message2) || !Array.isArray(message2.content))
+  if (!("content" in message3) || !Array.isArray(message3.content))
     return;
-  for (const block of message2.content) {
+  for (const block of message3.content) {
     if (typeof block !== "object" || block === null)
       continue;
     if (!("type" in block) || block.type !== "toolCall")
@@ -237664,7 +237664,7 @@ function extractFileOperations(messages, entries2, prevCompactionIndex) {
 function getMessagesFromProjectedEntryForCompaction(entry) {
   if (entry.sourceEntry.type === "compaction")
     return [];
-  return entry.messages.filter((message2) => message2.role !== "system");
+  return entry.messages.filter((message3) => message3.role !== "system");
 }
 function calculateContextTokens2(usage) {
   return usage.totalTokens || usage.input + usage.output + usage.cacheRead + usage.cacheWrite;
@@ -237701,8 +237701,8 @@ function estimateContextTokens2(messages) {
   const usageInfo = getLastAssistantUsageInfo2(messages);
   if (!usageInfo) {
     let estimated = 0;
-    for (const message2 of messages) {
-      estimated += estimateTokens2(message2);
+    for (const message3 of messages) {
+      estimated += estimateTokens2(message3);
     }
     return {
       tokens: estimated,
@@ -237750,9 +237750,9 @@ function estimateProjectedContextTokens(projection, branchEntries) {
   }
   const currentSystem = getCurrentSystemMessage(projection.messages);
   let tokens = currentSystem ? estimateTokens2(currentSystem) : 0;
-  for (const message2 of projection.messages) {
-    if (message2.role !== "system")
-      tokens += estimateTokens2(message2);
+  for (const message3 of projection.messages) {
+    if (message3.role !== "system")
+      tokens += estimateTokens2(message3);
   }
   return { tokens, usageTokens: 0, trailingTokens: tokens, lastUsageIndex: null };
 }
@@ -237775,11 +237775,11 @@ function estimateTextAndImageContentChars2(content) {
   }
   return chars;
 }
-function estimateTokens2(message2) {
+function estimateTokens2(message3) {
   let chars = 0;
-  switch (message2.role) {
+  switch (message3.role) {
     case "system": {
-      const system = message2;
+      const system = message3;
       chars = estimateTextAndImageContentChars2(system.content);
       if (system.sections) {
         for (const section of Object.values(system.sections)) {
@@ -237792,11 +237792,11 @@ function estimateTokens2(message2) {
       return Math.ceil(chars / 4);
     }
     case "user": {
-      chars = estimateTextAndImageContentChars2(message2.content);
+      chars = estimateTextAndImageContentChars2(message3.content);
       return Math.ceil(chars / 4);
     }
     case "assistant": {
-      const assistant = message2;
+      const assistant = message3;
       for (const block of assistant.content) {
         if (block.type === "text") {
           chars += block.text.length;
@@ -237810,23 +237810,23 @@ function estimateTokens2(message2) {
     }
     case "custom":
     case "toolResult": {
-      chars = estimateTextAndImageContentChars2(message2.content);
+      chars = estimateTextAndImageContentChars2(message3.content);
       return Math.ceil(chars / 4);
     }
     case "bashExecution": {
-      chars = message2.command.length + message2.output.length;
+      chars = message3.command.length + message3.output.length;
       return Math.ceil(chars / 4);
     }
     case "branchSummary":
     case "compactionSummary": {
-      chars = message2.summary.length;
+      chars = message3.summary.length;
       return Math.ceil(chars / 4);
     }
   }
   return 0;
 }
-function isCutPointMessage(message2) {
-  switch (message2.role) {
+function isCutPointMessage(message3) {
+  switch (message3.role) {
     case "user":
     case "assistant":
     case "bashExecution":
@@ -237839,8 +237839,8 @@ function isCutPointMessage(message2) {
   }
   return false;
 }
-function isTurnStartMessage(message2) {
-  switch (message2.role) {
+function isTurnStartMessage(message3) {
+  switch (message3.role) {
     case "user":
     case "bashExecution":
     case "custom":
@@ -237889,7 +237889,7 @@ function findCutPoint(entries2, startIndex, endIndex2, keepRecentTokens) {
   let cutIndex = cutPoints[0];
   for (let i2 = endIndex2 - 1; i2 >= startIndex; i2--) {
     const entry = entries2[i2];
-    const messageTokens = sessionEntryToContextMessages(entry).reduce((sum, message2) => sum + estimateTokens2(message2), 0);
+    const messageTokens = sessionEntryToContextMessages(entry).reduce((sum, message3) => sum + estimateTokens2(message3), 0);
     if (messageTokens === 0)
       continue;
     accumulatedTokens += messageTokens;
@@ -238014,7 +238014,7 @@ function findProjectedCutPoint(entries2, startIndex, endIndex2, keepRecentTokens
   let exceededBudget = false;
   let cutIndex = cutPoints[0];
   for (let i2 = endIndex2 - 1; i2 >= startIndex; i2--) {
-    const messageTokens = entries2[i2].messages.reduce((sum, message2) => sum + estimateTokens2(message2), 0);
+    const messageTokens = entries2[i2].messages.reduce((sum, message3) => sum + estimateTokens2(message3), 0);
     if (messageTokens === 0)
       continue;
     accumulatedTokens += messageTokens;
@@ -238400,20 +238400,20 @@ function collectBugReportDiagnostics(sessionManager, crashes = []) {
     if (entry.type !== "message" || entry.message.role !== "assistant")
       continue;
     assistantMessageCount++;
-    const message2 = entry.message;
-    const diagnostics = message2.diagnostics ?? [];
-    if (diagnostics.length === 0 && message2.stopReason !== "error" && message2.stopReason !== "aborted" && !message2.errorMessage) {
+    const message3 = entry.message;
+    const diagnostics = message3.diagnostics ?? [];
+    if (diagnostics.length === 0 && message3.stopReason !== "error" && message3.stopReason !== "aborted" && !message3.errorMessage) {
       continue;
     }
     assistant.push({
       entryId: entry.id,
       timestamp: entry.timestamp,
-      provider: message2.provider,
-      model: message2.model,
-      api: message2.api,
-      stopReason: message2.stopReason,
-      ...message2.rawStopReason === void 0 ? {} : { rawStopReason: message2.rawStopReason },
-      ...message2.errorMessage === void 0 ? {} : { errorMessage: message2.errorMessage },
+      provider: message3.provider,
+      model: message3.model,
+      api: message3.api,
+      stopReason: message3.stopReason,
+      ...message3.rawStopReason === void 0 ? {} : { rawStopReason: message3.rawStopReason },
+      ...message3.errorMessage === void 0 ? {} : { errorMessage: message3.errorMessage },
       diagnostics
     });
   }
@@ -238460,11 +238460,11 @@ function selectMessages(messages, tokenBudget) {
   const selected = [];
   let tokens = 0;
   for (let index3 = messages.length - 1; index3 >= 0; index3--) {
-    const message2 = messages[index3];
-    const next = estimateTokens2(message2);
+    const message3 = messages[index3];
+    const next = estimateTokens2(message3);
     if (selected.length > 0 && tokens + next > tokenBudget)
       break;
-    selected.push(message2);
+    selected.push(message3);
     tokens += next;
   }
   return selected.reverse();
@@ -238619,21 +238619,21 @@ function prepareBranchEntries(entries2, tokenBudget = 0) {
   }
   for (let i2 = entries2.length - 1; i2 >= 0; i2--) {
     const entry = entries2[i2];
-    const message2 = getMessageFromEntry(entry, edits.get(entry.id));
-    if (!message2)
+    const message3 = getMessageFromEntry(entry, edits.get(entry.id));
+    if (!message3)
       continue;
-    extractFileOpsFromMessage(message2, fileOps);
-    const tokens = estimateTokens2(message2);
+    extractFileOpsFromMessage(message3, fileOps);
+    const tokens = estimateTokens2(message3);
     if (tokenBudget > 0 && totalTokens + tokens > tokenBudget) {
       if (entry.type === "compaction" || entry.type === "branch_summary") {
         if (totalTokens < tokenBudget * 0.9) {
-          messages.unshift(message2);
+          messages.unshift(message3);
           totalTokens += tokens;
         }
       }
       break;
     }
-    messages.unshift(message2);
+    messages.unshift(message3);
     totalTokens += tokens;
   }
   return { messages, fileOps, totalTokens };
@@ -239735,17 +239735,17 @@ function time(label, namespace = "main") {
   timingNamespace.timings.push({ label, ms: now - timingNamespace.lastTime });
   timingNamespace.lastTime = now;
 }
-function printTimingGroup(title, timings) {
+function printTimingGroup(title2, timings) {
   const printableTimings = timings.filter((timing) => timing.ms >= 0);
   if (printableTimings.length === 0)
     return;
   console.error(`
---- ${title} ---`);
+--- ${title2} ---`);
   for (const t2 of printableTimings) {
     console.error(`  ${t2.label}: ${t2.ms}ms`);
   }
   console.error(`  TOTAL: ${printableTimings.reduce((a, b2) => a + b2.ms, 0)}ms`);
-  console.error(`${"-".repeat(title.length + 8)}
+  console.error(`${"-".repeat(title2.length + 8)}
 `);
 }
 function printTimings() {
@@ -242748,7 +242748,7 @@ var require_jiti = __commonJS({
         }, pathe_M_eThtNZ_dirname = function(e4) {
           const t4 = pathe_M_eThtNZ_normalizeWindowsPath(e4).replace(/\/$/, "").split("/").slice(0, -1);
           return 1 === t4.length && Je2.test(t4[0]) && (t4[0] += "/"), t4.join("/") || (isAbsolute9(e4) ? "/" : ".");
-        }, basename20 = function(e4, t4) {
+        }, basename21 = function(e4, t4) {
           const i3 = pathe_M_eThtNZ_normalizeWindowsPath(e4).split("/");
           let n2 = "";
           for (let e5 = i3.length - 1; e5 >= 0; e5--) {
@@ -243469,7 +243469,7 @@ Default "index" lookups for the main are deprecated for ES modules.`, "Deprecati
           if (!e4.opts.fsCache || !t4.filename) return i3();
           const n2 = ` /* v${Ti}-${utils_hash(t4.source, 16)} */
 `;
-          let a2 = `${basename20(pathe_M_eThtNZ_dirname(t4.filename))}-${(function(e5) {
+          let a2 = `${basename21(pathe_M_eThtNZ_dirname(t4.filename))}-${(function(e5) {
             const t5 = e5.split(Wt).pop();
             if (!t5) return;
             const i4 = t5.lastIndexOf(".");
@@ -243515,7 +243515,7 @@ Default "index" lookups for the main are deprecated for ES modules.`, "Deprecati
           return i3.startsWith("#!") && (i3 = "// " + i3), i3;
         }
         function eval_evalModule(t4, i3, n2 = {}) {
-          const a2 = n2.id || (n2.filename ? basename20(n2.filename) : `_jitiEval.${n2.ext || (n2.async ? "mjs" : "js")}`), c3 = n2.filename || jitiResolve(t4, a2, { async: n2.async }), l4 = n2.ext || extname2(c3), y3 = n2.cache || t4.parentCache || {}, E2 = /\.[cm]?tsx?$/.test(l4), w2 = ".mjs" === l4 || ".js" === l4 && "module" === (function(e4) {
+          const a2 = n2.id || (n2.filename ? basename21(n2.filename) : `_jitiEval.${n2.ext || (n2.async ? "mjs" : "js")}`), c3 = n2.filename || jitiResolve(t4, a2, { async: n2.async }), l4 = n2.ext || extname2(c3), y3 = n2.cache || t4.parentCache || {}, E2 = /\.[cm]?tsx?$/.test(l4), w2 = ".mjs" === l4 || ".js" === l4 && "module" === (function(e4) {
             for (; e4 && "." !== e4 && "/" !== e4; ) {
               e4 = pathe_M_eThtNZ_join(e4, "..");
               try {
@@ -243563,7 +243563,7 @@ Default "index" lookups for the main are deprecated for ES modules.`, "Deprecati
                     (0, $e2.mkdirSync)(n4, { recursive: true });
                   } catch {
                   }
-                  const a4 = pathe_M_eThtNZ_join(n4, `${basename20(i7, extname2(i7))}-${Date.now()}-${Math.random().toString(36).slice(2)}.mjs`);
+                  const a4 = pathe_M_eThtNZ_join(n4, `${basename21(i7, extname2(i7))}-${Date.now()}-${Math.random().toString(36).slice(2)}.mjs`);
                   return (0, $e2.writeFileSync)(a4, t6), a4;
                 })(l5, n3), debug2(t5, "[esm]", "[tempfile]", c5), a3(pathToFileURL4(c5))), E3 = y4 ? a3(y4).catch((e4) => {
                   if ("ENAMETOOLONG" !== e4?.code) throw e4;
@@ -273014,10 +273014,10 @@ function createExtensionRuntime() {
     pendingVirtualModelRegistrations: [],
     createContext: notInitialized,
     assertActive,
-    invalidate: (message2) => {
+    invalidate: (message3) => {
       if (state3.staleMessage)
         return;
-      state3.staleMessage = message2 ?? "This extension ctx is stale after session replacement or reload. Do not use a captured pi or command ctx after ctx.newSession(), ctx.fork(), ctx.switchSession(), or ctx.reload(). For newSession, fork, and switchSession, move post-replacement work into withSession and use the ctx passed to withSession. For reload, do not use the old ctx after await ctx.reload().";
+      state3.staleMessage = message3 ?? "This extension ctx is stale after session replacement or reload. Do not use a captured pi or command ctx after ctx.newSession(), ctx.fork(), ctx.switchSession(), or ctx.reload(). For newSession, fork, and switchSession, move post-replacement work into withSession and use the ctx passed to withSession. For reload, do not use the old ctx after await ctx.reload().";
       for (const unsubscribe of eventBusUnsubscribers)
         unsubscribe();
       eventBusUnsubscribers.clear();
@@ -273167,9 +273167,9 @@ function createExtensionAPI(extension2, runtime, cwd, eventBus) {
       return runtime.flagValues.has(name) ? runtime.flagValues.get(name) : pendingFlagValues.get(name);
     },
     // Action methods - delegate to shared runtime
-    sendMessage(message2, options) {
+    sendMessage(message3, options) {
       assertActive();
-      runtime.sendMessage(message2, options);
+      runtime.sendMessage(message3, options);
     },
     sendUserMessage(content, options) {
       assertActive();
@@ -273382,8 +273382,8 @@ async function loadExtension(extensionPath, cwd, eventBus, runtime, cacheToken) 
     const extension2 = await initializeExtension(factory, extensionPath, resolvedPath, cwd, eventBus, runtime);
     return { extension: extension2, error: null };
   } catch (err) {
-    const message2 = err instanceof Error ? err.message : String(err);
-    return { extension: null, error: `Failed to load extension: ${message2}` };
+    const message3 = err instanceof Error ? err.message : String(err);
+    return { extension: null, error: `Failed to load extension: ${message3}` };
   }
 }
 async function loadExtensionFromFactory(factory, cwd, eventBus, runtime, extensionPath = "<inline>") {
@@ -274172,13 +274172,13 @@ var require_ignore = __commonJS({
         const rules = this._rules;
         const { length } = rules;
         const shortcut = this._basenameCount * 2 >= length;
-        const basename20 = shortcut ? basenameOf(path19) : path19;
+        const basename21 = shortcut ? basenameOf(path19) : path19;
         for (let index3 = 0; index3 < length; index3++) {
           const rule = rules[index3];
           const { negative } = rule;
           const skip = unignored === negative && ignored !== unignored || negative && !ignored && !unignored && !checkUnignored;
           if (!skip && rule[mode].test(
-            shortcut && rule._basenameOnly ? basename20 : path19
+            shortcut && rule._basenameOnly ? basename21 : path19
           )) {
             ignored = !negative;
             unignored = negative;
@@ -274195,8 +274195,8 @@ var require_ignore = __commonJS({
         return ret;
       }
     };
-    var throwError = (message2, Ctor) => {
-      throw new Ctor(message2);
+    var throwError = (message3, Ctor) => {
+      throw new Ctor(message3);
     };
     var checkPath2 = (path19, originalPath, doThrow) => {
       if (!isString(path19)) {
@@ -274510,8 +274510,8 @@ function loadSkillFromFile(filePath, source) {
   try {
     rawContent = readFileSync7(filePath, "utf-8");
   } catch (error2) {
-    const message2 = error2 instanceof Error ? error2.message : "failed to read skill file";
-    diagnostics.push({ type: "warning", message: message2, path: filePath });
+    const message3 = error2 instanceof Error ? error2.message : "failed to read skill file";
+    diagnostics.push({ type: "warning", message: message3, path: filePath });
     return { skill: null, diagnostics };
   }
   let frontmatter;
@@ -274519,8 +274519,8 @@ function loadSkillFromFile(filePath, source) {
     ({ frontmatter } = parseFrontmatter(rawContent));
   } catch (error2) {
     if (isDeclaredSkill) {
-      const message2 = error2 instanceof Error ? error2.message : "failed to parse skill file";
-      diagnostics.push({ type: "warning", message: message2, path: filePath });
+      const message3 = error2 instanceof Error ? error2.message : "failed to parse skill file";
+      diagnostics.push({ type: "warning", message: message3, path: filePath });
     }
     return { skill: null, diagnostics };
   }
@@ -274652,8 +274652,8 @@ function loadSkills(options) {
         allDiagnostics.push({ type: "warning", message: "skill path is not a markdown file", path: resolvedPath });
       }
     } catch (error2) {
-      const message2 = error2 instanceof Error ? error2.message : "failed to read skill path";
-      allDiagnostics.push({ type: "warning", message: message2, path: resolvedPath });
+      const message3 = error2 instanceof Error ? error2.message : "failed to read skill path";
+      allDiagnostics.push({ type: "warning", message: message3, path: resolvedPath });
     }
   }
   return {
@@ -274849,7 +274849,7 @@ function snapshotEventHandlers(extensions, event) {
   return extensions.map((ext2) => ({ ext: ext2, handlers: ext2.handlers.get(event)?.slice() ?? [] }));
 }
 function sameMessages(left, right) {
-  return left.length === right.length && left.every((message2, index3) => message2 === right[index3]);
+  return left.length === right.length && left.every((message3, index3) => message3 === right[index3]);
 }
 function restoreSystemMessages(current, visible, returned) {
   if (sameMessages(returned, visible))
@@ -275165,24 +275165,24 @@ var init_runner = __esm({
       wrapUIPromptContext(ui) {
         return {
           ...ui,
-          select: (title, options, opts) => this.withUIPrompt("select", title, () => ui.select(title, options, opts)),
-          confirm: (title, message2, opts) => this.withUIPrompt("confirm", title, () => ui.confirm(title, message2, opts)),
-          input: (title, placeholder, opts) => this.withUIPrompt("input", title, () => ui.input(title, placeholder, opts)),
-          editor: (title, prefill) => this.withUIPrompt("editor", title, () => ui.editor(title, prefill)),
+          select: (title2, options, opts) => this.withUIPrompt("select", title2, () => ui.select(title2, options, opts)),
+          confirm: (title2, message3, opts) => this.withUIPrompt("confirm", title2, () => ui.confirm(title2, message3, opts)),
+          input: (title2, placeholder, opts) => this.withUIPrompt("input", title2, () => ui.input(title2, placeholder, opts)),
+          editor: (title2, prefill) => this.withUIPrompt("editor", title2, () => ui.editor(title2, prefill)),
           custom: (factory, options) => this.withUIPrompt("custom", void 0, () => ui.custom(factory, options))
         };
       }
-      withUIPrompt(kind, title, run) {
+      withUIPrompt(kind, title2, run) {
         const outerPrompt = this.uiPromptDepth++ === 0;
         if (outerPrompt) {
-          this.activeUIPrompt = { kind, title };
-          this.emitUIPromptEvent({ type: "ui_prompt_start", reason: "ui_prompt", kind, ...title ? { title } : {} });
+          this.activeUIPrompt = { kind, title: title2 };
+          this.emitUIPromptEvent({ type: "ui_prompt_start", reason: "ui_prompt", kind, ...title2 ? { title: title2 } : {} });
         }
         const finish = () => {
           if (--this.uiPromptDepth > 0)
             return;
           this.uiPromptDepth = 0;
-          const prompt = this.activeUIPrompt ?? { kind, title };
+          const prompt = this.activeUIPrompt ?? { kind, title: title2 };
           this.activeUIPrompt = void 0;
           this.emitUIPromptEvent({
             type: "ui_prompt_end",
@@ -275255,10 +275255,10 @@ var init_runner = __esm({
         this.shortcutDiagnostics = [];
         const builtinKeybindings = buildBuiltinKeybindings(resolvedKeybindings);
         const extensionShortcuts = /* @__PURE__ */ new Map();
-        const addDiagnostic = (message2, extensionPath) => {
-          this.shortcutDiagnostics.push({ type: "warning", message: message2, path: extensionPath });
+        const addDiagnostic = (message3, extensionPath) => {
+          this.shortcutDiagnostics.push({ type: "warning", message: message3, path: extensionPath });
           if (!this.hasUI()) {
-            console.warn(message2);
+            console.warn(message3);
           }
         };
         for (const ext2 of this.extensions) {
@@ -275284,10 +275284,10 @@ var init_runner = __esm({
       getShortcutDiagnostics() {
         return this.shortcutDiagnostics;
       }
-      invalidate(message2 = "This extension ctx is stale after session replacement or reload. Do not use a captured pi or command ctx after ctx.newSession(), ctx.fork(), ctx.switchSession(), or ctx.reload(). For newSession, fork, and switchSession, move post-replacement work into withSession and use the ctx passed to withSession. For reload, do not use the old ctx after await ctx.reload().") {
+      invalidate(message3 = "This extension ctx is stale after session replacement or reload. Do not use a captured pi or command ctx after ctx.newSession(), ctx.fork(), ctx.switchSession(), or ctx.reload(). For newSession, fork, and switchSession, move post-replacement work into withSession and use the ctx passed to withSession. For reload, do not use the old ctx after await ctx.reload().") {
         if (!this.staleMessage) {
-          this.staleMessage = message2;
-          this.runtime.invalidate(message2);
+          this.staleMessage = message3;
+          this.runtime.invalidate(message3);
         }
       }
       assertActive() {
@@ -275618,12 +275618,12 @@ var init_runner = __esm({
                 }
               }
             } catch (err) {
-              const message2 = err instanceof Error ? err.message : String(err);
+              const message3 = err instanceof Error ? err.message : String(err);
               const stack = err instanceof Error ? err.stack : void 0;
               this.emitError({
                 extensionPath: ext2.path,
                 event: event.type,
-                error: message2,
+                error: message3,
                 stack
               });
             }
@@ -275675,12 +275675,12 @@ var init_runner = __esm({
               currentMessage = handlerResult.message;
               modified = true;
             } catch (err) {
-              const message2 = err instanceof Error ? err.message : String(err);
+              const message3 = err instanceof Error ? err.message : String(err);
               const stack = err instanceof Error ? err.stack : void 0;
               this.emitError({
                 extensionPath: ext2.path,
                 event: "message_end",
-                error: message2,
+                error: message3,
                 stack
               });
             }
@@ -275721,12 +275721,12 @@ var init_runner = __esm({
                 modified = true;
               }
             } catch (err) {
-              const message2 = err instanceof Error ? err.message : String(err);
+              const message3 = err instanceof Error ? err.message : String(err);
               const stack = err instanceof Error ? err.stack : void 0;
               this.emitError({
                 extensionPath: ext2.path,
                 event: "tool_result",
-                error: message2,
+                error: message3,
                 stack
               });
             }
@@ -275772,12 +275772,12 @@ var init_runner = __esm({
               }
               return handlerResult;
             } catch (err) {
-              const message2 = err instanceof Error ? err.message : String(err);
+              const message3 = err instanceof Error ? err.message : String(err);
               const stack = err instanceof Error ? err.stack : void 0;
               this.emitError({
                 extensionPath: ext2.path,
                 event: "user_bash",
-                error: message2,
+                error: message3,
                 stack
               });
               throw err;
@@ -275797,7 +275797,7 @@ var init_runner = __esm({
         for (const { ext: ext2, handlers } of snapshotEventHandlers(this.extensions, "context")) {
           for (const handler2 of handlers) {
             try {
-              const visibleMessages = currentMessages.filter((message2) => message2.role !== "system");
+              const visibleMessages = currentMessages.filter((message3) => message3.role !== "system");
               const visibleSnapshot = visibleMessages.slice();
               const event = { type: "context", messages: visibleMessages };
               const handlerResult = await handler2(event, ctx);
@@ -275806,12 +275806,12 @@ var init_runner = __esm({
                 continue;
               currentMessages = restoreSystemMessages(currentMessages, visibleSnapshot, returned);
             } catch (err) {
-              const message2 = err instanceof Error ? err.message : String(err);
+              const message3 = err instanceof Error ? err.message : String(err);
               const stack = err instanceof Error ? err.stack : void 0;
               this.emitError({
                 extensionPath: ext2.path,
                 event: "context",
-                error: message2,
+                error: message3,
                 stack
               });
             }
@@ -275832,12 +275832,12 @@ var init_runner = __esm({
                 });
               }
             } catch (err) {
-              const message2 = err instanceof Error ? err.message : String(err);
+              const message3 = err instanceof Error ? err.message : String(err);
               const stack = err instanceof Error ? err.stack : void 0;
               this.emitError({
                 extensionPath: ext2.path,
                 event: "context_with_system",
-                error: message2,
+                error: message3,
                 stack
               });
             }
@@ -275860,12 +275860,12 @@ var init_runner = __esm({
                 currentPayload = handlerResult;
               }
             } catch (err) {
-              const message2 = err instanceof Error ? err.message : String(err);
+              const message3 = err instanceof Error ? err.message : String(err);
               const stack = err instanceof Error ? err.stack : void 0;
               this.emitError({
                 extensionPath: ext2.path,
                 event: "before_provider_request",
-                error: message2,
+                error: message3,
                 stack
               });
             }
@@ -275884,12 +275884,12 @@ var init_runner = __esm({
               };
               await handler2(event, ctx);
             } catch (err) {
-              const message2 = err instanceof Error ? err.message : String(err);
+              const message3 = err instanceof Error ? err.message : String(err);
               const stack = err instanceof Error ? err.stack : void 0;
               this.emitError({
                 extensionPath: ext2.path,
                 event: "before_provider_headers",
-                error: message2,
+                error: message3,
                 stack
               });
             }
@@ -275927,12 +275927,12 @@ var init_runner = __esm({
                 }
               }
             } catch (err) {
-              const message2 = err instanceof Error ? err.message : String(err);
+              const message3 = err instanceof Error ? err.message : String(err);
               const stack = err instanceof Error ? err.stack : void 0;
               this.emitError({
                 extensionPath: ext2.path,
                 event: "before_agent_start",
-                error: message2,
+                error: message3,
                 stack
               });
             }
@@ -275961,12 +275961,12 @@ var init_runner = __esm({
                 themePaths.push(...result.themePaths.map((path19) => ({ path: path19, extensionPath: ext2.path })));
               }
             } catch (err) {
-              const message2 = err instanceof Error ? err.message : String(err);
+              const message3 = err instanceof Error ? err.message : String(err);
               const stack = err instanceof Error ? err.stack : void 0;
               this.emitError({
                 extensionPath: ext2.path,
                 event: "resources_discover",
-                error: message2,
+                error: message3,
                 stack
               });
             }
@@ -276486,7 +276486,7 @@ function adaptOAuth(config) {
         onAuth: (info2) => callbacks.notify({ type: "auth_url", ...info2 }),
         onDeviceCode: (info2) => callbacks.notify({ type: "device_code", ...info2 }),
         onPrompt: (prompt) => callbacks.prompt({ type: "text", ...prompt }),
-        onProgress: (message2) => callbacks.notify({ type: "progress", message: message2 }),
+        onProgress: (message3) => callbacks.notify({ type: "progress", message: message3 }),
         onManualCodeInput: () => callbacks.prompt({ type: "manual_code", message: "Paste the authorization code" }),
         onSelect: (prompt) => callbacks.prompt({ type: "select", ...prompt }),
         signal: callbacks.signal
@@ -276802,10 +276802,10 @@ var init_model_registry = __esm({
           };
         } catch (error2) {
           const cause = error2 instanceof Error ? error2.cause : void 0;
-          const message2 = cause instanceof Error ? cause.message : error2 instanceof Error ? error2.message : String(error2);
+          const message3 = cause instanceof Error ? cause.message : error2 instanceof Error ? error2.message : String(error2);
           return {
             ok: false,
-            error: message2 === "authHeader requires a resolved API key" ? `No API key found for "${model2.provider}"` : message2
+            error: message3 === "authHeader requires a resolved API key" ? `No API key found for "${model2.provider}"` : message3
           };
         }
       }
@@ -277115,8 +277115,8 @@ function loadTemplateFromFile(filePath, sourceInfo) {
   try {
     rawContent = readFileSync8(filePath, "utf-8");
   } catch (error2) {
-    const message2 = error2 instanceof Error ? error2.message : "failed to read prompt template file";
-    diagnostics.push({ type: "warning", message: message2, path: filePath });
+    const message3 = error2 instanceof Error ? error2.message : "failed to read prompt template file";
+    diagnostics.push({ type: "warning", message: message3, path: filePath });
     return { template: null, diagnostics };
   }
   let frontmatter;
@@ -277124,8 +277124,8 @@ function loadTemplateFromFile(filePath, sourceInfo) {
   try {
     ({ frontmatter, body } = parseFrontmatter(rawContent));
   } catch (error2) {
-    const message2 = error2 instanceof Error ? error2.message : "failed to parse prompt template file";
-    diagnostics.push({ type: "warning", message: message2, path: filePath });
+    const message3 = error2 instanceof Error ? error2.message : "failed to parse prompt template file";
+    diagnostics.push({ type: "warning", message: message3, path: filePath });
     return { template: null, diagnostics };
   }
   const name = basename9(filePath).replace(/\.md$/, "");
@@ -277245,8 +277245,8 @@ function loadPromptTemplates(options) {
         diagnostics.push(...result.diagnostics);
       }
     } catch (error2) {
-      const message2 = error2 instanceof Error ? error2.message : "failed to read prompt template path";
-      diagnostics.push({ type: "warning", message: message2, path: resolvedPath });
+      const message3 = error2 instanceof Error ? error2.message : "failed to read prompt template path";
+      diagnostics.push({ type: "warning", message: message3, path: resolvedPath });
     }
   }
   return { templates, diagnostics };
@@ -277633,8 +277633,8 @@ ${imageIndicators}` : imageIndicators;
   }
   return output;
 }
-function formatToolCallWithArgs(title, args, theme2, expanded) {
-  const header = theme2.fg("toolTitle", theme2.bold(title));
+function formatToolCallWithArgs(title2, args, theme2, expanded) {
+  const header = theme2.fg("toolTitle", theme2.bold(title2));
   if (args == null)
     return header;
   const entries2 = typeof args === "object" && !Array.isArray(args) ? Object.entries(args) : [["args", args]];
@@ -279395,17 +279395,17 @@ function renderDiff(diffText, _options = {}) {
         removedLines.push({ lineNum: p.lineNum, content: p.content });
         i2++;
       }
-      const addedLines = [];
+      const addedLines2 = [];
       while (i2 < lines.length) {
         const p = parseDiffLine(lines[i2]);
         if (!p || p.prefix !== "+")
           break;
-        addedLines.push({ lineNum: p.lineNum, content: p.content });
+        addedLines2.push({ lineNum: p.lineNum, content: p.content });
         i2++;
       }
-      if (removedLines.length === 1 && addedLines.length === 1) {
+      if (removedLines.length === 1 && addedLines2.length === 1) {
         const removed = removedLines[0];
-        const added = addedLines[0];
+        const added = addedLines2[0];
         const { removedLine, addedLine } = renderIntraLineDiff(replaceTabs2(removed.content), replaceTabs2(added.content));
         result.push(theme.fg("toolDiffRemoved", `-${removed.lineNum} ${removedLine}`));
         result.push(theme.fg("toolDiffAdded", `+${added.lineNum} ${addedLine}`));
@@ -279413,7 +279413,7 @@ function renderDiff(diffText, _options = {}) {
         for (const removed of removedLines) {
           result.push(theme.fg("toolDiffRemoved", `-${removed.lineNum} ${replaceTabs2(removed.content)}`));
         }
-        for (const added of addedLines) {
+        for (const added of addedLines2) {
           result.push(theme.fg("toolDiffAdded", `+${added.lineNum} ${replaceTabs2(added.content)}`));
         }
       }
@@ -281581,9 +281581,9 @@ function isVirtualModel(model2) {
 }
 function findLatestResponse(messages) {
   for (let i2 = messages.length - 1; i2 >= 0; i2--) {
-    const message2 = messages[i2];
-    if (message2.role === "assistant" && message2.stopReason !== "error" && message2.stopReason !== "aborted") {
-      return message2;
+    const message3 = messages[i2];
+    if (message3.role === "assistant" && message3.stopReason !== "error" && message3.stopReason !== "aborted") {
+      return message3;
     }
   }
   return void 0;
@@ -281706,8 +281706,8 @@ function withoutDeletedHeaders(headers) {
 }
 function estimateMessagesTokens(messages) {
   let tokens = 0;
-  for (const message2 of messages) {
-    tokens += estimateTokens2(message2);
+  for (const message3 of messages) {
+    tokens += estimateTokens2(message3);
   }
   return tokens;
 }
@@ -281941,11 +281941,11 @@ var init_agent_session = __esm({
        * The model whose limits apply to `message`, or undefined when the message came from another
        * model. Under a virtual selection, that is the physical model that produced it.
        */
-      _modelForMessage(message2) {
+      _modelForMessage(message3) {
         const model2 = this.model;
         if (model2 && isVirtualModel(model2))
-          return this._modelRuntime.getPhysicalModel(message2.provider, message2.model);
-        return model2?.provider === message2.provider && model2.id === message2.model ? model2 : void 0;
+          return this._modelRuntime.getPhysicalModel(message3.provider, message3.model);
+        return model2?.provider === message3.provider && model2.id === message3.model ? model2 : void 0;
       }
       /**
        * Record the selection on the current branch when the branch implies another one, so a resume
@@ -282111,8 +282111,8 @@ var init_agent_session = __esm({
           const thinkingLevel = previous?.thinkingLevel ?? this.agent.state.thinkingLevel;
           if (!isVirtualModel(model2))
             return { ...previous, context: context4, model: model2, thinkingLevel };
-          const lastResponse = context4.messages.findLastIndex((message2) => message2.role === "assistant");
-          const userTurn = context4.messages.slice(lastResponse + 1).some((message2) => message2.role === "user");
+          const lastResponse = context4.messages.findLastIndex((message3) => message3.role === "assistant");
+          const userTurn = context4.messages.slice(lastResponse + 1).some((message3) => message3.role === "user");
           const state3 = getVirtualModelState(this.sessionManager.getBranch(), model2.provider, model2.id);
           const route = await this._modelRuntime.resolveModel(model2, convertToLlm(context4.messages), {
             reason: failed ? "retry" : userTurn ? "user" : "continuation",
@@ -282134,9 +282134,9 @@ var init_agent_session = __esm({
           return { ...previous, context: context4, model: route.model, thinkingLevel: route.thinkingLevel };
         };
       }
-      async _dispatchTurnEndBoundary(message2, toolResults) {
-        this._lastActivityOutcome = message2.stopReason === "aborted" ? "aborted" : message2.stopReason === "error" ? "error" : "completed";
-        const messageEntryId = this._findPersistedMessageEntryId(message2);
+      async _dispatchTurnEndBoundary(message3, toolResults) {
+        this._lastActivityOutcome = message3.stopReason === "aborted" ? "aborted" : message3.stopReason === "error" ? "error" : "completed";
+        const messageEntryId = this._findPersistedMessageEntryId(message3);
         if (!this._extensionRunner.hasHandlers("turn_end"))
           return false;
         if (!messageEntryId) {
@@ -282154,7 +282154,7 @@ var init_agent_session = __esm({
         const boundary = await this._extensionRunner.emitBoundary({
           type: "turn_end",
           turnIndex: this._turnIndex,
-          message: message2,
+          message: message3,
           toolResults,
           messageEntryId,
           toolResultEntryIds,
@@ -282213,8 +282213,8 @@ var init_agent_session = __esm({
       _refreshFinalizedContext() {
         const projection = this.sessionManager.buildSessionProjection();
         for (const entry of projection.entries) {
-          for (const message2 of entry.messages)
-            this._entryIdsByMessage.set(message2, entry.sourceEntry.id);
+          for (const message3 of entry.messages)
+            this._entryIdsByMessage.set(message3, entry.sourceEntry.id);
         }
         this.agent.state.messages = projection.messages;
       }
@@ -282260,7 +282260,7 @@ var init_agent_session = __esm({
         const pendingMessages = this._getPendingBoundaryMessages();
         const llmMessages = convertToLlm(projection.messages);
         const finalRole = llmMessages[llmMessages.length - 1]?.role;
-        const hasNonSystemContext = llmMessages.some((message2) => message2.role !== "system");
+        const hasNonSystemContext = llmMessages.some((message3) => message3.role !== "system");
         const contextCanContinue = hasNonSystemContext && finalRole !== "assistant";
         const pendingCustomContext = this._pendingCustomMessages.length > 0;
         return {
@@ -282348,12 +282348,12 @@ var init_agent_session = __esm({
           this.agent.abort();
         if (this._nestedToolCalls) {
           if (event.type === "message_start" && event.message.role === "toolResult") {
-            const message2 = event.message;
-            const summary3 = this._nestedToolCalls.takeRecord(message2.toolCallId);
+            const message3 = event.message;
+            const summary3 = this._nestedToolCalls.takeRecord(message3.toolCallId);
             if (summary3?.calls)
-              message2.nestedCalls = summary3.calls;
+              message3.nestedCalls = summary3.calls;
             if (summary3?.usage) {
-              message2.usage = message2.usage ? combineUsage(message2.usage, summary3.usage) : summary3.usage;
+              message3.usage = message3.usage ? combineUsage(message3.usage, summary3.usage) : summary3.usage;
             }
           } else if (event.type === "agent_end") {
             this._nestedToolCalls.clear();
@@ -282415,22 +282415,22 @@ var init_agent_session = __esm({
           return false;
         }
         for (let i2 = event.messages.length - 1; i2 >= 0; i2--) {
-          const message2 = event.messages[i2];
-          if (message2.role === "assistant") {
-            return this._isRetryableError(message2);
+          const message3 = event.messages[i2];
+          if (message3.role === "assistant") {
+            return this._isRetryableError(message3);
           }
         }
         return false;
       }
-      _findPersistedMessageEntryId(message2) {
-        const mapped = this._entryIdsByMessage.get(message2);
+      _findPersistedMessageEntryId(message3) {
+        const mapped = this._entryIdsByMessage.get(message3);
         if (mapped)
           return mapped;
         for (const entry of [...this.sessionManager.getBranch()].reverse()) {
-          if (entry.type === "message" && entry.message === message2)
+          if (entry.type === "message" && entry.message === message3)
             return entry.id;
         }
-        const messageIndex = this.agent.state.messages.indexOf(message2);
+        const messageIndex = this.agent.state.messages.indexOf(message3);
         if (messageIndex < 0)
           return void 0;
         const projection = this.sessionManager.buildSessionProjection();
@@ -282438,7 +282438,7 @@ var init_agent_session = __esm({
         for (const entry of projection.entries) {
           for (let i2 = 0; i2 < entry.messages.length; i2++) {
             if (projectedIndex === messageIndex) {
-              this._entryIdsByMessage.set(message2, entry.sourceEntry.id);
+              this._entryIdsByMessage.set(message3, entry.sourceEntry.id);
               return entry.sourceEntry.id;
             }
             projectedIndex++;
@@ -282451,11 +282451,11 @@ var init_agent_session = __esm({
        * found in the projected context, so the pair stays together whether the attempt comes from
        * the current run or a resumed session. An unpaired result fails the next request (#11227).
        */
-      _omitRecoveryAttempt(message2) {
-        const toolCallIds = new Set(message2.content.flatMap((block) => block.type === "toolCall" ? [block.id] : []));
-        const entryId = this._findPersistedMessageEntryId(message2);
+      _omitRecoveryAttempt(message3) {
+        const toolCallIds = new Set(message3.content.flatMap((block) => block.type === "toolCall" ? [block.id] : []));
+        const entryId = this._findPersistedMessageEntryId(message3);
         const messages = this.agent.state.messages;
-        const index3 = messages.findIndex((m3) => m3 === message2 || entryId !== void 0 && this._entryIdsByMessage.get(m3) === entryId);
+        const index3 = messages.findIndex((m3) => m3 === message3 || entryId !== void 0 && this._entryIdsByMessage.get(m3) === entryId);
         const toolResults = [];
         for (const m3 of index3 < 0 ? [] : messages.slice(index3 + 1)) {
           if (m3.role === "assistant")
@@ -282463,7 +282463,7 @@ var init_agent_session = __esm({
           if (m3.role === "toolResult" && toolCallIds.has(m3.toolCallId))
             toolResults.push(m3);
         }
-        const targets = [message2, ...toolResults];
+        const targets = [message3, ...toolResults];
         const targetIds = targets.map((target) => this._findPersistedMessageEntryId(target));
         const unresolvedProjectedTarget = targets.some((target, index4) => targetIds[index4] === void 0 && this.agent.state.messages.includes(target));
         if (unresolvedProjectedTarget) {
@@ -282930,10 +282930,10 @@ var init_agent_session = __esm({
           const hidden = this._hiddenDeclarations;
           if (hidden.size === 0)
             return transformed;
-          return transformed.map((message2) => {
-            if (message2.role !== "system" || !message2.toolsAdded && !message2.toolsRemoved)
-              return message2;
-            const { toolsAdded, toolsRemoved, ...rest } = message2;
+          return transformed.map((message3) => {
+            if (message3.role !== "system" || !message3.toolsAdded && !message3.toolsRemoved)
+              return message3;
+            const { toolsAdded, toolsRemoved, ...rest } = message3;
             const added = toolsAdded?.filter((tool) => !hidden.has(tool.name)) ?? [];
             const removed = toolsRemoved?.filter((tool) => !hidden.has(tool.name)) ?? [];
             return {
@@ -282958,7 +282958,7 @@ var init_agent_session = __esm({
             ...current?.toolsAdded ? { toolsAdded: current.toolsAdded } : {},
             timestamp: current?.timestamp ?? Date.now()
           };
-          return [head, ...transformed.filter((message2) => message2.role !== "system")];
+          return [head, ...transformed.filter((message3) => message3.role !== "system")];
         };
       }
       /**
@@ -282972,7 +282972,7 @@ var init_agent_session = __esm({
         const systemMessages = this.sessionManager.getBranch().flatMap((entry) => entry.type === "message" && entry.message.role === "system" ? [entry.message] : []);
         if (systemMessages.length === 0)
           return;
-        const mentioned = new Set(systemMessages.flatMap((message2) => [...message2.toolsAdded ?? [], ...message2.toolsRemoved ?? []]).map((tool) => tool.name));
+        const mentioned = new Set(systemMessages.flatMap((message3) => [...message3.toolsAdded ?? [], ...message3.toolsRemoved ?? []]).map((tool) => tool.name));
         const newTools = [...this._toolRegistry.keys()].filter((name) => !mentioned.has(name) && !this._baseToolDefinitions.has(name) && this._isActivatedOnRegistration(name));
         const names2 = applyToolModifiers([...getCurrentTools(systemMessages).map((tool) => tool.name), ...newTools], modifiers2);
         this._pendingToolNames = new Set(names2.filter((name) => this._isAllowedTool(name)));
@@ -283081,34 +283081,34 @@ ${normalized.hints.join("\n")}` : trigger.prompt;
         return messages;
       }
       async _handlePostAgentRun() {
-        const message2 = this._lastAssistantMessage;
+        const message3 = this._lastAssistantMessage;
         this._lastAssistantMessage = void 0;
         if (this._agentRunAbortRequested) {
           this._finishCancelledRetry();
           return false;
         }
-        if (!message2)
+        if (!message3)
           return this.agent.hasQueuedMessages();
-        if (this._isRetryableError(message2) && await this._prepareRetry(message2)) {
+        if (this._isRetryableError(message3) && await this._prepareRetry(message3)) {
           if (this._agentRunAbortRequested)
             this._finishCancelledRetry();
-          this._failedResponse = message2;
+          this._failedResponse = message3;
           return !this._agentRunAbortRequested;
         }
         if (this._agentRunAbortRequested) {
           this._finishCancelledRetry();
           return false;
         }
-        if (message2.stopReason === "error" && this._retryAttempt > 0) {
+        if (message3.stopReason === "error" && this._retryAttempt > 0) {
           this._emit({
             type: "auto_retry_end",
             success: false,
             attempt: this._retryAttempt,
-            finalError: message2.errorMessage
+            finalError: message3.errorMessage
           });
           this._retryAttempt = 0;
         }
-        if (await this._checkCompaction(message2)) {
+        if (await this._checkCompaction(message3)) {
           return !this._agentRunAbortRequested;
         }
         return !this._agentRunAbortRequested && this.agent.hasQueuedMessages();
@@ -283378,14 +283378,14 @@ ${args}` : skillBlock;
        * @param options.triggerTurn If true and not streaming, triggers a new LLM turn
        * @param options.deliverAs Delivery mode: "steer", "followUp", or "nextTurn"
        */
-      async sendCustomMessage(message2, options) {
+      async sendCustomMessage(message3, options) {
         const appMessage = {
           role: "custom",
-          customType: message2.customType,
+          customType: message3.customType,
           // Untyped extensions can pass null/missing content; normalize at ingestion.
-          content: message2.content ?? [],
-          display: message2.display,
-          details: message2.details,
+          content: message3.content ?? [],
+          display: message3.display,
+          details: message3.details,
           timestamp: Date.now()
         };
         if (options?.deliverAs === "nextTurn") {
@@ -283398,7 +283398,7 @@ ${args}` : skillBlock;
           }
         } else if (options?.triggerTurn) {
           if (this._isEmittingAgentSettled) {
-            this._deferredSettledActions.push(async () => await this.sendCustomMessage(message2, options));
+            this._deferredSettledActions.push(async () => await this.sendCustomMessage(message3, options));
             return;
           }
           await this._startRun({ messageType: "custom", message: appMessage });
@@ -283833,9 +283833,9 @@ ${args}` : skillBlock;
           });
           return compactionResult;
         } catch (error2) {
-          const message2 = error2 instanceof Error ? error2.message : String(error2);
+          const message3 = error2 instanceof Error ? error2.message : String(error2);
           const aborted = this._compactionAbortController.signal.aborted || cancelledByExtension;
-          const errorMessage9 = aborted ? void 0 : `Compaction failed: ${message2}`;
+          const errorMessage9 = aborted ? void 0 : `Compaction failed: ${message3}`;
           this._clearManualCompactionState();
           this._emit({
             type: "compaction_end",
@@ -283907,7 +283907,7 @@ ${args}` : skillBlock;
         }
         const currentProjection = this.sessionManager.buildSessionProjection();
         const assistantEntryId = this._findPersistedMessageEntryId(assistantMessage);
-        const assistantIsProjected = assistantEntryId === void 0 || currentProjection.entries.some((entry) => entry.sourceEntry.id === assistantEntryId && entry.messages.some((message2) => message2.role === "assistant"));
+        const assistantIsProjected = assistantEntryId === void 0 || currentProjection.entries.some((entry) => entry.sourceEntry.id === assistantEntryId && entry.messages.some((message3) => message3.role === "assistant"));
         const branch = this.sessionManager.getBranch();
         const assistantIndex = assistantEntryId ? branch.findIndex((entry) => entry.id === assistantEntryId) : -1;
         const entriesAfterAssistant = assistantIndex >= 0 ? branch.slice(assistantIndex + 1) : [];
@@ -284072,10 +284072,10 @@ ${args}` : skillBlock;
             return true;
           return this.agent.hasQueuedMessages();
         } catch (error2) {
-          const message2 = error2 instanceof Error ? error2.message : "compaction failed";
+          const message3 = error2 instanceof Error ? error2.message : "compaction failed";
           const aborted = abortController?.signal.aborted === true || cancelledByExtension;
           if (started) {
-            const errorMessage9 = aborted ? void 0 : reason === "overflow" ? `Context overflow recovery failed: ${message2}` : `Auto-compaction failed: ${message2}`;
+            const errorMessage9 = aborted ? void 0 : reason === "overflow" ? `Context overflow recovery failed: ${message3}` : `Auto-compaction failed: ${message3}`;
             this._emit({
               type: "compaction_end",
               reason,
@@ -284213,8 +284213,8 @@ ${args}` : skillBlock;
           return [...extensionCommands, ...templates, ...skills];
         };
         runner.bindCore({
-          sendMessage: (message2, options) => {
-            this.sendCustomMessage(message2, options).catch((err) => {
+          sendMessage: (message3, options) => {
+            this.sendCustomMessage(message3, options).catch((err) => {
               runner.emitError({
                 extensionPath: "<runtime>",
                 event: "send_message",
@@ -284460,10 +284460,10 @@ ${args}` : skillBlock;
        * Check if an error is retryable (overloaded, rate limit, server errors).
        * Context overflow errors are NOT retryable (handled by compaction instead).
        */
-      _isRetryableError(message2) {
-        if (isContextOverflow(message2, (this._modelForMessage(message2) ?? this.model)?.contextWindow ?? 0))
+      _isRetryableError(message3) {
+        if (isContextOverflow(message3, (this._modelForMessage(message3) ?? this.model)?.contextWindow ?? 0))
           return false;
-        return isRetryableAssistantError(message2);
+        return isRetryableAssistantError(message3);
       }
       /**
        * Retry policy + callbacks shared by compaction and branch-summary summarization calls.
@@ -284509,7 +284509,7 @@ ${args}` : skillBlock;
        * Prepare a retryable error for continuation with exponential backoff.
        * @returns true if the caller should continue the agent, false otherwise
        */
-      async _prepareRetry(message2) {
+      async _prepareRetry(message3) {
         const settings2 = this.settingsManager.getRetrySettings();
         if (!settings2.enabled) {
           return false;
@@ -284525,9 +284525,9 @@ ${args}` : skillBlock;
           attempt: this._retryAttempt,
           maxAttempts: settings2.maxRetries,
           delayMs,
-          errorMessage: message2.errorMessage || "Unknown error"
+          errorMessage: message3.errorMessage || "Unknown error"
         });
-        this._omitRecoveryAttempt(message2);
+        this._omitRecoveryAttempt(message3);
         this._retryAbortController = new AbortController();
         try {
           await sleep6(delayMs, this._retryAbortController.signal);
@@ -284842,17 +284842,17 @@ ${command}` : command;
           if (entry.type !== "message")
             continue;
           totalMessages++;
-          const message2 = entry.message;
-          if (message2.role === "user") {
+          const message3 = entry.message;
+          if (message3.role === "user") {
             userMessages++;
-          } else if (message2.role === "toolResult") {
+          } else if (message3.role === "toolResult") {
             toolResults++;
-            if (message2.usage) {
-              addUsageToTotals(usageTotals, message2.usage);
+            if (message3.usage) {
+              addUsageToTotals(usageTotals, message3.usage);
             }
-          } else if (message2.role === "assistant") {
+          } else if (message3.role === "assistant") {
             assistantMessages++;
-            const assistantMsg = message2;
+            const assistantMsg = message3;
             if (Array.isArray(assistantMsg.content)) {
               toolCalls += assistantMsg.content.filter((c2) => c2.type === "toolCall").length;
             }
@@ -284889,7 +284889,7 @@ ${command}` : command;
         const branch = this.sessionManager.getBranch();
         const latestCompaction = getLatestCompactionEntry(branch);
         if (latestCompaction) {
-          const projectedAssistants = new Set(projection.entries.flatMap((entry) => entry.messages.some((message2) => message2.role === "assistant" && message2.stopReason !== "aborted" && message2.stopReason !== "error" && calculateContextTokens2(message2.usage) > 0) ? [entry.sourceEntry.id] : []));
+          const projectedAssistants = new Set(projection.entries.flatMap((entry) => entry.messages.some((message3) => message3.role === "assistant" && message3.stopReason !== "aborted" && message3.stopReason !== "error" && calculateContextTokens2(message3.usage) > 0) ? [entry.sourceEntry.id] : []));
           const compactionIndex = branch.findIndex((entry) => entry.id === latestCompaction.id);
           const hasPostCompactionUsage = branch.slice(compactionIndex + 1).some((entry) => projectedAssistants.has(entry.id));
           if (!hasPostCompactionUsage)
@@ -284982,7 +284982,7 @@ ${command}` : command;
       // =========================================================================
       createReplacedSessionContext() {
         const context4 = Object.defineProperties({}, Object.getOwnPropertyDescriptors(this._extensionRunner.createCommandContext()));
-        context4.sendMessage = (message2, options) => this.sendCustomMessage(message2, options);
+        context4.sendMessage = (message3, options) => this.sendCustomMessage(message3, options);
         context4.sendUserMessage = (content, options) => this.sendUserMessage(content, options);
         return context4;
       }
@@ -293911,8 +293911,8 @@ var init_package_manager = __esm({
       emitProgress(event) {
         this.progressCallback?.(event);
       }
-      async withProgress(action, source, message2, operation) {
-        this.emitProgress({ type: "start", action, source, message: message2 });
+      async withProgress(action, source, message3, operation) {
+        this.emitProgress({ type: "start", action, source, message: message3 });
         try {
           await operation();
           this.emitProgress({ type: "complete", action, source });
@@ -294142,9 +294142,9 @@ var init_package_manager = __esm({
           return;
         }
         const sourceLabel = sources.length === 1 ? sources[0].source : `${scope} npm packages`;
-        const message2 = sources.length === 1 ? `Updating ${sources[0].source}...` : `Updating ${scope} npm packages...`;
+        const message3 = sources.length === 1 ? `Updating ${sources[0].source}...` : `Updating ${scope} npm packages...`;
         const specs = sources.map((entry) => entry.parsed.version ? entry.parsed.spec : `${entry.parsed.name}@latest`);
-        await this.withProgress("update", sourceLabel, message2, async () => {
+        await this.withProgress("update", sourceLabel, message3, async () => {
           await this.installNpmBatch(specs, scope);
         });
         this.reportUnchangedNpmUpdates(sources, scope);
@@ -296512,8 +296512,8 @@ var init_resource_loader = __esm({
               diagnostics.push({ type: "warning", message: "theme path is not a json file", path: resolved });
             }
           } catch (error2) {
-            const message2 = error2 instanceof Error ? error2.message : "failed to read theme path";
-            diagnostics.push({ type: "warning", message: message2, path: resolved });
+            const message3 = error2 instanceof Error ? error2.message : "failed to read theme path";
+            diagnostics.push({ type: "warning", message: message3, path: resolved });
           }
         }
         return { themes, diagnostics };
@@ -296542,16 +296542,16 @@ var init_resource_loader = __esm({
             this.loadThemeFromFile(join26(dir, entry.name), themes, diagnostics, colorMode);
           }
         } catch (error2) {
-          const message2 = error2 instanceof Error ? error2.message : "failed to read theme directory";
-          diagnostics.push({ type: "warning", message: message2, path: dir });
+          const message3 = error2 instanceof Error ? error2.message : "failed to read theme directory";
+          diagnostics.push({ type: "warning", message: message3, path: dir });
         }
       }
       loadThemeFromFile(filePath, themes, diagnostics, colorMode) {
         try {
           themes.push(loadThemeFromPath(filePath, colorMode));
         } catch (error2) {
-          const message2 = error2 instanceof Error ? error2.message : "failed to load theme";
-          diagnostics.push({ type: "warning", message: message2, path: filePath });
+          const message3 = error2 instanceof Error ? error2.message : "failed to load theme";
+          diagnostics.push({ type: "warning", message: message3, path: filePath });
         }
       }
       async loadExtensionFactories(runtime) {
@@ -296567,8 +296567,8 @@ var init_resource_loader = __esm({
             extension2.replaceable = isNamed && input2.replaceable === true;
             extensions.push(extension2);
           } catch (error2) {
-            const message2 = error2 instanceof Error ? error2.message : "failed to load extension";
-            errors.push({ path: extensionPath, error: message2 });
+            const message3 = error2 instanceof Error ? error2.message : "failed to load extension";
+            errors.push({ path: extensionPath, error: message3 });
           }
         }
         return { extensions, errors };
@@ -296931,7 +296931,7 @@ var init_cache_warmer = __esm({
         }
         run.extensionOverride = extensionOverride;
         try {
-          const message2 = await this.models.streamSimple(run.model, run.context, {
+          const message3 = await this.models.streamSimple(run.model, run.context, {
             ...run.options,
             maxTokens: 1,
             maxRetries: 0,
@@ -296939,8 +296939,8 @@ var init_cache_warmer = __esm({
           }).result();
           if (!this.validateRun(run))
             return;
-          if (message2.stopReason !== "error" && message2.stopReason !== "aborted") {
-            const entry = this.sessionManager.appendUsage("cache_warm", message2.provider, message2.responseModel ?? message2.model, message2.usage, extensionOverride ? "extension override" : void 0);
+          if (message3.stopReason !== "error" && message3.stopReason !== "aborted") {
+            const entry = this.sessionManager.appendUsage("cache_warm", message3.provider, message3.responseModel ?? message3.model, message3.usage, extensionOverride ? "extension override" : void 0);
             this.onWarmed?.(entry);
           }
         } catch {
@@ -297139,10 +297139,10 @@ async function createAgentSessionServices(options) {
     try {
       modelRuntime.registerProvider(name, config);
     } catch (error2) {
-      const message2 = error2 instanceof Error ? error2.message : String(error2);
+      const message3 = error2 instanceof Error ? error2.message : String(error2);
       diagnostics.push({
         type: "error",
-        message: `Extension "${extensionPath}" error: ${message2}`
+        message: `Extension "${extensionPath}" error: ${message3}`
       });
     }
   }
@@ -297151,10 +297151,10 @@ async function createAgentSessionServices(options) {
     try {
       modelRuntime.registerNativeProvider(provider2);
     } catch (error2) {
-      const message2 = error2 instanceof Error ? error2.message : String(error2);
+      const message3 = error2 instanceof Error ? error2.message : String(error2);
       diagnostics.push({
         type: "error",
-        message: `Extension "${extensionPath}" error: ${message2}`
+        message: `Extension "${extensionPath}" error: ${message3}`
       });
     }
   }
@@ -297163,10 +297163,10 @@ async function createAgentSessionServices(options) {
     try {
       modelRuntime.registerVirtualModel(definition);
     } catch (error2) {
-      const message2 = error2 instanceof Error ? error2.message : String(error2);
+      const message3 = error2 instanceof Error ? error2.message : String(error2);
       diagnostics.push({
         type: "error",
-        message: `Extension "${extensionPath}" error: ${message2}`
+        message: `Extension "${extensionPath}" error: ${message3}`
       });
     }
   }
@@ -297633,7 +297633,7 @@ async function createAgentSession(options = {}) {
     return () => {
       const currentModel = agent.state.model;
       const currentMessages = agent.state.messages;
-      return currentModel.provider === requestModel.provider && currentModel.id === requestModel.id && messages.length <= currentMessages.length && messages.every((message2, index3) => currentMessages[index3] === message2);
+      return currentModel.provider === requestModel.provider && currentModel.id === requestModel.id && messages.length <= currentMessages.length && messages.every((message3, index3) => currentMessages[index3] === message3);
     };
   };
   const transformProviderPayload = async (payload) => {
@@ -297828,8 +297828,8 @@ function readTrustFile(path19) {
   try {
     parsed = JSON.parse(stripBom(readFileSync14(path19, "utf-8")));
   } catch (error2) {
-    const message2 = error2 instanceof Error ? error2.message : String(error2);
-    throw new Error(`Failed to read trust store ${path19}: ${message2}`);
+    const message3 = error2 instanceof Error ? error2.message : String(error2);
+    throw new Error(`Failed to read trust store ${path19}: ${message3}`);
   }
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
     throw new Error(`Invalid trust store ${path19}: expected an object`);
@@ -298278,8 +298278,8 @@ NEWLINE: /\r?\n/
 SOURCE: /[\s\S]+/
 `;
     CodemodeSourceError = class extends Error {
-      constructor(message2) {
-        super(message2);
+      constructor(message3) {
+        super(message3);
         this.name = "CodemodeSourceError";
       }
     };
@@ -298339,11 +298339,11 @@ function parseScriptError(json3) {
   const parsed = parseBridgeJson(json3, "script error");
   if (typeof parsed !== "object" || parsed === null)
     throw new BridgeError("script error is not an object");
-  const { name, message: message2, stack } = parsed;
-  if (typeof message2 !== "string" || name !== void 0 && typeof name !== "string" || stack !== void 0 && typeof stack !== "string") {
+  const { name, message: message3, stack } = parsed;
+  if (typeof message3 !== "string" || name !== void 0 && typeof name !== "string" || stack !== void 0 && typeof stack !== "string") {
     throw new BridgeError("script error is malformed");
   }
-  return { kind: "script", name, message: message2, stack };
+  return { kind: "script", name, message: message3, stack };
 }
 function checkGlobals(globals) {
   const names2 = /* @__PURE__ */ new Set();
@@ -298435,7 +298435,7 @@ var init_execution = __esm({
           ...options.deterministic ? { deterministic: options.deterministic } : {}
         };
         const events = {
-          message: (message2) => this.receive(message2),
+          message: (message3) => this.receive(message3),
           failure: (error2) => this.finish(error2)
         };
         new Promise((resolve19) => resolve19(options.launch(data, events))).then((channel) => {
@@ -298444,8 +298444,8 @@ var init_execution = __esm({
             return;
           }
           this.channel = channel;
-          for (const message2 of this.unsent.splice(0))
-            channel.post(message2);
+          for (const message3 of this.unsent.splice(0))
+            channel.post(message3);
         }, (error2) => {
           this.finish({ kind: "sandbox", message: errorMessage2(error2) });
         });
@@ -298486,24 +298486,24 @@ var init_execution = __esm({
           ...properties === void 0 ? {} : { properties }
         });
       }
-      abort(message2) {
-        this.finish({ kind: "aborted", message: message2 });
+      abort(message3) {
+        this.finish({ kind: "aborted", message: message3 });
         return this.promise;
       }
       onAbort = () => {
         const reason = this.signal?.reason;
         this.finish({ kind: "aborted", message: reason instanceof Error ? reason.message : "Execution aborted" });
       };
-      post(message2) {
+      post(message3) {
         if (this.channel)
-          this.channel.post(message2);
+          this.channel.post(message3);
         else
-          this.unsent.push(message2);
+          this.unsent.push(message3);
       }
       /** An exception here would escape into the launcher's transport and leave the execution unsettled. */
-      receive(message2) {
+      receive(message3) {
         try {
-          this.handleMessage(message2);
+          this.handleMessage(message3);
         } catch (error2) {
           this.finish({
             kind: "sandbox",
@@ -298511,58 +298511,58 @@ var init_execution = __esm({
           });
         }
       }
-      handleMessage(message2) {
+      handleMessage(message3) {
         if (this.finished)
           return;
-        if (!isWorkerToHostMessage(message2))
+        if (!isWorkerToHostMessage(message3))
           throw new BridgeError("unknown message from the worker");
-        switch (message2.type) {
+        switch (message3.type) {
           case "output":
-            this.output.push(message2.item);
+            this.output.push(message3.item);
             break;
           case "call":
-            if (this.pending.has(message2.id))
-              throw new BridgeError(`duplicate call id ${message2.id}`);
+            if (this.pending.has(message3.id))
+              throw new BridgeError(`duplicate call id ${message3.id}`);
             if (this.control)
-              this.forwardCall(message2, this.control);
+              this.forwardCall(message3, this.control);
             else
-              void this.handleCall(message2);
+              void this.handleCall(message3);
             break;
           case "started":
-            this.control?.onStarted?.(message2.fingerprint);
+            this.control?.onStarted?.(message3.fingerprint);
             break;
           case "idle":
-            this.control?.onIdle?.(message2.seq, message2.issued);
+            this.control?.onIdle?.(message3.seq, message3.issued);
             break;
           case "done":
-            this.handleDone(message2);
+            this.handleDone(message3);
             break;
           case "crash":
-            this.finish({ kind: "sandbox", message: message2.message });
+            this.finish({ kind: "sandbox", message: message3.message });
             break;
         }
       }
-      handleDone(message2) {
-        if (!message2.ok) {
-          this.finish(parseScriptError(message2.error), void 0, void 0, message2.during);
+      handleDone(message3) {
+        if (!message3.ok) {
+          this.finish(parseScriptError(message3.error), void 0, void 0, message3.during);
           return;
         }
-        const value2 = message2.value === void 0 ? void 0 : parseBridgeJson(message2.value, "return value");
-        this.finish(void 0, value2, parseStoreWrites(message2.writes), message2.during);
+        const value2 = message3.value === void 0 ? void 0 : parseBridgeJson(message3.value, "return value");
+        this.finish(void 0, value2, parseStoreWrites(message3.writes), message3.during);
       }
       /** A host-controlled run: record the call and hand it to the caller, which answers with `deliver()`. */
-      forwardCall(message2, control) {
-        const { id, name, target } = message2;
-        const args = message2.args === void 0 ? void 0 : parseBridgeJson(message2.args, "call arguments");
+      forwardCall(message3, control) {
+        const { id, name, target } = message3;
+        const args = message3.args === void 0 ? void 0 : parseBridgeJson(message3.args, "call arguments");
         const record = target === "tool" ? { name, status: "cancelled", durationMs: 0 } : void 0;
         if (record)
           this.calls.push(record);
         this.pending.set(id, { record, startedAt: performance.now(), controller: new AbortController() });
         control.onCall({ id, target, name, args });
       }
-      async handleCall(message2) {
-        const { id, name } = message2;
-        const isTool2 = message2.target === "tool";
+      async handleCall(message3) {
+        const { id, name } = message3;
+        const isTool2 = message3.target === "tool";
         const record = isTool2 ? { name, status: "cancelled", durationMs: 0 } : void 0;
         if (record)
           this.calls.push(record);
@@ -298574,7 +298574,7 @@ var init_execution = __esm({
           const tool = (isTool2 ? this.executors.tools : this.executors.globals).get(name);
           if (!tool)
             throw new Error(`Unknown ${isTool2 ? "tool" : "global"} "${name}"`);
-          const args = message2.args === void 0 ? void 0 : JSON.parse(message2.args);
+          const args = message3.args === void 0 ? void 0 : JSON.parse(message3.args);
           const value2 = await tool.execute(args, { signal: pending.controller.signal });
           reply = { type: "result", id, ok: true, payload: value2 === void 0 ? void 0 : JSON.stringify(value2) };
           status = "ok";
@@ -298784,10 +298784,10 @@ function workerLauncher(options) {
     }
     if (releaseWorker)
       worker.once("exit", releaseWorker);
-    worker.on("message", (message2) => {
-      if (typeof message2 === "object" && message2 !== null && ("watch:import" in message2 || "watch:require" in message2))
+    worker.on("message", (message3) => {
+      if (typeof message3 === "object" && message3 !== null && ("watch:import" in message3 || "watch:require" in message3))
         return;
-      events.message(message2);
+      events.message(message3);
     });
     worker.on("error", (error2) => {
       events.failure({
@@ -298810,7 +298810,7 @@ function workerLauncher(options) {
       void stop2();
       throw error2;
     }
-    return { post: (message2) => worker.postMessage(message2), stop: stop2 };
+    return { post: (message3) => worker.postMessage(message3), stop: stop2 };
   };
 }
 var CodemodeSandbox;
@@ -300347,14 +300347,14 @@ var init_renderer = __esm({
       renderCall(args, theme2, context4) {
         startToolTimer(context4);
         const code = str2(args?.code);
-        const title = theme2.fg("toolTitle", theme2.bold("codemode"));
+        const title2 = theme2.fg("toolTitle", theme2.bold("codemode"));
         const component = context4.lastComponent ?? new Container();
         component.clear();
         if (code === null) {
-          component.addChild(new Text(`${title} ${theme2.fg("error", "[invalid arg]")}`, 0, 0));
+          component.addChild(new Text(`${title2} ${theme2.fg("error", "[invalid arg]")}`, 0, 0));
           return component;
         }
-        component.addChild(new Text(title, 0, 0));
+        component.addChild(new Text(title2, 0, 0));
         if (code) {
           const state3 = context4.state;
           state3.scriptHighlighter ??= new CodeHighlighter();
@@ -300837,20 +300837,20 @@ function toError(value2) {
 function isJsonRpcId(value2) {
   return typeof value2 === "string" || typeof value2 === "number" && Number.isFinite(value2);
 }
-function isJsonRpcRequest(message2) {
-  return isObject4(message2) && message2.jsonrpc === "2.0" && isJsonRpcId(message2.id) && typeof message2.method === "string";
+function isJsonRpcRequest(message3) {
+  return isObject4(message3) && message3.jsonrpc === "2.0" && isJsonRpcId(message3.id) && typeof message3.method === "string";
 }
-function isJsonRpcNotification(message2) {
-  return isObject4(message2) && message2.jsonrpc === "2.0" && !("id" in message2) && typeof message2.method === "string";
+function isJsonRpcNotification(message3) {
+  return isObject4(message3) && message3.jsonrpc === "2.0" && !("id" in message3) && typeof message3.method === "string";
 }
-function isJsonRpcResponse(message2) {
-  if (!isObject4(message2) || message2.jsonrpc !== "2.0" || !isJsonRpcId(message2.id))
+function isJsonRpcResponse(message3) {
+  if (!isObject4(message3) || message3.jsonrpc !== "2.0" || !isJsonRpcId(message3.id))
     return false;
-  if ("result" in message2)
-    return !("error" in message2);
-  if (!("error" in message2) || !isObject4(message2.error))
+  if ("result" in message3)
+    return !("error" in message3);
+  if (!("error" in message3) || !isObject4(message3.error))
     return false;
-  return typeof message2.error.code === "number" && typeof message2.error.message === "string";
+  return typeof message3.error.code === "number" && typeof message3.error.message === "string";
 }
 function parseJsonRpcMessage(value2) {
   if (isJsonRpcRequest(value2) || isJsonRpcNotification(value2) || isJsonRpcResponse(value2))
@@ -300870,16 +300870,16 @@ var init_jsonrpc = __esm({
     McpError = class extends Error {
       code;
       data;
-      constructor(code, message2, data) {
-        super(message2);
+      constructor(code, message3, data) {
+        super(message3);
         this.name = "McpError";
         this.code = code;
         this.data = data;
       }
     };
     McpConnectionClosedError = class extends Error {
-      constructor(message2 = "MCP connection closed") {
-        super(message2);
+      constructor(message3 = "MCP connection closed") {
+        super(message3);
         this.name = "McpConnectionClosedError";
       }
     };
@@ -300892,8 +300892,8 @@ var init_jsonrpc = __esm({
       }
     };
     McpAbortError = class extends Error {
-      constructor(message2 = "MCP request aborted") {
-        super(message2);
+      constructor(message3 = "MCP request aborted") {
+        super(message3);
         this.name = "AbortError";
       }
     };
@@ -300916,8 +300916,8 @@ function validateInitializeResult(value2) {
   }
   return value2;
 }
-function invalid(message2) {
-  return new McpError(JSON_RPC_ERROR_CODES.invalidRequest, message2);
+function invalid(message3) {
+  return new McpError(JSON_RPC_ERROR_CODES.invalidRequest, message3);
 }
 function validateListPage(method, key, value2, isItem) {
   const items = isObject4(value2) ? value2[key] : void 0;
@@ -301015,7 +301015,7 @@ var init_client3 = __esm({
         this.state = "connecting";
         this.transport = transport3;
         this.disposers = [
-          transport3.onMessage((message2) => this.handleMessage(message2)),
+          transport3.onMessage((message3) => this.handleMessage(message3)),
           // Transport errors are reported only. Pending requests fail when the transport closes.
           transport3.onError((error2) => this.emitError(error2)),
           transport3.onClose(() => this.handleTransportClose())
@@ -301148,7 +301148,7 @@ var init_client3 = __esm({
         const id = this.nextRequestId++;
         const progressToken = options.onProgress ? id : void 0;
         const requestParams = progressToken === void 0 ? params : { ...params, _meta: { ...isObject4(params?._meta) ? params._meta : {}, progressToken } };
-        const message2 = {
+        const message3 = {
           jsonrpc: "2.0",
           id,
           method,
@@ -301173,7 +301173,7 @@ var init_client3 = __esm({
             this.progressRequests.set(progressToken, id);
           options.signal?.addEventListener("abort", entry.onAbort, { once: true });
           this.armTimeout(id, entry);
-          transport3.send(message2, { signal: entry.sendController.signal }).catch((error2) => this.cancelPending(id, error2, false));
+          transport3.send(message3, { signal: entry.sendController.signal }).catch((error2) => this.cancelPending(id, error2, false));
         });
       }
       async notifyInternal(method, params, allowConnecting) {
@@ -301189,56 +301189,56 @@ var init_client3 = __esm({
         }
         throw new McpConnectionClosedError(`MCP client is ${this.state}`);
       }
-      handleMessage(message2) {
-        if (isJsonRpcResponse(message2)) {
-          this.handleResponse(message2);
+      handleMessage(message3) {
+        if (isJsonRpcResponse(message3)) {
+          this.handleResponse(message3);
           return;
         }
-        if (isJsonRpcRequest(message2)) {
-          void this.handleRequest(message2);
+        if (isJsonRpcRequest(message3)) {
+          void this.handleRequest(message3);
           return;
         }
-        if (isJsonRpcNotification(message2)) {
-          this.handleNotification(message2.method, message2.params);
+        if (isJsonRpcNotification(message3)) {
+          this.handleNotification(message3.method, message3.params);
           return;
         }
         this.emitError(new McpError(JSON_RPC_ERROR_CODES.invalidRequest, "Received invalid JSON-RPC message"));
       }
-      handleResponse(message2) {
-        const entry = this.pending.get(message2.id);
+      handleResponse(message3) {
+        const entry = this.pending.get(message3.id);
         if (!entry) {
-          this.emitError(new Error(`Received response for unknown MCP request ${String(message2.id)}`));
+          this.emitError(new Error(`Received response for unknown MCP request ${String(message3.id)}`));
           return;
         }
-        this.removePending(message2.id, entry);
-        if ("error" in message2)
-          entry.reject(new McpError(message2.error.code, message2.error.message, message2.error.data));
+        this.removePending(message3.id, entry);
+        if ("error" in message3)
+          entry.reject(new McpError(message3.error.code, message3.error.message, message3.error.data));
         else
-          entry.resolve(message2.result);
+          entry.resolve(message3.result);
       }
-      async handleRequest(message2) {
+      async handleRequest(message3) {
         const transport3 = this.transport;
         if (!transport3)
           return;
-        const handler2 = this.requestHandlers.get(message2.method);
+        const handler2 = this.requestHandlers.get(message3.method);
         if (!handler2) {
           await transport3.send({
             jsonrpc: "2.0",
-            id: message2.id,
-            error: { code: JSON_RPC_ERROR_CODES.methodNotFound, message: `Method not found: ${message2.method}` }
+            id: message3.id,
+            error: { code: JSON_RPC_ERROR_CODES.methodNotFound, message: `Method not found: ${message3.method}` }
           }).catch((error2) => this.emitError(error2));
           return;
         }
         const controller = new AbortController();
-        this.incoming.set(message2.id, controller);
+        this.incoming.set(message3.id, controller);
         try {
-          const result = await handler2(message2.params, { signal: controller.signal });
-          await transport3.send({ jsonrpc: "2.0", id: message2.id, result: result ?? {} });
+          const result = await handler2(message3.params, { signal: controller.signal });
+          await transport3.send({ jsonrpc: "2.0", id: message3.id, result: result ?? {} });
         } catch (error2) {
           const responseError = error2 instanceof McpError ? { code: error2.code, message: error2.message, data: error2.data } : { code: JSON_RPC_ERROR_CODES.internalError, message: toError(error2).message };
-          await transport3.send({ jsonrpc: "2.0", id: message2.id, error: responseError }).catch((sendError) => this.emitError(sendError));
+          await transport3.send({ jsonrpc: "2.0", id: message3.id, error: responseError }).catch((sendError) => this.emitError(sendError));
         } finally {
-          this.incoming.delete(message2.id);
+          this.incoming.delete(message3.id);
         }
       }
       handleNotification(method, params) {
@@ -301406,9 +301406,9 @@ var init_transport = __esm({
         this.closeListeners.add(listener);
         return () => this.closeListeners.delete(listener);
       }
-      emitMessage(message2) {
+      emitMessage(message3) {
         for (const listener of this.messageListeners)
-          listener(message2);
+          listener(message3);
       }
       emitError(error2) {
         const normalized = toError(error2);
@@ -301547,11 +301547,11 @@ var init_stdio = __esm({
             this.emitError(error2);
         });
       }
-      async send(message2) {
+      async send(message3) {
         const stdin = this.child?.stdin;
         if (!this.started || this.closed || !stdin?.writable)
           throw new McpConnectionClosedError();
-        const payload = `${JSON.stringify(message2)}
+        const payload = `${JSON.stringify(message3)}
 `;
         await new Promise((resolve19, reject) => {
           stdin.write(payload, (error2) => error2 ? reject(error2) : resolve19());
@@ -301732,8 +301732,8 @@ var init_streamable_http = __esm({
     McpHttpError = class extends Error {
       status;
       body;
-      constructor(status, message2, body = "") {
-        super(message2);
+      constructor(status, message3, body = "") {
+        super(message3);
         this.name = "McpHttpError";
         this.status = status;
         this.body = body;
@@ -301785,23 +301785,23 @@ var init_streamable_http = __esm({
       setProtocolVersion(version2) {
         this.protocolVersion = version2;
       }
-      async send(message2, { signal } = {}) {
+      async send(message3, { signal } = {}) {
         if (!this.started || this.closed)
           throw new McpConnectionClosedError();
         const response = await this.authorizedFetch("POST", {
           headers: { accept: "application/json, text/event-stream", "content-type": "application/json" },
-          body: JSON.stringify(message2)
+          body: JSON.stringify(message3)
         }, signal);
         await this.checkResponse(response);
         this.captureSession(response);
-        if (!isJsonRpcRequest(message2)) {
+        if (!isJsonRpcRequest(message3)) {
           await discard(response);
-          if ("method" in message2 && message2.method === "notifications/initialized")
+          if ("method" in message3 && message3.method === "notifications/initialized")
             this.startGetStream();
           return;
         }
         if (response.status === 202 || response.status === 204) {
-          throw new McpHttpError(response.status, `MCP server accepted request ${message2.method} without a response`);
+          throw new McpHttpError(response.status, `MCP server accepted request ${message3.method} without a response`);
         }
         const type = contentType(response);
         if (type === "application/json") {
@@ -301811,7 +301811,7 @@ var init_streamable_http = __esm({
           return;
         }
         if (type === "text/event-stream" && response.body) {
-          void this.consumeResponseStream(response.body, message2.id);
+          void this.consumeResponseStream(response.body, message3.id);
           return;
         }
         await discard(response);
@@ -301909,15 +301909,15 @@ var init_streamable_http = __esm({
             cursor.received = true;
             if (!event.data.trim() || event.event !== void 0 && event.event !== "message")
               return;
-            let message2;
+            let message3;
             try {
-              message2 = parseJsonRpcMessage(JSON.parse(event.data));
+              message3 = parseJsonRpcMessage(JSON.parse(event.data));
             } catch (error2) {
               this.emitError(error2);
               return;
             }
-            onMessage?.(message2);
-            this.emitMessage(message2);
+            onMessage?.(message3);
+            this.emitMessage(message3);
           }
         });
       }
@@ -301929,8 +301929,8 @@ var init_streamable_http = __esm({
       async consumeResponseStream(body, requestId) {
         const cursor = { lastEventId: void 0, retryMs: void 0, received: false };
         let answered = false;
-        const onMessage = (message2) => {
-          if (isJsonRpcResponse(message2) && message2.id === requestId)
+        const onMessage = (message3) => {
+          if (isJsonRpcResponse(message3) && message3.id === requestId)
             answered = true;
         };
         let stream12 = body;
@@ -302235,13 +302235,13 @@ function toToolAnnotations(tool) {
 }
 function createMcpToolDefinition(options) {
   const { server, tool } = options;
-  const title = tool.title ?? tool.annotations?.title;
+  const title2 = tool.title ?? tool.annotations?.title;
   const annotations = toToolAnnotations(tool);
   const label = `${server}/${tool.name}`;
   return {
     name: options.name,
     label,
-    description: tool.description?.trim() || title || `MCP tool ${tool.name} from server ${server}`,
+    description: tool.description?.trim() || title2 || `MCP tool ${tool.name} from server ${server}`,
     parameters: toParameters(tool.inputSchema),
     outputSchema: createMcpResultSchema(tool.outputSchema),
     exposure: toToolExposure(options.exposure),
@@ -302711,8 +302711,8 @@ var init_errors6 = __esm({
     OAuthError2 = class extends Error {
       code;
       errorUri;
-      constructor(code, message2, errorUri) {
-        super(message2 || code);
+      constructor(code, message3, errorUri) {
+        super(message3 || code);
         this.name = "OAuthError";
         this.code = code;
         this.errorUri = errorUri;
@@ -303418,16 +303418,16 @@ function escapeHtml2(value2) {
   return value2.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
 }
 function renderPage(options) {
-  const title = escapeHtml2(options.title);
+  const title2 = escapeHtml2(options.title);
   const heading = escapeHtml2(options.heading);
-  const message2 = escapeHtml2(options.message);
+  const message3 = escapeHtml2(options.message);
   const details = options.details ? escapeHtml2(options.details) : void 0;
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${title}</title>
+  <title>${title2}</title>
   <style>
     :root {
       --text: #fafafa;
@@ -303491,24 +303491,24 @@ function renderPage(options) {
   <main>
     <div class="logo">${LOGO_SVG}</div>
     <h1>${heading}</h1>
-    <p>${message2}</p>
+    <p>${message3}</p>
     ${details ? `<div class="details">${details}</div>` : ""}
   </main>
 </body>
 </html>`;
 }
-function oauthSuccessHtml(message2) {
+function oauthSuccessHtml(message3) {
   return renderPage({
     title: "Authentication successful",
     heading: "Authentication successful",
-    message: message2
+    message: message3
   });
 }
-function oauthErrorHtml(message2, details) {
+function oauthErrorHtml(message3, details) {
   return renderPage({
     title: "Authentication failed",
     heading: "Authentication failed",
-    message: message2,
+    message: message3,
     details
   });
 }
@@ -303902,10 +303902,10 @@ function formatData(data) {
   }
 }
 function formatMcpLogMessage(server, params, now = /* @__PURE__ */ new Date()) {
-  const message2 = isRecord4(params) ? params : { data: params };
-  const level = typeof message2.level === "string" ? message2.level : "info";
-  const logger = typeof message2.logger === "string" && message2.logger ? ` ${message2.logger}:` : "";
-  const text = formatData(message2.data).replace(/\r?\n/g, "\n    ");
+  const message3 = isRecord4(params) ? params : { data: params };
+  const level = typeof message3.level === "string" ? message3.level : "info";
+  const logger = typeof message3.logger === "string" && message3.logger ? ` ${message3.logger}:` : "";
+  const text = formatData(message3.data).replace(/\r?\n/g, "\n    ");
   return `${now.toISOString()} [${server}] ${level}${logger} ${text}
 `;
 }
@@ -304588,10 +304588,10 @@ var init_dynamic_border = __esm({
 });
 
 // node_modules/@earendil-works/pi-coding-agent/dist/extensions/mcp/ui.js
-function frame(theme2, title, body, footer) {
+function frame(theme2, title2, body, footer) {
   const container = new Container();
   container.addChild(new DynamicBorder((text) => theme2.fg("accent", text)));
-  container.addChild(new Text(theme2.fg("accent", theme2.bold(title)), 1, 0));
+  container.addChild(new Text(theme2.fg("accent", theme2.bold(title2)), 1, 0));
   for (const child of body)
     container.addChild(child);
   if (footer) {
@@ -304707,20 +304707,20 @@ var init_ui = __esm({
           });
         });
       }
-      status(title, message2, onCancel) {
-        const body = [new Spacer(1), new Text(this.theme.fg("muted", message2), 1, 0)];
+      status(title2, message3, onCancel) {
+        const body = [new Spacer(1), new Text(this.theme.fg("muted", message3), 1, 0)];
         if (!onCancel) {
-          this.setContent(frame(this.theme, title, body));
+          this.setContent(frame(this.theme, title2, body));
           return;
         }
-        this.setContent(frame(this.theme, title, body, keyHint("tui.select.cancel", "cancel")), {
+        this.setContent(frame(this.theme, title2, body, keyHint("tui.select.cancel", "cancel")), {
           handleInput: (data) => {
             if (this.keybindings.matches(data, "tui.select.cancel"))
               onCancel();
           }
         });
       }
-      redirectUrl(title, authorizationUrl, signal) {
+      redirectUrl(title2, authorizationUrl, signal) {
         return new Promise((resolve19) => {
           let settled = false;
           const finish = (value2) => {
@@ -304746,7 +304746,7 @@ var init_ui = __esm({
             new Text(this.theme.fg("muted", "If the browser runs on another machine, paste the URL it was redirected to:"), 1, 0),
             input2
           ];
-          this.setContent(frame(this.theme, title, body, `${keyHint("tui.select.confirm", "submit")} \u2022 ${keyHint("tui.select.cancel", "cancel")}`), {
+          this.setContent(frame(this.theme, title2, body, `${keyHint("tui.select.confirm", "submit")} \u2022 ${keyHint("tui.select.cancel", "cancel")}`), {
             handleInput: (data) => {
               if (this.keybindings.matches(data, "tui.select.confirm")) {
                 const value2 = input2.getValue().trim();
@@ -305397,9 +305397,9 @@ Run /mcp to fix.`, "warning");
       return setExposure(server, choice);
     };
     const signInWithUi = (ui, server) => {
-      const title = `Sign in to ${server.entry.name}`;
+      const title2 = `Sign in to ${server.entry.name}`;
       const cancel = new AbortController();
-      const status = (message2) => ui.status(title, message2, () => cancel.abort());
+      const status = (message3) => ui.status(title2, message3, () => cancel.abort());
       let authorizationUrl = "";
       status("Contacting the authorization server\u2026");
       return signIn(server, {
@@ -305408,7 +305408,7 @@ Run /mcp to fix.`, "warning");
           openUrl(url.href);
         },
         promptForRedirectUrl: async (signal) => {
-          const value2 = await ui.redirectUrl(title, authorizationUrl, signal);
+          const value2 = await ui.redirectUrl(title2, authorizationUrl, signal);
           status("Connecting\u2026");
           return value2;
         }
@@ -305418,10 +305418,10 @@ Run /mcp to fix.`, "warning");
       const ready = operation();
       const attempt2 = server.attempt;
       const { signal } = session;
-      const finish = (message2) => {
+      const finish = (message3) => {
         if (signal.aborted || server.attempt !== attempt2 || !servers.includes(server))
           return;
-        server.message = message2;
+        server.message = message3;
         ensureDiscoveryActive(ctx);
         emitChange();
       };
@@ -305429,10 +305429,10 @@ Run /mcp to fix.`, "warning");
     };
     const runAction = async (ui, ctx, server, action) => {
       const { signal } = session;
-      let message2;
+      let message3;
       switch (action) {
         case "signin":
-          message2 = await signInWithUi(ui, server);
+          message3 = await signInWithUi(ui, server);
           break;
         case "reconnect":
           runInBackground(ctx, server, async () => {
@@ -305447,7 +305447,7 @@ Run /mcp to fix.`, "warning");
           await showTools(ui, server);
           break;
         case "exposure":
-          message2 = await chooseExposure(ui, server);
+          message3 = await chooseExposure(ui, server);
           break;
         case "enable":
         case "disable":
@@ -305460,7 +305460,7 @@ Run /mcp to fix.`, "warning");
       }
       if (signal.aborted)
         return;
-      server.message = message2;
+      server.message = message3;
       ensureDiscoveryActive(ctx);
       emitChange();
     };
@@ -306080,8 +306080,8 @@ ${content}
 </file>
 `;
       } catch (error2) {
-        const message2 = error2 instanceof Error ? error2.message : String(error2);
-        console.error(source_default.red(`Error: Could not read file ${absolutePath}: ${message2}`));
+        const message3 = error2 instanceof Error ? error2.message : String(error2);
+        console.error(source_default.red(`Error: Could not read file ${absolutePath}: ${message3}`));
         process.exit(1);
       }
     }
@@ -306628,14 +306628,14 @@ var init_extension_input = __esm({
         this._focused = value2;
         this.input.focused = value2;
       }
-      constructor(title, _placeholder, onSubmit, onCancel, opts) {
+      constructor(title2, _placeholder, onSubmit, onCancel, opts) {
         super();
         this.onSubmitCallback = onSubmit;
         this.onCancelCallback = onCancel;
-        this.baseTitle = title;
+        this.baseTitle = title2;
         this.addChild(new DynamicBorder());
         this.addChild(new Spacer(1));
-        this.titleText = new Text(theme.fg("accent", title), 1, 0);
+        this.titleText = new Text(theme.fg("accent", title2), 1, 0);
         this.addChild(this.titleText);
         if (opts?.description) {
           this.addChild(new Spacer(1));
@@ -306690,16 +306690,16 @@ var init_extension_selector = __esm({
       baseTitle;
       countdown;
       onToggleToolsExpanded;
-      constructor(title, options, onSelect, onCancel, opts) {
+      constructor(title2, options, onSelect, onCancel, opts) {
         super();
         this.options = options;
         this.onSelectCallback = onSelect;
         this.onCancelCallback = onCancel;
         this.onToggleToolsExpanded = opts?.onToggleToolsExpanded;
-        this.baseTitle = title;
+        this.baseTitle = title2;
         this.addChild(new DynamicBorder());
         this.addChild(new Spacer(1));
-        this.titleText = new Text(theme.fg("accent", theme.bold(title)), 1, 0);
+        this.titleText = new Text(theme.fg("accent", theme.bold(title2)), 1, 0);
         this.addChild(this.titleText);
         if (opts?.description) {
           this.addChild(new Spacer(1));
@@ -307135,7 +307135,7 @@ function shouldRunFirstTimeSetup(settingsPath = getSettingsPath()) {
   }
   return !existsSync21(settingsPath);
 }
-async function showStartupSelector(settingsManager, title, options) {
+async function showStartupSelector(settingsManager, title2, options) {
   const ui = await createStartupTui(settingsManager);
   return new Promise((resolve19) => {
     let settled = false;
@@ -307148,7 +307148,7 @@ async function showStartupSelector(settingsManager, title, options) {
       ui.stop();
       resolve19(result);
     };
-    const selector = new ExtensionSelectorComponent(title, options.map((option) => option.label), (option) => void finish(options.find((entry) => entry.label === option)?.value), () => void finish(void 0), { tui: ui });
+    const selector = new ExtensionSelectorComponent(title2, options.map((option) => option.label), (option) => void finish(options.find((entry) => entry.label === option)?.value), () => void finish(void 0), { tui: ui });
     ui.addChild(selector);
     ui.setFocus(selector);
     startStartupTui(ui, settingsManager);
@@ -307190,7 +307190,7 @@ async function showFirstTimeSetup(settingsManager) {
     queryStartupTerminalColors(ui, () => setTheme(previewTheme));
   });
 }
-async function showStartupInput(settingsManager, title, placeholder) {
+async function showStartupInput(settingsManager, title2, placeholder) {
   const ui = await createStartupTui(settingsManager);
   return new Promise((resolve19) => {
     let settled = false;
@@ -307204,7 +307204,7 @@ async function showStartupInput(settingsManager, title, placeholder) {
       ui.stop();
       resolve19(result);
     };
-    const input2 = new ExtensionInputComponent(title, placeholder, (value2) => void finish(value2), () => void finish(void 0), {
+    const input2 = new ExtensionInputComponent(title2, placeholder, (value2) => void finish(value2), () => void finish(void 0), {
       tui: ui
     });
     ui.addChild(input2);
@@ -307240,41 +307240,41 @@ function createProjectTrustContext(options) {
     mode: options.mode === "interactive" ? "tui" : options.mode,
     hasUI: options.hasUI,
     ui: {
-      select: async (title, selectOptions) => {
+      select: async (title2, selectOptions) => {
         if (!options.hasUI) {
           return void 0;
         }
         if (options.mode !== "interactive") {
           return void 0;
         }
-        return showStartupSelector(options.settingsManager, title, selectOptions.map((option) => ({ label: option, value: option })));
+        return showStartupSelector(options.settingsManager, title2, selectOptions.map((option) => ({ label: option, value: option })));
       },
-      confirm: async (title, message2) => {
+      confirm: async (title2, message3) => {
         if (!options.hasUI) {
           return false;
         }
         if (options.mode !== "interactive") {
           return false;
         }
-        return await showStartupSelector(options.settingsManager, `${title}
-${message2}`, [
+        return await showStartupSelector(options.settingsManager, `${title2}
+${message3}`, [
           { label: "Yes", value: true },
           { label: "No", value: false }
         ]) ?? false;
       },
-      input: async (title, placeholder) => {
+      input: async (title2, placeholder) => {
         if (!options.hasUI) {
           return void 0;
         }
         if (options.mode !== "interactive") {
           return void 0;
         }
-        return showStartupInput(options.settingsManager, title, placeholder);
+        return showStartupInput(options.settingsManager, title2, placeholder);
       },
-      notify: (message2, type = "info") => {
+      notify: (message3, type = "info") => {
         if (options.mode !== "interactive") {
           const color = type === "error" ? source_default.red : type === "warning" ? source_default.yellow : source_default.cyan;
-          console.error(color(message2));
+          console.error(color(message3));
         }
       }
     }
@@ -307667,8 +307667,8 @@ var init_session_selector = __esm({
       invalidate() {
       }
       render(width) {
-        const title = this.scope === "current" ? "Resume Session (Current Folder)" : "Resume Session (All)";
-        const leftText = theme.bold(title);
+        const title2 = this.scope === "current" ? "Resume Session (Current Folder)" : "Resume Session (All)";
+        const leftText = theme.bold(title2);
         const sortLabel = this.sortMode === "threaded" ? "Threaded" : this.sortMode === "recent" ? "Recent" : "Fuzzy";
         const sortText = theme.fg("muted", "Sort: ") + theme.fg("accent", sortLabel);
         const nameLabel = this.nameFilter === "all" ? "All" : "Named";
@@ -308248,9 +308248,9 @@ var init_session_selector = __esm({
           }
           if (scope !== this.scope)
             return;
-          const message2 = err instanceof Error ? err.message : String(err);
+          const message3 = err instanceof Error ? err.message : String(err);
           this.header.setLoading(false);
-          this.header.setStatusMessage({ type: "error", message: `Failed to load sessions: ${message2}` }, 4e3);
+          this.header.setStatusMessage({ type: "error", message: `Failed to load sessions: ${message3}` }, 4e3);
           this.sessionList.setSessions([], showCwd);
           this.requestRender();
         }
@@ -308425,8 +308425,8 @@ function errorMessage6(payload, fallback) {
   const error2 = payload.error;
   if (typeof error2 !== "object" || error2 === null)
     return fallback;
-  const message2 = error2.message;
-  return typeof message2 === "string" && message2 ? message2 : fallback;
+  const message3 = error2.message;
+  return typeof message3 === "string" && message3 ? message3 : fallback;
 }
 function isModelInfo(value2) {
   if (typeof value2 !== "object" || value2 === null)
@@ -309464,10 +309464,10 @@ function selectTheme(theme2) {
     noMatch: (text) => theme2.fg("warning", text)
   };
 }
-function frame2(theme2, title, body, footer) {
+function frame2(theme2, title2, body, footer) {
   const container = new Container();
   container.addChild(new DynamicBorder((text) => theme2.fg("accent", text)));
-  container.addChild(new Text(theme2.fg("accent", theme2.bold(title)), 1, 0));
+  container.addChild(new Text(theme2.fg("accent", theme2.bold(title2)), 1, 0));
   for (const child of body)
     container.addChild(child);
   if (footer) {
@@ -309777,23 +309777,23 @@ var init_ui2 = __esm({
           this.setContent(frame2(this.theme, "llama.cpp models", [new Text(this.theme.fg("dim", serverUrl), 1, 0), new Spacer(1), list2], `${keyHint("tui.select.confirm", "load/unload/download")} \u2022 ${keyHint("tui.select.cancel", "close")}`), list2);
         });
       }
-      select(title, options) {
+      select(title2, options) {
         return new Promise((resolve19) => {
           const list2 = new SelectList(options.map((option) => ({ value: option, label: option })), Math.min(options.length, 12), selectTheme(this.theme));
           list2.onSelect = (item) => resolve19(item.value);
           list2.onCancel = () => resolve19(void 0);
-          this.setContent(frame2(this.theme, title, [new Spacer(1), list2], `${keyHint("tui.select.confirm", "select")} \u2022 ${keyHint("tui.select.cancel", "cancel")}`), list2);
+          this.setContent(frame2(this.theme, title2, [new Spacer(1), list2], `${keyHint("tui.select.confirm", "select")} \u2022 ${keyHint("tui.select.cancel", "cancel")}`), list2);
         });
       }
-      async confirm(title, message2) {
-        return await this.select(`${title}
-${message2}`, ["Yes", "No"]) === "Yes";
+      async confirm(title2, message3) {
+        return await this.select(`${title2}
+${message3}`, ["Yes", "No"]) === "Yes";
       }
-      async connectionError(serverUrl, message2) {
+      async connectionError(serverUrl, message3) {
         const choice = await this.select(`llama.cpp unavailable
 ${serverUrl}
 
-${message2}`, ["Retry", "Close"]);
+${message3}`, ["Retry", "Close"]);
         return choice === "Retry" ? "retry" : "close";
       }
       searchModels(search) {
@@ -309802,8 +309802,8 @@ ${message2}`, ["Retry", "Close"]);
           this.setContent(frame2(this.theme, "Download model", [new Spacer(1), component], `${keyHint("tui.select.confirm", "select")} \u2022 ${keyHint("tui.select.cancel", "back")}`), component, component);
         });
       }
-      showStatus(title, message2) {
-        this.setContent(frame2(this.theme, title, [new Spacer(1), new Text(this.theme.fg("muted", message2), 1, 0)]));
+      showStatus(title2, message3) {
+        this.setContent(frame2(this.theme, title2, [new Spacer(1), new Text(this.theme.fg("muted", message3), 1, 0)]));
       }
       progress(state3) {
         if (!this.progressPromise) {
@@ -309862,8 +309862,8 @@ function modelIsLoaded(model2) {
 function isConnectionError2(error2) {
   if (!(error2 instanceof Error))
     return false;
-  const message2 = `${error2.name} ${error2.message}`.toLowerCase();
-  return message2.includes("fetch failed") || message2.includes("timeout") || message2.includes("network");
+  const message3 = `${error2.name} ${error2.message}`.toLowerCase();
+  return message3.includes("fetch failed") || message3.includes("timeout") || message3.includes("network");
 }
 function connectionErrorMessage(error2) {
   if (isConnectionError2(error2))
@@ -310819,8 +310819,8 @@ var init_migrations = __esm({
 });
 
 // node_modules/@earendil-works/pi-coding-agent/dist/core/cache-stats.js
-function detectMiss(prev, message2, models) {
-  const usage = message2.usage;
+function detectMiss(prev, message3, models) {
+  const usage = message3.usage;
   const promptTokens = usage.input + usage.cacheRead + usage.cacheWrite;
   if (!prev || promptTokens <= 0 || usage.cacheRead + usage.cacheWrite === 0 && !prev.reportedCache) {
     return void 0;
@@ -310830,23 +310830,23 @@ function detectMiss(prev, message2, models) {
     return void 0;
   const paidTokens = usage.input + usage.cacheWrite;
   const paidPerToken = paidTokens > 0 ? (usage.cost.input + usage.cost.cacheWrite) / paidTokens : 0;
-  const readPerToken = usage.cacheRead > 0 ? usage.cost.cacheRead / usage.cacheRead : (models.getModel(message2.provider, message2.model)?.cost.cacheRead ?? 0) / 1e6;
+  const readPerToken = usage.cacheRead > 0 ? usage.cost.cacheRead / usage.cacheRead : (models.getModel(message3.provider, message3.model)?.cost.cacheRead ?? 0) / 1e6;
   return {
     missedTokens,
     missedCost: missedTokens * Math.max(0, paidPerToken - readPerToken),
-    idleMs: Math.max(0, message2.timestamp - prev.timestamp),
-    modelChanged: `${message2.provider}/${message2.model}` !== prev.modelKey
+    idleMs: Math.max(0, message3.timestamp - prev.timestamp),
+    modelChanged: `${message3.provider}/${message3.model}` !== prev.modelKey
   };
 }
-function asPreviousRequest(message2, reportedCache) {
-  const usage = message2.usage;
+function asPreviousRequest(message3, reportedCache) {
+  const usage = message3.usage;
   const promptTokens = usage.input + usage.cacheRead + usage.cacheWrite;
   if (promptTokens <= 0)
     return void 0;
   return {
     promptTokens,
-    modelKey: `${message2.provider}/${message2.model}`,
-    timestamp: message2.timestamp,
+    modelKey: `${message3.provider}/${message3.model}`,
+    timestamp: message3.timestamp,
     reportedCache: reportedCache || usage.cacheRead + usage.cacheWrite > 0
   };
 }
@@ -310888,8 +310888,8 @@ function computeCacheWaste(entries2, models) {
 function collectCacheMisses(entries2, models) {
   return scan(entries2, models).misses;
 }
-function detectCacheMiss(entries2, message2, models) {
-  return detectMiss(scan(entries2, models).prev, message2, models);
+function detectCacheMiss(entries2, message3, models) {
+  return detectMiss(scan(entries2, models).prev, message3, models);
 }
 var CACHE_TTL_MS, NOISE_FLOOR_TOKENS;
 var init_cache_stats = __esm({
@@ -311137,8 +311137,8 @@ function isDirectoryTarget(originalPath, repositoryPath) {
   if (originalPath.endsWith("/")) {
     return true;
   }
-  const basename20 = path15.posix.basename(repositoryPath);
-  return !basename20.includes(".");
+  const basename21 = path15.posix.basename(repositoryPath);
+  return !basename21.includes(".");
 }
 function normalizeChangelogLinkTarget(target, tag) {
   let canonicalTarget = target.replace(LEGACY_REPO_RE, `https://github.com/${GITHUB_REPO}`);
@@ -311548,16 +311548,16 @@ var init_bordered_loader = __esm({
       loader;
       cancellable;
       signalController;
-      constructor(tui, theme2, message2, options) {
+      constructor(tui, theme2, message3, options) {
         super();
         this.cancellable = options?.cancellable ?? true;
         const borderColor = (s2) => theme2.fg("border", s2);
         this.addChild(new DynamicBorder(borderColor));
         if (this.cancellable) {
-          this.loader = new CancellableLoader(tui, (s2) => theme2.fg("accent", s2), (s2) => theme2.fg("muted", s2), message2);
+          this.loader = new CancellableLoader(tui, (s2) => theme2.fg("accent", s2), (s2) => theme2.fg("muted", s2), message3);
         } else {
           this.signalController = new AbortController();
-          this.loader = new Loader(tui, (s2) => theme2.fg("accent", s2), (s2) => theme2.fg("muted", s2), message2);
+          this.loader = new Loader(tui, (s2) => theme2.fg("accent", s2), (s2) => theme2.fg("muted", s2), message3);
         }
         this.addChild(this.loader);
         if (this.cancellable) {
@@ -311665,7 +311665,7 @@ var init_extension_editor = __esm({
         this._focused = value2;
         this.editor.focused = value2;
       }
-      constructor(tui, keybindings, title, prefill, onSubmit, onCancel, options, externalEditorCommand) {
+      constructor(tui, keybindings, title2, prefill, onSubmit, onCancel, options, externalEditorCommand) {
         super();
         this.tui = tui;
         this.keybindings = keybindings;
@@ -311675,7 +311675,7 @@ var init_extension_editor = __esm({
         const { description, ...editorOptions } = options ?? {};
         this.addChild(new DynamicBorder());
         this.addChild(new Spacer(1));
-        this.addChild(new Text(theme.fg("accent", title), 1, 0));
+        this.addChild(new Text(theme.fg("accent", title2), 1, 0));
         if (description) {
           this.addChild(new Spacer(1));
           this.addChild(new Text(theme.fg("text", description), 1, 0));
@@ -312070,33 +312070,33 @@ function recordInSession(session, bundle, delivery) {
   if (bundle.diagnostics.crashes.length > 0)
     clearCrashLog();
 }
-function input(context4, title, description, initialValue) {
+function input(context4, title2, description, initialValue) {
   return new Promise((resolve19) => {
     let component;
     const finish = (value2) => {
       restoreEditor2(context4, component);
       resolve19(value2);
     };
-    component = new ExtensionEditorComponent(context4.ui, context4.keybindings, title, initialValue, (value2) => finish(value2), () => finish(null), { description }, context4.session.settingsManager.getExternalEditorCommand());
+    component = new ExtensionEditorComponent(context4.ui, context4.keybindings, title2, initialValue, (value2) => finish(value2), () => finish(null), { description }, context4.session.settingsManager.getExternalEditorCommand());
     showOverlay(context4, component);
   });
 }
-function choose(context4, title, options, description) {
+function choose(context4, title2, options, description) {
   return new Promise((resolve19) => {
     let component;
     const finish = (value2) => {
       restoreEditor2(context4, component);
       resolve19(value2);
     };
-    component = new ExtensionSelectorComponent(title, options, finish, () => finish(), {
+    component = new ExtensionSelectorComponent(title2, options, finish, () => finish(), {
       tui: context4.ui,
       description
     });
     showOverlay(context4, component);
   });
 }
-function showLoader(context4, message2) {
-  const loader = new BorderedLoader(context4.ui, theme, message2);
+function showLoader(context4, message3) {
+  const loader = new BorderedLoader(context4.ui, theme, message3);
   showOverlay(context4, loader);
   return loader;
 }
@@ -312387,9 +312387,9 @@ var init_armin = __esm({
           const padRight = Math.max(0, width - padding - clipped.length);
           return ` ${theme.fg("accent", clipped)}${" ".repeat(padRight)}`;
         });
-        const message2 = "ARMIN SAYS HI";
-        const msgPadRight = Math.max(0, width - padding - message2.length);
-        this.cachedLines.push(` ${theme.fg("accent", message2)}${" ".repeat(msgPadRight)}`);
+        const message3 = "ARMIN SAYS HI";
+        const msgPadRight = Math.max(0, width - padding - message3.length);
+        this.cachedLines.push(` ${theme.fg("accent", message3)}${" ".repeat(msgPadRight)}`);
         this.cachedWidth = width;
         this.cachedVersion = this.gridVersion;
         return this.cachedLines;
@@ -312662,7 +312662,7 @@ var init_assistant_message = __esm({
       timestamp;
       thinkingVisibilityOverrides = /* @__PURE__ */ new Map();
       markdownSlots = [];
-      constructor(message2, hideThinkingBlock = false, markdownTheme = getMarkdownTheme(), hiddenThinkingLabel = "Thinking...", outputPad = 1, markdownTransformers = [], messageId, timestamp) {
+      constructor(message3, hideThinkingBlock = false, markdownTheme = getMarkdownTheme(), hiddenThinkingLabel = "Thinking...", outputPad = 1, markdownTransformers = [], messageId, timestamp) {
         super();
         this.hideThinkingBlock = hideThinkingBlock;
         this.markdownTheme = markdownTheme;
@@ -312673,8 +312673,8 @@ var init_assistant_message = __esm({
         this.timestamp = timestamp;
         this.contentContainer = new Container();
         this.addChild(this.contentContainer);
-        if (message2) {
-          this.updateContent(message2);
+        if (message3) {
+          this.updateContent(message3);
         }
       }
       invalidate() {
@@ -312712,8 +312712,8 @@ var init_assistant_message = __esm({
         lines[lines.length - 1] = OSC133_ZONE_END + OSC133_ZONE_FINAL + lines[lines.length - 1];
         return lines;
       }
-      updateContent(message2, isStreaming = this.isStreaming) {
-        this.lastMessage = message2;
+      updateContent(message3, isStreaming = this.isStreaming) {
+        this.lastMessage = message3;
         this.isStreaming = isStreaming;
         this.contentContainer.clear();
         const previousSlots = this.markdownSlots;
@@ -312734,8 +312734,8 @@ var init_assistant_message = __esm({
           this.contentContainer.addChild(child);
         };
         let thinkingRunIndex = 0;
-        for (let i2 = 0; i2 < message2.content.length; i2++) {
-          const content = message2.content[i2];
+        for (let i2 = 0; i2 < message3.content.length; i2++) {
+          const content = message3.content[i2];
           if (content.type === "text" && content.text.trim()) {
             const text = content.text.trim();
             addVisibleChild(markdownBlock("text", text, () => new Markdown(text, this.outputPad, 0, this.markdownTheme, void 0, {
@@ -312743,8 +312743,8 @@ var init_assistant_message = __esm({
             })));
           } else if (content.type === "thinking") {
             const thinkingBlocks = [];
-            for (; i2 < message2.content.length; i2++) {
-              const thinkingContent = message2.content[i2];
+            for (; i2 < message3.content.length; i2++) {
+              const thinkingContent = message3.content[i2];
               if (thinkingContent.type !== "thinking") {
                 break;
               }
@@ -312780,18 +312780,18 @@ var init_assistant_message = __esm({
             needsSpacer = true;
           }
         }
-        const hasToolCalls = message2.content.some((c2) => c2.type === "toolCall");
+        const hasToolCalls = message3.content.some((c2) => c2.type === "toolCall");
         this.hasToolCalls = hasToolCalls;
-        if (message2.stopReason === "length") {
+        if (message3.stopReason === "length") {
           this.contentContainer.addChild(new Spacer(1));
           this.contentContainer.addChild(new Text(theme.fg("error", "Response was truncated before completion."), this.outputPad, 0));
         } else if (!hasToolCalls) {
-          if (message2.stopReason === "aborted") {
-            const abortMessage = message2.errorMessage && message2.errorMessage !== "Request was aborted" ? message2.errorMessage : "Operation aborted";
+          if (message3.stopReason === "aborted") {
+            const abortMessage = message3.errorMessage && message3.errorMessage !== "Request was aborted" ? message3.errorMessage : "Operation aborted";
             this.contentContainer.addChild(new Spacer(1));
             this.contentContainer.addChild(new Text(theme.fg("error", abortMessage), this.outputPad, 0));
-          } else if (message2.stopReason === "error") {
-            const errorMsg = message2.errorMessage || "Unknown error";
+          } else if (message3.stopReason === "error") {
+            const errorMsg = message3.errorMessage || "Unknown error";
             this.contentContainer.addChild(new Spacer(1));
             this.contentContainer.addChild(new Text(theme.fg("error", `Error: ${errorMsg}`), this.outputPad, 0));
           }
@@ -312966,9 +312966,9 @@ var init_branch_summary_message = __esm({
       expanded = false;
       message;
       markdownTheme;
-      constructor(message2, markdownTheme = getMarkdownTheme(), outputPad = 1) {
+      constructor(message3, markdownTheme = getMarkdownTheme(), outputPad = 1) {
         super(outputPad, 1, (t2) => theme.bg("customMessageBg", t2));
-        this.message = message2;
+        this.message = message3;
         this.markdownTheme = markdownTheme;
         this.updateDisplay();
       }
@@ -313019,9 +313019,9 @@ var init_compaction_summary_message = __esm({
       expanded = false;
       message;
       markdownTheme;
-      constructor(message2, markdownTheme = getMarkdownTheme(), outputPad = 1) {
+      constructor(message3, markdownTheme = getMarkdownTheme(), outputPad = 1) {
         super(outputPad, 1, (t2) => theme.bg("customMessageBg", t2));
-        this.message = message2;
+        this.message = message3;
         this.markdownTheme = markdownTheme;
         this.updateDisplay();
       }
@@ -313213,9 +313213,9 @@ var init_custom_entry = __esm({
         try {
           component = this.renderer(this.entry, { expanded: this._expanded, keyText, keyHint }, theme);
         } catch (error2) {
-          const message2 = error2 instanceof Error ? error2.message : String(error2);
+          const message3 = error2 instanceof Error ? error2.message : String(error2);
           const box2 = new Box(this.outputPad, 1, (text) => theme.bg("customMessageBg", text));
-          box2.addChild(new Text(theme.fg("error", `[${this.entry.customType}] renderer failed: ${message2}`), 0, 0));
+          box2.addChild(new Text(theme.fg("error", `[${this.entry.customType}] renderer failed: ${message3}`), 0, 0));
           component = box2;
         }
         if (!component) {
@@ -313244,9 +313244,9 @@ var init_custom_message = __esm({
       markdownTheme;
       _expanded = false;
       outputPad;
-      constructor(message2, customRenderer, markdownTheme = getMarkdownTheme(), outputPad = 1) {
+      constructor(message3, customRenderer, markdownTheme = getMarkdownTheme(), outputPad = 1) {
         super();
-        this.message = message2;
+        this.message = message3;
         this.customRenderer = customRenderer;
         this.markdownTheme = markdownTheme;
         this.outputPad = outputPad;
@@ -314699,9 +314699,9 @@ var init_login_dialog = __esm({
         this.tui = tui;
         this.onComplete = onComplete;
         const providerName = providerNameOverride || providerId;
-        const title = titleOverride ?? `Login to ${providerName}`;
+        const title2 = titleOverride ?? `Login to ${providerName}`;
         this.addChild(new DynamicBorder());
-        this.addChild(new Text(theme.fg("accent", theme.bold(title)), 1, 0));
+        this.addChild(new Text(theme.fg("accent", theme.bold(title2)), 1, 0));
         this.contentContainer = new Container();
         this.addChild(this.contentContainer);
         this.input = new Input();
@@ -314789,10 +314789,10 @@ var init_login_dialog = __esm({
         }
         this.tui.requestRender();
       }
-      setDeviceCodeStatus(hint, message2) {
+      setDeviceCodeStatus(hint, message3) {
         if (this.signal.aborted || !this.focused || !this.contentContainer.children.includes(hint))
           return;
-        hint.children = [new TruncatedText(theme.fg("dim", message2), 1, 0)];
+        hint.children = [new TruncatedText(theme.fg("dim", message3), 1, 0)];
         this.tui.requestRender();
       }
       activateDeviceCode(info2, hint) {
@@ -314829,10 +314829,10 @@ var init_login_dialog = __esm({
        * Called by onPrompt callback - show prompt and wait for input
        * Note: Does NOT clear content, appends to existing (preserves URL from showAuth)
        */
-      showPrompt(message2, placeholder) {
+      showPrompt(message3, placeholder) {
         this.clearDeviceCodeAction();
         this.contentContainer.addChild(new Spacer(1));
-        this.contentContainer.addChild(new Text(theme.fg("text", message2), 1, 0));
+        this.contentContainer.addChild(new Text(theme.fg("text", message3), 1, 0));
         if (placeholder) {
           this.contentContainer.addChild(new Text(theme.fg("dim", `e.g., ${placeholder}`), 1, 0));
         }
@@ -314857,9 +314857,9 @@ var init_login_dialog = __esm({
         this.tui.requestRender();
       }
       /** Show provider-owned information and links without starting an auth callback flow. */
-      showInfo(message2, links = [], showCloseHint = false) {
+      showInfo(message3, links = [], showCloseHint = false) {
         this.contentContainer.addChild(new Spacer(1));
-        this.contentContainer.addChild(new Text(theme.fg("text", message2), 1, 0));
+        this.contentContainer.addChild(new Text(theme.fg("text", message3), 1, 0));
         for (const link of links) {
           const url = displayUrl(link.url);
           const text = link.label ? `${link.label}: ${url}` : url;
@@ -314874,17 +314874,17 @@ var init_login_dialog = __esm({
       /**
        * Show waiting message (for polling flows like GitHub Copilot)
        */
-      showWaiting(message2) {
+      showWaiting(message3) {
         this.contentContainer.addChild(new Spacer(1));
-        this.contentContainer.addChild(new Text(theme.fg("dim", message2), 1, 0));
+        this.contentContainer.addChild(new Text(theme.fg("dim", message3), 1, 0));
         this.contentContainer.addChild(new Text(`(${keyHint("tui.select.cancel", "to cancel")})`, 1, 0));
         this.tui.requestRender();
       }
       /**
        * Called by onProgress callback
        */
-      showProgress(message2) {
-        this.contentContainer.addChild(new Text(theme.fg("dim", message2), 1, 0));
+      showProgress(message3) {
+        this.contentContainer.addChild(new Text(theme.fg("dim", message3), 1, 0));
         this.tui.requestRender();
       }
       handleInput(data) {
@@ -317072,11 +317072,11 @@ function layoutFlowchart(graph) {
 }
 function layoutClass(graph, infos) {
   const extras = graph.nodes.map((node, i2) => {
-    const title = [];
+    const title2 = [];
     if (infos[i2].annotation !== null)
-      title.push(`\xAB${infos[i2].annotation}\xBB`);
-    title.push(displayGenerics(node.label));
-    return { kind: "compartments", sections: [title, infos[i2].attrs, infos[i2].methods] };
+      title2.push(`\xAB${infos[i2].annotation}\xBB`);
+    title2.push(displayGenerics(node.label));
+    return { kind: "compartments", sections: [title2, infos[i2].attrs, infos[i2].methods] };
   });
   const canvas = layoutCanvas(graph, extras);
   return canvas && orient(canvas, graph);
@@ -317250,9 +317250,9 @@ function drawClassBox(canvas, p, sections) {
     }
   });
 }
-function drawFrame(canvas, p, title, sub) {
+function drawFrame(canvas, p, title2, sub) {
   drawBox(canvas, p, [], "rect");
-  const t2 = fitLabel(title, sat(p.w, 4));
+  const t2 = fitLabel(title2, sat(p.w, 4));
   drawTextOverEdges(canvas, ` ${t2} `, p.x + 1, p.y, "text");
   canvas.blit(sub, p.x + 1 + half(p.w - 2 - sub.w), p.y + 1 + half(p.h - 2 - sub.h));
 }
@@ -319201,8 +319201,8 @@ var init_oauth_selector = __esm({
         this.onCancelCallback = onCancel;
         this.addChild(new DynamicBorder());
         this.addChild(new Spacer(1));
-        const title = mode === "login" ? "Select provider to configure:" : "Select provider to logout:";
-        this.addChild(new TruncatedText(theme.fg("accent", theme.bold(title)), 1, 0));
+        const title2 = mode === "login" ? "Select provider to configure:" : "Select provider to logout:";
+        this.addChild(new TruncatedText(theme.fg("accent", theme.bold(title2)), 1, 0));
         this.addChild(new Spacer(1));
         this.searchInput = new Input();
         if (initialSearchInput) {
@@ -319254,8 +319254,8 @@ var init_oauth_selector = __esm({
           this.listContainer.addChild(new TruncatedText(scrollInfo, 1, 0));
         }
         if (this.filteredProviders.length === 0) {
-          const message2 = this.allProviders.length === 0 ? this.mode === "login" ? "No providers available" : "No providers logged in. Use /login first." : "No matching providers";
-          this.listContainer.addChild(new TruncatedText(theme.fg("muted", `  ${message2}`), 1, 0));
+          const message3 = this.allProviders.length === 0 ? this.mode === "login" ? "No providers available" : "No providers logged in. Use /login first." : "No matching providers";
+          this.listContainer.addChild(new TruncatedText(theme.fg("muted", `  ${message3}`), 1, 0));
         }
       }
       handleInput(keyData) {
@@ -319338,8 +319338,8 @@ function radiusShimmer(text, elapsedMs) {
   }
   return `${result}\x1B[39m`;
 }
-function createLoginMenuSelector(tui, title, options, radiusOption, onSelect, onCancel) {
-  return new RadiusLoginMenuComponent(tui, title, options, radiusOption, onSelect, onCancel);
+function createLoginMenuSelector(tui, title2, options, radiusOption, onSelect, onCancel) {
+  return new RadiusLoginMenuComponent(tui, title2, options, radiusOption, onSelect, onCancel);
 }
 var RADIUS_COLORS, CHARS_PER_COLOR, CHARS_PER_SECOND, ANIMATION_FRAME_MS, RadiusLoginMenuComponent;
 var init_radius_login_selector = __esm({
@@ -319356,8 +319356,8 @@ var init_radius_login_selector = __esm({
       animationStart = performance.now();
       animationTimer;
       animating = false;
-      constructor(tui, title, options, radiusOption, onSelect, onCancel) {
-        super(title, options, (option) => {
+      constructor(tui, title2, options, radiusOption, onSelect, onCancel) {
+        super(title2, options, (option) => {
           this.stopAnimation();
           onSelect(option);
         }, () => {
@@ -319529,8 +319529,8 @@ var init_scoped_models_selector = __esm({
           this.updateList();
         }
       }
-      setRefreshStatus(message2, kind) {
-        this.refreshStatusText?.setText(theme.fg(kind, `  ${message2}`));
+      setRefreshStatus(message3, kind) {
+        this.refreshStatusText?.setText(theme.fg(kind, `  ${message3}`));
       }
       buildItems() {
         return getSortedIds(this.enabledIds, this.allIds).map((id) => ({
@@ -319727,14 +319727,14 @@ var init_settings_submenu = __esm({
       onSelectCb;
       onCancelCb;
       onSelectionChangeCb;
-      constructor(title, description, options, currentValue, onSelect, onCancel, onSelectionChange, submenuOptions) {
+      constructor(title2, description, options, currentValue, onSelect, onCancel, onSelectionChange, submenuOptions) {
         super();
         this.allOptions = options;
         this.listLayout = submenuOptions?.layout ?? SUBMENU_SELECT_LIST_LAYOUT;
         this.onSelectCb = onSelect;
         this.onCancelCb = onCancel;
         this.onSelectionChangeCb = onSelectionChange;
-        this.addChild(new Text(theme.bold(theme.fg("accent", title)), 0, 0));
+        this.addChild(new Text(theme.bold(theme.fg("accent", title2)), 0, 0));
         if (description) {
           this.addChild(new Spacer(1));
           this.addChild(new Text(theme.fg("muted", description), 0, 0));
@@ -319809,11 +319809,11 @@ var init_settings_submenu = __esm({
         const step = this.steps[stepIndex];
         const total = this.steps.length;
         const stepLabel = total > 1 ? `Step ${stepIndex + 1}/${total} \xB7 ` : "";
-        const title = typeof step.title === "function" ? step.title(this.context) : step.title;
+        const title2 = typeof step.title === "function" ? step.title(this.context) : step.title;
         const desc = typeof step.description === "function" ? step.description(this.context) : step.description;
         const items = step.options(this.context);
         const preselect = step.preselect?.(this.context) ?? "";
-        return new SelectSubmenu(title, `${stepLabel}${desc}`, items, preselect, (value2) => {
+        return new SelectSubmenu(title2, `${stepLabel}${desc}`, items, preselect, (value2) => {
           this.context[step.key] = value2;
           if (stepIndex < total - 1) {
             this.activeComponent = this.buildStep(stepIndex + 1);
@@ -320076,8 +320076,8 @@ var init_settings_selector = __esm({
         content.addChild(settingsList);
         this.setContent(content, settingsList);
       }
-      createThemeSelect(title, description, currentValue, done, onSelect) {
-        return new SelectSubmenu(title, description, themeItems(this.availableThemes, currentValue), currentValue, onSelect, () => {
+      createThemeSelect(title2, description, currentValue, done, onSelect) {
+        return new SelectSubmenu(title2, description, themeItems(this.availableThemes, currentValue), currentValue, onSelect, () => {
           this.callbacks.onThemePreview?.(this.getThemeSetting());
           done();
         }, (value2) => this.callbacks.onThemePreview?.(value2));
@@ -320648,8 +320648,8 @@ var init_status_indicator = __esm({
     init_keybinding_hints();
     StatusIndicator = class extends Loader {
       kind;
-      constructor(kind, ui, spinnerColorFn, messageColorFn, message2, indicator) {
-        super(ui, spinnerColorFn, messageColorFn, message2, indicator);
+      constructor(kind, ui, spinnerColorFn, messageColorFn, message3, indicator) {
+        super(ui, spinnerColorFn, messageColorFn, message3, indicator);
         this.kind = kind;
       }
       renderInBorder(width) {
@@ -320664,8 +320664,8 @@ var init_status_indicator = __esm({
       }
     };
     WorkingStatusIndicator = class extends StatusIndicator {
-      constructor(ui, message2, indicator, colorFn) {
-        super("working", ui, colorFn ?? ((text) => theme.fg("accent", text)), colorFn ?? ((text) => theme.fg("muted", text)), message2, indicator);
+      constructor(ui, message3, indicator, colorFn) {
+        super("working", ui, colorFn ?? ((text) => theme.fg("accent", text)), colorFn ?? ((text) => theme.fg("muted", text)), message3, indicator);
       }
     };
     RetryStatusIndicator = class extends StatusIndicator {
@@ -322405,7 +322405,7 @@ var init_user_message_selector = __esm({
       // Max messages visible
       constructor(messages, initialSelectedId) {
         this.messages = messages;
-        const initialIndex = initialSelectedId ? messages.findIndex((message2) => message2.id === initialSelectedId) : -1;
+        const initialIndex = initialSelectedId ? messages.findIndex((message3) => message3.id === initialSelectedId) : -1;
         this.selectedIndex = initialIndex >= 0 ? initialIndex : Math.max(0, messages.length - 1);
       }
       invalidate() {
@@ -322419,9 +322419,9 @@ var init_user_message_selector = __esm({
         const startIndex = Math.max(0, Math.min(this.selectedIndex - Math.floor(this.maxVisible / 2), this.messages.length - this.maxVisible));
         const endIndex2 = Math.min(startIndex + this.maxVisible, this.messages.length);
         for (let i2 = startIndex; i2 < endIndex2; i2++) {
-          const message2 = this.messages[i2];
+          const message3 = this.messages[i2];
           const isSelected = i2 === this.selectedIndex;
-          const normalizedMessage = message2.text.replace(/\n/g, " ").trim();
+          const normalizedMessage = message3.text.replace(/\n/g, " ").trim();
           const cursor = isSelected ? theme.fg("accent", "\u203A ") : "  ";
           const maxMsgWidth = width - 2;
           const truncatedMsg = truncateToWidth(normalizedMessage, maxMsgWidth);
@@ -323061,7 +323061,7 @@ var init_interactive_mode = __esm({
         setRegisteredThemes(this.session.resourceLoader.getThemes().themes);
         this.themeController = new InteractiveThemeController(this.ui, {
           getSettingsManager: () => this.settingsManager,
-          showError: (message2) => this.showError(message2),
+          showError: (message3) => this.showError(message3),
           onChanged: () => this.updateEditorBorderColor(),
           initialThemeSetting: options.initialThemeSetting
         });
@@ -323506,9 +323506,9 @@ ${onboarding()}`, this.getStartupExpansionState(), 1, 0);
           }
         }
         if (initialMessages) {
-          for (const message2 of initialMessages) {
+          for (const message3 of initialMessages) {
             try {
-              await this.session.prompt(message2);
+              await this.session.prompt(message3);
             } catch (error2) {
               const errorMessage9 = error2 instanceof Error ? error2.message : "Unknown error occurred";
               this.showError(errorMessage9);
@@ -324242,8 +324242,8 @@ ${warningLines()}`, 0, 0));
         this.updateTerminalTitle();
       }
       async handleFatalRuntimeError(prefix2, error2) {
-        const message2 = error2 instanceof Error ? error2.message : String(error2);
-        this.showError(`${prefix2}: ${message2}`);
+        const message3 = error2 instanceof Error ? error2.message : String(error2);
+        this.showError(`${prefix2}: ${message3}`);
         const extensionHint = this.getCrashExtensionHint(error2);
         if (extensionHint) {
           this.chatContainer.addChild(new ThemedText(() => theme.fg("warning", extensionHint), this.outputPad, 0));
@@ -324287,10 +324287,10 @@ ${warningLines()}`, 0, 0));
         this.chatContainer.addChild(new ThemedText(() => theme.fg("muted", `If this looks like a ${APP_NAME} bug, /bug sends a report to the developers.`), this.outputPad, 0));
         this.ui.requestRender();
       }
-      maybeSuggestBugReport(message2) {
-        if (message2.stopReason !== "error" || isRetryableAssistantError(message2))
+      maybeSuggestBugReport(message3) {
+        if (message3.stopReason !== "error" || isRetryableAssistantError(message3))
           return;
-        if (/\b(?:abort(?:ed)?|cancel(?:l?ed)?)\b/i.test(message2.errorMessage ?? ""))
+        if (/\b(?:abort(?:ed)?|cancel(?:l?ed)?)\b/i.test(message3.errorMessage ?? ""))
           return;
         if (this.maybeShowInstallChangeWarning())
           return;
@@ -324470,7 +324470,7 @@ ${warningLines()}`, 0, 0));
        * Set an extension widget (string array or custom component).
        */
       setExtensionWidget(key, content, options) {
-        const placement = options?.placement ?? "aboveEditor";
+        const placement2 = options?.placement ?? "aboveEditor";
         const removeExisting = (map2) => {
           const existing = map2.get(key);
           if (existing?.dispose)
@@ -324496,7 +324496,7 @@ ${warningLines()}`, 0, 0));
         } else {
           component = content(this.ui, theme);
         }
-        const targetMap = placement === "belowEditor" ? this.extensionWidgetsBelow : this.extensionWidgetsAbove;
+        const targetMap = placement2 === "belowEditor" ? this.extensionWidgetsBelow : this.extensionWidgetsAbove;
         targetMap.set(key, component);
         this.renderWidgets();
       }
@@ -324654,16 +324654,16 @@ ${warningLines()}`, 0, 0));
       }
       createExtensionUIContext() {
         return {
-          select: (title, options, opts) => this.showExtensionSelector(title, options, opts),
-          confirm: (title, message2, opts) => this.showExtensionConfirm(title, message2, opts),
-          input: (title, placeholder, opts) => this.showExtensionInput(title, placeholder, opts),
-          notify: (message2, type) => this.showExtensionNotify(message2, type),
+          select: (title2, options, opts) => this.showExtensionSelector(title2, options, opts),
+          confirm: (title2, message3, opts) => this.showExtensionConfirm(title2, message3, opts),
+          input: (title2, placeholder, opts) => this.showExtensionInput(title2, placeholder, opts),
+          notify: (message3, type) => this.showExtensionNotify(message3, type),
           onTerminalInput: (handler2) => this.addExtensionTerminalInputListener(handler2),
           setStatus: (key, text) => this.setExtensionStatus(key, text),
-          setWorkingMessage: (message2) => {
-            this.workingMessage = message2;
+          setWorkingMessage: (message3) => {
+            this.workingMessage = message3;
             if (this.activeStatusIndicator?.kind === "working") {
-              this.activeStatusIndicator.setMessage(message2 ?? this.defaultWorkingMessage);
+              this.activeStatusIndicator.setMessage(message3 ?? this.defaultWorkingMessage);
             }
           },
           setWorkingVisible: (visible) => this.setWorkingVisible(visible),
@@ -324672,12 +324672,12 @@ ${warningLines()}`, 0, 0));
           setWidget: (key, content, options) => this.setExtensionWidget(key, content, options),
           setFooter: (factory) => this.setExtensionFooter(factory),
           setHeader: (factory) => this.setExtensionHeader(factory),
-          setTitle: (title) => this.ui.terminal.setTitle(title),
+          setTitle: (title2) => this.ui.terminal.setTitle(title2),
           custom: (factory, options) => this.showExtensionCustom(factory, options),
           pasteToEditor: (text) => this.editor.handleInput(`\x1B[200~${text}\x1B[201~`),
           setEditorText: (text) => this.editor.setText(text),
           getEditorText: () => this.editor.getExpandedText?.() ?? this.editor.getText(),
-          editor: (title, prefill) => this.showExtensionEditor(title, prefill),
+          editor: (title2, prefill) => this.showExtensionEditor(title2, prefill),
           addAutocompleteProvider: (factory) => {
             this.autocompleteProviderWrappers.push(factory);
             this.setupAutocompleteProvider();
@@ -324737,7 +324737,7 @@ ${warningLines()}`, 0, 0));
       /**
        * Show a selector for extensions.
        */
-      showExtensionSelector(title, options, opts, blocked = { kind: "question", message: title }) {
+      showExtensionSelector(title2, options, opts, blocked = { kind: "question", message: title2 }) {
         return new Promise((resolve19) => {
           if (opts?.signal?.aborted) {
             resolve19(void 0);
@@ -324751,18 +324751,18 @@ ${warningLines()}`, 0, 0));
           };
           const onAbort = () => finish(void 0);
           opts?.signal?.addEventListener("abort", onAbort, { once: true });
-          const selector = new ExtensionSelectorComponent(title, options, (option) => finish(option), () => finish(void 0), { tui: this.ui, timeout: opts?.timeout, onToggleToolsExpanded: () => this.toggleToolOutputExpansion() });
+          const selector = new ExtensionSelectorComponent(title2, options, (option) => finish(option), () => finish(void 0), { tui: this.ui, timeout: opts?.timeout, onToggleToolsExpanded: () => this.toggleToolOutputExpansion() });
           this.pushExtensionDialog(selector, blocked);
         });
       }
       /**
        * Show a confirmation dialog for extensions.
        */
-      async showExtensionConfirm(title, message2, opts) {
-        const result = await this.showExtensionSelector(`${title}
-${message2}`, ["Yes", "No"], opts, {
+      async showExtensionConfirm(title2, message3, opts) {
+        const result = await this.showExtensionSelector(`${title2}
+${message3}`, ["Yes", "No"], opts, {
           kind: "permission",
-          message: title
+          message: title2
         });
         return result === "Yes";
       }
@@ -324773,7 +324773,7 @@ ${message2}`, ["Yes", "No"], opts, {
       /**
        * Show a text input for extensions.
        */
-      showExtensionInput(title, placeholder, opts) {
+      showExtensionInput(title2, placeholder, opts) {
         return new Promise((resolve19) => {
           if (opts?.signal?.aborted) {
             resolve19(void 0);
@@ -324787,21 +324787,21 @@ ${message2}`, ["Yes", "No"], opts, {
           };
           const onAbort = () => finish(void 0);
           opts?.signal?.addEventListener("abort", onAbort, { once: true });
-          const input2 = new ExtensionInputComponent(title, placeholder, (value2) => finish(value2), () => finish(void 0), { tui: this.ui, timeout: opts?.timeout });
-          this.pushExtensionDialog(input2, { kind: "question", message: title });
+          const input2 = new ExtensionInputComponent(title2, placeholder, (value2) => finish(value2), () => finish(void 0), { tui: this.ui, timeout: opts?.timeout });
+          this.pushExtensionDialog(input2, { kind: "question", message: title2 });
         });
       }
       /**
        * Show a multi-line editor for extensions (with Ctrl+G support).
        */
-      showExtensionEditor(title, prefill) {
+      showExtensionEditor(title2, prefill) {
         return new Promise((resolve19) => {
           const finish = (value2) => {
             this.removeExtensionDialog(editor);
             resolve19(value2);
           };
-          const editor = new ExtensionEditorComponent(this.ui, this.keybindings, title, prefill, (value2) => finish(value2), () => finish(void 0), void 0, this.settingsManager.getExternalEditorCommand());
-          this.pushExtensionDialog(editor, { kind: "question", message: title });
+          const editor = new ExtensionEditorComponent(this.ui, this.keybindings, title2, prefill, (value2) => finish(value2), () => finish(void 0), void 0, this.settingsManager.getExternalEditorCommand());
+          this.pushExtensionDialog(editor, { kind: "question", message: title2 });
         });
       }
       /**
@@ -324872,13 +324872,13 @@ ${message2}`, ["Yes", "No"], opts, {
       /**
        * Show a notification for extensions.
        */
-      showExtensionNotify(message2, type) {
+      showExtensionNotify(message3, type) {
         if (type === "error") {
-          this.showError(message2);
+          this.showError(message3);
         } else if (type === "warning") {
-          this.showWarning(message2);
+          this.showWarning(message3);
         } else {
-          this.showStatus(message2);
+          this.showStatus(message3);
         }
       }
       /** Show a custom component with keyboard focus. Overlay mode renders on top of existing content. */
@@ -325574,10 +325574,10 @@ ${message2}`, ["Yes", "No"], opts, {
         }
       }
       /** Extract text content from a user message */
-      getUserMessageText(message2) {
-        if (message2.role !== "user")
+      getUserMessageText(message3) {
+        if (message3.role !== "user")
           return "";
-        const textBlocks = typeof message2.content === "string" ? [{ type: "text", text: message2.content }] : message2.content.filter((c2) => c2.type === "text");
+        const textBlocks = typeof message3.content === "string" ? [{ type: "text", text: message3.content }] : message3.content.filter((c2) => c2.type === "text");
         return textBlocks.map((c2) => c2.text).join("");
       }
       /** Show a managed-tool status update in the chat. */
@@ -325586,9 +325586,9 @@ ${message2}`, ["Yes", "No"], opts, {
           this.chatContainer.addChild(new Spacer(1));
           this.managedToolStatusStarted = true;
         }
-        const message2 = status.type === "warning" ? `Warning: ${status.message}` : status.message;
+        const message3 = status.type === "warning" ? `Warning: ${status.message}` : status.message;
         const color = status.type === "warning" ? "warning" : "dim";
-        this.chatContainer.addChild(new ThemedText(() => theme.fg(color, message2), 1, 0));
+        this.chatContainer.addChild(new ThemedText(() => theme.fg(color, message3), 1, 0));
         this.lastStatusSpacer = void 0;
         this.lastStatusText = void 0;
         this.ui.requestRender();
@@ -325599,18 +325599,18 @@ ${message2}`, ["Yes", "No"], opts, {
        * If multiple status messages are emitted back-to-back (without anything else being added to the chat),
        * we update the previous status line instead of appending new ones to avoid log spam.
        */
-      showStatus(message2) {
+      showStatus(message3) {
         const children = this.chatContainer.children;
         const last = children.length > 0 ? children[children.length - 1] : void 0;
         const secondLast = children.length > 1 ? children[children.length - 2] : void 0;
         if (last && secondLast && last === this.lastStatusText && secondLast === this.lastStatusSpacer) {
-          this.lastStatusMessage = message2;
+          this.lastStatusMessage = message3;
           this.lastStatusText.invalidate();
           this.ui.requestRender();
           return;
         }
         const spacer = new Spacer(1);
-        this.lastStatusMessage = message2;
+        this.lastStatusMessage = message3;
         const text = new ThemedText(() => theme.fg("dim", this.lastStatusMessage), 1, 0);
         this.chatContainer.addChild(spacer);
         this.chatContainer.addChild(text);
@@ -325637,21 +325637,21 @@ ${message2}`, ["Yes", "No"], opts, {
         }
         this.chatContainer.addChild(component);
       }
-      addMessageToChat(message2, options) {
-        switch (message2.role) {
+      addMessageToChat(message3, options) {
+        switch (message3.role) {
           case "bashExecution": {
-            const component = new BashExecutionComponent(message2.command, this.ui, message2.excludeFromContext, this.outputPad);
-            if (message2.output) {
-              component.appendOutput(message2.output);
+            const component = new BashExecutionComponent(message3.command, this.ui, message3.excludeFromContext, this.outputPad);
+            if (message3.output) {
+              component.appendOutput(message3.output);
             }
-            component.setComplete(message2.exitCode, message2.cancelled, message2.truncated ? { truncated: true } : void 0, message2.fullOutputPath);
+            component.setComplete(message3.exitCode, message3.cancelled, message3.truncated ? { truncated: true } : void 0, message3.fullOutputPath);
             this.chatContainer.addChild(component);
             break;
           }
           case "custom": {
-            if (message2.display) {
-              const renderer = this.session.extensionRunner.getMessageRenderer(message2.customType);
-              const component = new CustomMessageComponent(message2, renderer, this.getMarkdownThemeWithSettings(), this.outputPad);
+            if (message3.display) {
+              const renderer = this.session.extensionRunner.getMessageRenderer(message3.customType);
+              const component = new CustomMessageComponent(message3, renderer, this.getMarkdownThemeWithSettings(), this.outputPad);
               component.setExpanded(this.toolOutputExpanded);
               this.chatContainer.addChild(component);
             }
@@ -325659,14 +325659,14 @@ ${message2}`, ["Yes", "No"], opts, {
           }
           case "compactionSummary": {
             this.chatContainer.addChild(new Spacer(1));
-            const component = new CompactionSummaryMessageComponent(message2, this.getMarkdownThemeWithSettings(), this.outputPad);
+            const component = new CompactionSummaryMessageComponent(message3, this.getMarkdownThemeWithSettings(), this.outputPad);
             component.setExpanded(this.toolOutputExpanded);
             this.chatContainer.addChild(component);
             break;
           }
           case "branchSummary": {
             this.chatContainer.addChild(new Spacer(1));
-            const component = new BranchSummaryMessageComponent(message2, this.getMarkdownThemeWithSettings(), this.outputPad);
+            const component = new BranchSummaryMessageComponent(message3, this.getMarkdownThemeWithSettings(), this.outputPad);
             component.setExpanded(this.toolOutputExpanded);
             this.chatContainer.addChild(component);
             break;
@@ -325674,7 +325674,7 @@ ${message2}`, ["Yes", "No"], opts, {
           case "system":
             break;
           case "user": {
-            const textContent = this.getUserMessageText(message2);
+            const textContent = this.getUserMessageText(message3);
             if (textContent) {
               if (this.chatContainer.children.length > 0) {
                 this.chatContainer.addChild(new Spacer(1));
@@ -325700,7 +325700,7 @@ ${message2}`, ["Yes", "No"], opts, {
             break;
           }
           case "assistant": {
-            const assistantComponent = new AssistantMessageComponent(message2, this.hideThinkingBlock, this.getMarkdownThemeWithSettings(), this.hiddenThinkingLabel, this.outputPad, this.getMarkdownTransformers(), options?.messageId, options?.timestamp);
+            const assistantComponent = new AssistantMessageComponent(message3, this.hideThinkingBlock, this.getMarkdownThemeWithSettings(), this.hiddenThinkingLabel, this.outputPad, this.getMarkdownTransformers(), options?.messageId, options?.timestamp);
             this.chatContainer.addChild(assistantComponent);
             break;
           }
@@ -325708,7 +325708,7 @@ ${message2}`, ["Yes", "No"], opts, {
             break;
           }
           default: {
-            const _exhaustive = message2;
+            const _exhaustive = message3;
           }
         }
       }
@@ -325733,14 +325733,14 @@ ${message2}`, ["Yes", "No"], opts, {
             this.addCompactionCostNotice(item);
             continue;
           }
-          const message2 = item;
-          if (message2.role === "assistant") {
-            const meta = messageMeta?.get(message2);
-            this.addMessageToChat(message2, {
+          const message3 = item;
+          if (message3.role === "assistant") {
+            const meta = messageMeta?.get(message3);
+            this.addMessageToChat(message3, {
               messageId: meta?.id,
               timestamp: meta?.timestamp
             });
-            for (const content of message2.content) {
+            for (const content of message3.content) {
               if (content.type === "toolCall") {
                 const component = new ToolExecutionComponent(content.name, content.id, content.arguments, {
                   showImages: this.settingsManager.getShowImages(),
@@ -325749,13 +325749,13 @@ ${message2}`, ["Yes", "No"], opts, {
                 }, this.getRegisteredToolDefinition(content.name), this.ui, this.sessionManager.getCwd());
                 component.setExpanded(this.toolOutputExpanded);
                 this.chatContainer.addChild(component);
-                if (message2.stopReason === "aborted" || message2.stopReason === "error") {
+                if (message3.stopReason === "aborted" || message3.stopReason === "error") {
                   let errorMessage9;
-                  if (message2.stopReason === "aborted") {
+                  if (message3.stopReason === "aborted") {
                     const retryAttempt = this.session.retryAttempt;
                     errorMessage9 = retryAttempt > 0 ? `Aborted after ${retryAttempt} retry attempt${retryAttempt > 1 ? "s" : ""}` : "Operation aborted";
                   } else {
-                    errorMessage9 = message2.errorMessage || "Error";
+                    errorMessage9 = message3.errorMessage || "Error";
                   }
                   component.updateResult({ content: [{ type: "text", text: errorMessage9 }], isError: true });
                 } else {
@@ -325763,20 +325763,20 @@ ${message2}`, ["Yes", "No"], opts, {
                 }
               }
             }
-            if (message2.stopReason !== "aborted" && message2.stopReason !== "error") {
-              const miss = cacheMisses.get(message2);
+            if (message3.stopReason !== "aborted" && message3.stopReason !== "error") {
+              const miss = cacheMisses.get(message3);
               if (miss)
                 this.addCacheMissNotice(miss);
             }
-          } else if (message2.role === "toolResult") {
-            const component = renderedPendingTools.get(message2.toolCallId);
+          } else if (message3.role === "toolResult") {
+            const component = renderedPendingTools.get(message3.toolCallId);
             if (component) {
-              component.updateResult(message2);
-              renderedPendingTools.delete(message2.toolCallId);
+              component.updateResult(message3);
+              renderedPendingTools.delete(message3.toolCallId);
             }
           } else {
-            const meta = messageMeta?.get(message2);
-            this.addMessageToChat(message2, {
+            const meta = messageMeta?.get(message3);
+            this.addMessageToChat(message3, {
               ...options,
               messageId: meta?.id,
               timestamp: meta?.timestamp
@@ -325834,9 +325834,9 @@ ${message2}`, ["Yes", "No"], opts, {
         this.chatContainer.addChild(new Spacer(1));
         this.chatContainer.addChild(new ThemedText(() => theme.fg("warning", `${label}: ${formatTokens(tokens)} tokens billed${cost}`), 1, 0));
       }
-      static countDroppedThinkingBlocks(message2) {
+      static countDroppedThinkingBlocks(message3) {
         let count = 0;
-        for (const diagnostic of message2.diagnostics ?? []) {
+        for (const diagnostic of message3.diagnostics ?? []) {
           if (diagnostic.type !== "anthropic_input_transformations")
             continue;
           const transformations = diagnostic.details?.transformations;
@@ -325846,10 +325846,10 @@ ${message2}`, ["Yes", "No"], opts, {
         }
         return count;
       }
-      maybeShowThinkingDropNotice(message2) {
+      maybeShowThinkingDropNotice(message3) {
         if (!this.settingsManager.getShowCacheMissNotices())
           return;
-        const droppedCount = _InteractiveMode.countDroppedThinkingBlocks(message2);
+        const droppedCount = _InteractiveMode.countDroppedThinkingBlocks(message3);
         if (droppedCount === 0)
           return;
         let previousDroppedCount = 0;
@@ -325872,10 +325872,10 @@ ${message2}`, ["Yes", "No"], opts, {
        * significant cache miss. Only states observable facts: the miss itself,
        * a model switch, or an idle gap past the cache TTL.
        */
-      maybeShowCacheMissNotice(message2) {
+      maybeShowCacheMissNotice(message3) {
         if (!this.settingsManager.getShowCacheMissNotices())
           return;
-        const miss = detectCacheMiss(this.sessionManager.getEntries(), message2, this.session.modelRuntime);
+        const miss = detectCacheMiss(this.sessionManager.getEntries(), message3, this.session.modelRuntime);
         if (miss)
           this.addCacheMissNotice(miss);
       }
@@ -326302,12 +326302,12 @@ ${packageLines}`, 1, 0));
         const { steering: steeringMessages, followUp: followUpMessages } = this.getAllQueuedMessages();
         if (steeringMessages.length > 0 || followUpMessages.length > 0) {
           this.pendingMessagesContainer.addChild(new Spacer(1));
-          for (const message2 of steeringMessages) {
-            const text = theme.fg("dim", `Steering: ${message2}`);
+          for (const message3 of steeringMessages) {
+            const text = theme.fg("dim", `Steering: ${message3}`);
             this.pendingMessagesContainer.addChild(new TruncatedText(text, 1, 0));
           }
-          for (const message2 of followUpMessages) {
-            const text = theme.fg("dim", `Follow-up: ${message2}`);
+          for (const message3 of followUpMessages) {
+            const text = theme.fg("dim", `Follow-up: ${message3}`);
             this.pendingMessagesContainer.addChild(new TruncatedText(text, 1, 0));
           }
           const dequeueHint = this.getAppKeyDisplay("app.message.dequeue");
@@ -326365,41 +326365,41 @@ ${packageLines}`, 1, 0));
         };
         try {
           if (options?.willRetry) {
-            for (const message2 of queuedMessages) {
-              if (this.isExtensionCommand(message2.text)) {
-                await this.session.prompt(message2.text);
-              } else if (message2.mode === "followUp") {
-                await this.session.followUp(message2.text);
+            for (const message3 of queuedMessages) {
+              if (this.isExtensionCommand(message3.text)) {
+                await this.session.prompt(message3.text);
+              } else if (message3.mode === "followUp") {
+                await this.session.followUp(message3.text);
               } else {
-                await this.session.steer(message2.text);
+                await this.session.steer(message3.text);
               }
             }
             this.updatePendingMessagesDisplay();
             return;
           }
-          const firstPromptIndex = queuedMessages.findIndex((message2) => !this.isExtensionCommand(message2.text));
+          const firstPromptIndex = queuedMessages.findIndex((message3) => !this.isExtensionCommand(message3.text));
           if (firstPromptIndex === -1) {
-            for (const message2 of queuedMessages) {
-              await this.session.prompt(message2.text);
+            for (const message3 of queuedMessages) {
+              await this.session.prompt(message3.text);
             }
             return;
           }
           const preCommands = queuedMessages.slice(0, firstPromptIndex);
           const firstPrompt = queuedMessages[firstPromptIndex];
           const rest = queuedMessages.slice(firstPromptIndex + 1);
-          for (const message2 of preCommands) {
-            await this.session.prompt(message2.text);
+          for (const message3 of preCommands) {
+            await this.session.prompt(message3.text);
           }
           const promptPromise = this.session.prompt(firstPrompt.text, { streamingBehavior: firstPrompt.mode }).catch((error2) => {
             restoreQueue(error2);
           });
-          for (const message2 of rest) {
-            if (this.isExtensionCommand(message2.text)) {
-              await this.session.prompt(message2.text);
-            } else if (message2.mode === "followUp") {
-              await this.session.followUp(message2.text);
+          for (const message3 of rest) {
+            if (this.isExtensionCommand(message3.text)) {
+              await this.session.prompt(message3.text);
+            } else if (message3.mode === "followUp") {
+              await this.session.followUp(message3.text);
             } else {
-              await this.session.steer(message2.text);
+              await this.session.steer(message3.text);
             }
           }
           this.updatePendingMessagesDisplay();
@@ -327293,7 +327293,7 @@ ${packageLines}`, 1, 0));
           }
           return;
         }
-        const title = providerOptions?.[0] ? `Select authentication method for ${providerOptions[0].name}:` : "Select authentication method:";
+        const title2 = providerOptions?.[0] ? `Select authentication method for ${providerOptions[0].name}:` : "Select authentication method:";
         this.showSelector((done) => {
           const onSelect = (option) => {
             done();
@@ -327315,15 +327315,15 @@ ${packageLines}`, 1, 0));
             done();
             this.ui.requestRender();
           };
-          const selector = radiusLabel && radiusText ? createLoginMenuSelector(this.ui, title, options, { label: radiusLabel, text: radiusText }, onSelect, onCancel) : new ExtensionSelectorComponent(title, options, onSelect, onCancel);
+          const selector = radiusLabel && radiusText ? createLoginMenuSelector(this.ui, title2, options, { label: radiusLabel, text: radiusText }, onSelect, onCancel) : new ExtensionSelectorComponent(title2, options, onSelect, onCancel);
           return { component: selector, focus: selector, dispose: () => selector.dispose() };
         });
       }
       showLoginProviderSelector(authType, initialSearchInput) {
         const providerOptions = this.getLoginProviderOptions(authType);
         if (providerOptions.length === 0) {
-          const message2 = authType === "oauth" ? "No account providers available." : authType === "api_key" ? "No API key providers available." : "No login providers available.";
-          this.showStatus(message2);
+          const message3 = authType === "oauth" ? "No account providers available." : authType === "api_key" ? "No API key providers available." : "No login providers available.";
+          this.showStatus(message3);
           return;
         }
         this.showSelector((done) => {
@@ -327373,11 +327373,11 @@ ${packageLines}`, 1, 0));
                 signal: AbortSignal.timeout(15e3)
               });
               await this.updateAvailableProviderCount();
-              const message2 = providerOption.authType === "oauth" ? `Logged out of ${providerOption.name}` : `Removed stored API key for ${providerOption.name}. Environment variables and models.json config are unchanged.`;
-              this.showStatus(message2);
+              const message3 = providerOption.authType === "oauth" ? `Logged out of ${providerOption.name}` : `Removed stored API key for ${providerOption.name}. Environment variables and models.json config are unchanged.`;
+              this.showStatus(message3);
             } catch (error2) {
-              const message2 = error2 instanceof Error ? error2.message : String(error2);
-              this.showError(error2 instanceof CredentialSynchronizationError ? `Credentials removed for ${providerOption.name}, but local model state could not be synchronized: ${message2}` : `Logout failed: ${message2}`);
+              const message3 = error2 instanceof Error ? error2.message : String(error2);
+              this.showError(error2 instanceof CredentialSynchronizationError ? `Credentials removed for ${providerOption.name}, but local model state could not be synchronized: ${message3}` : `Logout failed: ${message3}`);
             }
           }, () => {
             done();
@@ -327821,8 +327821,8 @@ ${packageLines}`, 1, 0));
           ui: this.ui,
           editorContainer: this.editorContainer,
           editor: this.editor,
-          showStatus: (message2) => this.showStatus(message2),
-          showError: (message2) => this.showError(message2)
+          showStatus: (message3) => this.showStatus(message3),
+          showError: (message3) => this.showError(message3)
         });
       }
       async handleBugCommand(hint) {
@@ -327832,8 +327832,8 @@ ${packageLines}`, 1, 0));
           editorContainer: this.editorContainer,
           editor: this.editor,
           keybindings: this.keybindings,
-          showStatus: (message2) => this.showStatus(message2),
-          showError: (message2) => this.showError(message2)
+          showStatus: (message3) => this.showStatus(message3),
+          showError: (message3) => this.showError(message3)
         }, hint);
       }
       async handleCopyCommand(options = {}) {
@@ -328372,8 +328372,8 @@ async function runPrintMode(runtimeHost, options) {
     if (initialMessage) {
       await session.prompt(initialMessage, { images: initialImages });
     }
-    for (const message2 of messages) {
-      await session.prompt(message2);
+    for (const message3 of messages) {
+      await session.prompt(message3);
     }
     if (mode === "text") {
       const state3 = session.state;
@@ -328585,22 +328585,22 @@ var init_rpc_client = __esm({
        * Returns the prompt's disposition after acceptance; use onEvent() to receive streaming events.
        * If the disposition is "handled", no run started for this prompt, so don't wait for agent_settled.
        */
-      async prompt(message2, images, streamingBehavior) {
-        const response = await this.send({ type: "prompt", message: message2, images, streamingBehavior });
+      async prompt(message3, images, streamingBehavior) {
+        const response = await this.send({ type: "prompt", message: message3, images, streamingBehavior });
         return this.getData(response).disposition;
       }
       /**
        * Queue a steering message to interrupt the agent mid-run.
        */
-      async steer(message2, images) {
-        const response = await this.send({ type: "steer", message: message2, images });
+      async steer(message3, images) {
+        const response = await this.send({ type: "steer", message: message3, images });
         return this.getData(response).disposition;
       }
       /**
        * Queue a follow-up message to be processed after the agent finishes.
        */
-      async followUp(message2, images) {
-        const response = await this.send({ type: "follow_up", message: message2, images });
+      async followUp(message3, images) {
+        const response = await this.send({ type: "follow_up", message: message3, images });
         return this.getData(response).disposition;
       }
       /**
@@ -328854,9 +328854,9 @@ var init_rpc_client = __esm({
       /**
        * Send prompt and wait for completion, returning all events.
        */
-      async promptAndWait(message2, images, timeout = 6e4) {
+      async promptAndWait(message3, images, timeout = 6e4) {
         const eventsPromise = this.collectEvents(timeout);
-        await this.prompt(message2, images);
+        await this.prompt(message3, images);
         return eventsPromise;
       }
       // =========================================================================
@@ -328960,8 +328960,8 @@ async function runRpcMode(runtimeHost) {
     }
     return { id, type: "response", command, success: true, data };
   };
-  const error2 = (id, command, message2) => {
-    return { id, type: "response", command, success: false, error: message2 };
+  const error2 = (id, command, message3) => {
+    return { id, type: "response", command, success: false, error: message3 };
   };
   const pendingExtensionRequests = /* @__PURE__ */ new Map();
   let shutdownRequested = false;
@@ -329001,15 +329001,15 @@ async function runRpcMode(runtimeHost) {
     });
   }
   const createExtensionUIContext = () => ({
-    select: (title, options, opts) => createDialogPromise(opts, void 0, { method: "select", title, options, timeout: opts?.timeout }, (r2) => "cancelled" in r2 && r2.cancelled ? void 0 : "value" in r2 ? r2.value : void 0),
-    confirm: (title, message2, opts) => createDialogPromise(opts, false, { method: "confirm", title, message: message2, timeout: opts?.timeout }, (r2) => "cancelled" in r2 && r2.cancelled ? false : "confirmed" in r2 ? r2.confirmed : false),
-    input: (title, placeholder, opts) => createDialogPromise(opts, void 0, { method: "input", title, placeholder, timeout: opts?.timeout }, (r2) => "cancelled" in r2 && r2.cancelled ? void 0 : "value" in r2 ? r2.value : void 0),
-    notify(message2, type) {
+    select: (title2, options, opts) => createDialogPromise(opts, void 0, { method: "select", title: title2, options, timeout: opts?.timeout }, (r2) => "cancelled" in r2 && r2.cancelled ? void 0 : "value" in r2 ? r2.value : void 0),
+    confirm: (title2, message3, opts) => createDialogPromise(opts, false, { method: "confirm", title: title2, message: message3, timeout: opts?.timeout }, (r2) => "cancelled" in r2 && r2.cancelled ? false : "confirmed" in r2 ? r2.confirmed : false),
+    input: (title2, placeholder, opts) => createDialogPromise(opts, void 0, { method: "input", title: title2, placeholder, timeout: opts?.timeout }, (r2) => "cancelled" in r2 && r2.cancelled ? void 0 : "value" in r2 ? r2.value : void 0),
+    notify(message3, type) {
       output({
         type: "extension_ui_request",
         id: crypto6.randomUUID(),
         method: "notify",
-        message: message2,
+        message: message3,
         notifyType: type
       });
     },
@@ -329050,12 +329050,12 @@ async function runRpcMode(runtimeHost) {
     },
     setHeader(_factory) {
     },
-    setTitle(title) {
+    setTitle(title2) {
       output({
         type: "extension_ui_request",
         id: crypto6.randomUUID(),
         method: "setTitle",
-        title
+        title: title2
       });
     },
     async custom() {
@@ -329075,7 +329075,7 @@ async function runRpcMode(runtimeHost) {
     getEditorText() {
       return "";
     },
-    async editor(title, prefill) {
+    async editor(title2, prefill) {
       const id = crypto6.randomUUID();
       return new Promise((resolve19, reject) => {
         pendingExtensionRequests.set(id, {
@@ -329090,7 +329090,7 @@ async function runRpcMode(runtimeHost) {
           },
           reject
         });
-        output({ type: "extension_ui_request", id, method: "editor", title, prefill });
+        output({ type: "extension_ui_request", id, method: "editor", title: title2, prefill });
       });
     },
     addAutocompleteProvider() {
@@ -329779,15 +329779,15 @@ var init_config_selector = __esm({
       invalidate() {
       }
       render(width) {
-        const title = theme.bold(this.writeScope === "project" ? "Project Local Resources" : "Global Resources");
+        const title2 = theme.bold(this.writeScope === "project" ? "Project Local Resources" : "Global Resources");
         const sep13 = theme.fg("muted", " \xB7 ");
         const switchHint = this.projectModeAvailable ? keyHint("tui.input.tab", "switch mode") + sep13 : "";
         const actionHint = this.writeScope === "project" ? rawKeyHint("space", "cycle inherit/+/-") : rawKeyHint("space", "toggle");
         const hint = switchHint + actionHint + sep13 + rawKeyHint("esc", "close");
-        const spacing = Math.max(1, width - visibleWidth(title) - visibleWidth(hint));
+        const spacing = Math.max(1, width - visibleWidth(title2) - visibleWidth(hint));
         const scopeHint = this.writeScope === "project" ? theme.fg("muted", `${CONFIG_DIR_NAME}/settings.json \xB7 inherited global resources are dimmed`) : theme.fg("muted", `~/${CONFIG_DIR_NAME}/agent/settings.json`);
         return [
-          truncateToWidth(`${title}${" ".repeat(spacing)}${hint}`, width, ""),
+          truncateToWidth(`${title2}${" ".repeat(spacing)}${hint}`, width, ""),
           truncateToWidth(scopeHint, width, "")
         ];
       }
@@ -331047,8 +331047,8 @@ async function runConfiguredSelfUpdate(argv, plan) {
   try {
     await runSelfUpdate(command);
   } catch (error2) {
-    const message2 = error2 instanceof Error ? error2.message : "Unknown self-update command error";
-    console.error(source_default.red(`Error: ${message2}`));
+    const message3 = error2 instanceof Error ? error2.message : "Unknown self-update command error";
+    console.error(source_default.red(`Error: ${message3}`));
     process.exitCode = 1;
     return;
   }
@@ -331116,7 +331116,7 @@ async function createCommandSettingsManager(options) {
       settingsManager,
       hasUI: appMode === "interactive"
     }),
-    onExtensionError: (message2) => projectTrustWarnings.push(message2)
+    onExtensionError: (message3) => projectTrustWarnings.push(message3)
   });
   settingsManager.setProjectTrusted(projectTrusted);
   return { settingsManager, projectTrustWarnings };
@@ -331233,8 +331233,8 @@ async function handlePackageCommand(args, runtimeOptions = {}) {
     try {
       await refreshModelCatalogs2(getAgentDir());
     } catch (error2) {
-      const message2 = error2 instanceof Error ? error2.message : "Unknown model catalog refresh error";
-      console.error(source_default.red(`Error: ${message2}`));
+      const message3 = error2 instanceof Error ? error2.message : "Unknown model catalog refresh error";
+      console.error(source_default.red(`Error: ${message3}`));
       process.exitCode = 1;
     }
     return true;
@@ -331352,8 +331352,8 @@ async function handlePackageCommand(args, runtimeOptions = {}) {
               console.log(source_default.dim(`Updating managed ${APP_NAME} installation...`));
               await runManagedSelfUpdate(managedInstallRoot, selfUpdatePlan.version);
             } catch (error2) {
-              const message2 = error2 instanceof Error ? error2.message : "Unknown managed update error";
-              console.error(source_default.red(`Error: ${message2}`));
+              const message3 = error2 instanceof Error ? error2.message : "Unknown managed update error";
+              console.error(source_default.red(`Error: ${message3}`));
               process.exitCode = 1;
               return true;
             }
@@ -331386,8 +331386,8 @@ async function handlePackageCommand(args, runtimeOptions = {}) {
             }
             await runSelfUpdate(selfUpdateCommand);
           } catch (error2) {
-            const message2 = error2 instanceof Error ? error2.message : "Unknown package command error";
-            console.error(source_default.red(`Error: ${message2}`));
+            const message3 = error2 instanceof Error ? error2.message : "Unknown package command error";
+            console.error(source_default.red(`Error: ${message3}`));
             if (installMethod === "pnpm") {
               printPnpmSelfUpdateMetadataHint();
             }
@@ -331409,8 +331409,8 @@ async function handlePackageCommand(args, runtimeOptions = {}) {
       }
     }
   } catch (error2) {
-    const message2 = error2 instanceof Error ? error2.message : "Unknown package command error";
-    console.error(source_default.red(`Error: ${message2}`));
+    const message3 = error2 instanceof Error ? error2.message : "Unknown package command error";
+    console.error(source_default.red(`Error: ${message3}`));
     process.exitCode = 1;
     return true;
   }
@@ -331516,8 +331516,8 @@ async function runAuthCommand(args) {
   try {
     command = parseAuthCommand(args);
   } catch (error2) {
-    const message2 = error2 instanceof AuthCommandError ? error2.message : "Failed to parse auth command";
-    console.error(source_default.red(`Error: ${message2}`));
+    const message3 = error2 instanceof AuthCommandError ? error2.message : "Failed to parse auth command";
+    console.error(source_default.red(`Error: ${message3}`));
     process.exitCode = 1;
     return true;
   }
@@ -331570,8 +331570,8 @@ async function runAuthCommand(args) {
 `);
     process.exitCode = result.status === "ready" ? 0 : result.status === "not_ready" ? 1 : 2;
   } catch (error2) {
-    const message2 = error2 instanceof AuthCommandError ? error2.message : "Failed to resolve credential";
-    console.error(source_default.red(`Error: ${message2}`));
+    const message3 = error2 instanceof AuthCommandError ? error2.message : "Failed to resolve credential";
+    console.error(source_default.red(`Error: ${message3}`));
     process.exitCode = command.kind === "check" ? 2 : 1;
   }
   return true;
@@ -331612,13 +331612,13 @@ async function resolveSessionPath(sessionArg, cwd, sessionDir) {
   }
   return { type: "not_found", arg: sessionArg };
 }
-async function promptConfirm(message2) {
+async function promptConfirm(message3) {
   return new Promise((resolve19) => {
     const rl = createInterface6({
       input: process.stdin,
       output: process.stdout
     });
-    rl.question(`${message2} [y/N] `, (answer) => {
+    rl.question(`${message3} [y/N] `, (answer) => {
       rl.close();
       resolve19(answer.toLowerCase() === "y" || answer.toLowerCase() === "yes");
     });
@@ -331653,8 +331653,8 @@ function validateSessionIdFlags(parsed) {
   try {
     assertValidSessionId(parsed.sessionId);
   } catch (error2) {
-    const message2 = error2 instanceof Error ? error2.message : String(error2);
-    console.error(source_default.red(`Error: ${message2}`));
+    const message3 = error2 instanceof Error ? error2.message : String(error2);
+    console.error(source_default.red(`Error: ${message3}`));
     process.exit(1);
   }
 }
@@ -331662,8 +331662,8 @@ function openSessionOrExit(path19, sessionDir) {
   try {
     return SessionManager.open(path19, sessionDir);
   } catch (error2) {
-    const message2 = error2 instanceof Error ? error2.message : String(error2);
-    console.error(source_default.red(`Error: ${message2}`));
+    const message3 = error2 instanceof Error ? error2.message : String(error2);
+    console.error(source_default.red(`Error: ${message3}`));
     process.exit(1);
   }
 }
@@ -331671,8 +331671,8 @@ function forkSessionOrExit(sourcePath, cwd, sessionDir, sessionId) {
   try {
     return SessionManager.forkFrom(sourcePath, cwd, sessionDir, { id: sessionId });
   } catch (error2) {
-    const message2 = error2 instanceof Error ? error2.message : String(error2);
-    console.error(source_default.red(`Error: ${message2}`));
+    const message3 = error2 instanceof Error ? error2.message : String(error2);
+    console.error(source_default.red(`Error: ${message3}`));
     process.exit(1);
   }
 }
@@ -331889,8 +331889,8 @@ async function main(args, options) {
       const outputPath = parsed.messages.length > 0 ? parsed.messages[0] : void 0;
       result = await exportFromFile(parsed.export, outputPath);
     } catch (error2) {
-      const message2 = error2 instanceof Error ? error2.message : "Failed to export session";
-      console.error(source_default.red(`Error: ${message2}`));
+      const message3 = error2 instanceof Error ? error2.message : "Failed to export session";
+      console.error(source_default.red(`Error: ${message3}`));
       process.exit(1);
     }
     console.log(`Exported to: ${result}`);
@@ -331980,7 +331980,7 @@ async function main(args, options) {
               settingsManager: startupSettingsManager,
               hasUI: isInitialRuntime && trustPromptMode === "interactive"
             }),
-            onExtensionError: (message2) => projectTrustDiagnostics.push({ type: "warning", message: message2 })
+            onExtensionError: (message3) => projectTrustDiagnostics.push({ type: "warning", message: message3 })
           });
           projectTrustByCwd.set(cwd2, trusted);
           return trusted;
@@ -336214,22 +336214,22 @@ var require_errors4 = __commonJS({
   "node_modules/yaml/dist/errors.js"(exports) {
     "use strict";
     var YAMLError = class extends Error {
-      constructor(name, pos, code, message2) {
+      constructor(name, pos, code, message3) {
         super();
         this.name = name;
         this.code = code;
-        this.message = message2;
+        this.message = message3;
         this.pos = pos;
       }
     };
     var YAMLParseError = class extends YAMLError {
-      constructor(pos, code, message2) {
-        super("YAMLParseError", pos, code, message2);
+      constructor(pos, code, message3) {
+        super("YAMLParseError", pos, code, message3);
       }
     };
     var YAMLWarning = class extends YAMLError {
-      constructor(pos, code, message2) {
-        super("YAMLWarning", pos, code, message2);
+      constructor(pos, code, message3) {
+        super("YAMLWarning", pos, code, message3);
       }
     };
     var prettifyError = (src, lc) => (error2) => {
@@ -336909,8 +336909,8 @@ var require_compose_collection2 = __commonJS({
         const { anchor, newlineAfterProp: nl } = props;
         const lastProp = anchor && tagToken ? anchor.offset > tagToken.offset ? anchor : tagToken : anchor ?? tagToken;
         if (lastProp && (!nl || nl.offset < lastProp.offset)) {
-          const message2 = "Missing newline after block sequence props";
-          onError3(lastProp, "MISSING_CHAR", message2);
+          const message3 = "Missing newline after block sequence props";
+          onError3(lastProp, "MISSING_CHAR", message3);
         }
       }
       const expType = token.type === "block-map" ? "map" : token.type === "block-seq" ? "seq" : token.start.source === "{" ? "map" : "seq";
@@ -336982,15 +336982,15 @@ var require_resolve_block_scalar2 = __commonJS({
             trimIndent = indent.length;
         } else {
           if (indent.length < trimIndent) {
-            const message2 = "Block scalars with more-indented leading empty lines must use an explicit indentation indicator";
-            onError3(offset + indent.length, "MISSING_CHAR", message2);
+            const message3 = "Block scalars with more-indented leading empty lines must use an explicit indentation indicator";
+            onError3(offset + indent.length, "MISSING_CHAR", message3);
           }
           if (header.indent === 0)
             trimIndent = indent.length;
           contentStart = i2;
           if (trimIndent === 0 && !ctx.atRoot) {
-            const message2 = "Block scalar values in collections must be indented";
-            onError3(offset, "BAD_INDENT", message2);
+            const message3 = "Block scalar values in collections must be indented";
+            onError3(offset, "BAD_INDENT", message3);
           }
           break;
         }
@@ -337013,8 +337013,8 @@ var require_resolve_block_scalar2 = __commonJS({
           content = content.slice(0, -1);
         if (content && indent.length < trimIndent) {
           const src = header.indent ? "explicit indentation indicator" : "first line";
-          const message2 = `Block scalar lines must not be less indented than their ${src}`;
-          onError3(offset - content.length - (crlf ? 2 : 1), "BAD_INDENT", message2);
+          const message3 = `Block scalar lines must not be less indented than their ${src}`;
+          onError3(offset - content.length - (crlf ? 2 : 1), "BAD_INDENT", message3);
           indent = "";
         }
         if (type === Scalar.Scalar.BLOCK_LITERAL) {
@@ -337092,8 +337092,8 @@ var require_resolve_block_scalar2 = __commonJS({
             break;
           case "comment":
             if (strict && !hasSpace) {
-              const message2 = "Comments must be separated from other tokens by white space characters";
-              onError3(token, "MISSING_CHAR", message2);
+              const message3 = "Comments must be separated from other tokens by white space characters";
+              onError3(token, "MISSING_CHAR", message3);
             }
             length += token.source.length;
             comment = token.source.substring(1);
@@ -337104,8 +337104,8 @@ var require_resolve_block_scalar2 = __commonJS({
             break;
           /* istanbul ignore next should not happen */
           default: {
-            const message2 = `Unexpected token in block scalar header: ${token.type}`;
-            onError3(token, "UNEXPECTED_TOKEN", message2);
+            const message3 = `Unexpected token in block scalar header: ${token.type}`;
+            onError3(token, "UNEXPECTED_TOKEN", message3);
             const ts = token.source;
             if (ts && typeof ts === "string")
               length += ts.length;
@@ -337498,13 +337498,13 @@ var require_compose_node2 = __commonJS({
             if (anchor)
               node.anchor = anchor.source.substring(1);
           } catch (error2) {
-            const message2 = error2 instanceof Error ? error2.message : String(error2);
-            onError3(token, "RESOURCE_EXHAUSTION", message2);
+            const message3 = error2 instanceof Error ? error2.message : String(error2);
+            onError3(token, "RESOURCE_EXHAUSTION", message3);
           }
           break;
         default: {
-          const message2 = token.type === "error" ? token.message : `Unsupported token (type: ${token.type})`;
-          onError3(token, "UNEXPECTED_TOKEN", message2);
+          const message3 = token.type === "error" ? token.message : `Unsupported token (type: ${token.type})`;
+          onError3(token, "UNEXPECTED_TOKEN", message3);
           isSrcToken = false;
         }
       }
@@ -337660,12 +337660,12 @@ var require_composer2 = __commonJS({
         this.prelude = [];
         this.errors = [];
         this.warnings = [];
-        this.onError = (source, code, message2, warning2) => {
+        this.onError = (source, code, message3, warning2) => {
           const pos = getErrorPos(source);
           if (warning2)
-            this.warnings.push(new errors.YAMLWarning(pos, code, message2));
+            this.warnings.push(new errors.YAMLWarning(pos, code, message3));
           else
-            this.errors.push(new errors.YAMLParseError(pos, code, message2));
+            this.errors.push(new errors.YAMLParseError(pos, code, message3));
         };
         this.directives = new directives.Directives({ version: options.version || "1.2" });
         this.options = options;
@@ -337735,10 +337735,10 @@ ${cb}` : comment;
           console.dir(token, { depth: null });
         switch (token.type) {
           case "directive":
-            this.directives.add(token.source, (offset, message2, warning2) => {
+            this.directives.add(token.source, (offset, message3, warning2) => {
               const pos = getErrorPos(token);
               pos[0] += offset;
-              this.onError(pos, "BAD_DIRECTIVE", message2, warning2);
+              this.onError(pos, "BAD_DIRECTIVE", message3, warning2);
             });
             this.prelude.push(token.source);
             this.atDirectives = true;
@@ -337827,12 +337827,12 @@ var require_cst_scalar2 = __commonJS({
     var stringifyString = require_stringifyString2();
     function resolveAsScalar(token, strict = true, onError3) {
       if (token) {
-        const _onError = (pos, code, message2) => {
+        const _onError = (pos, code, message3) => {
           const offset = typeof pos === "number" ? pos : Array.isArray(pos) ? pos[0] : pos.offset;
           if (onError3)
-            onError3(offset, code, message2);
+            onError3(offset, code, message3);
           else
-            throw new errors.YAMLParseError([offset, offset + 1], code, message2);
+            throw new errors.YAMLParseError([offset, offset + 1], code, message3);
         };
         switch (token.type) {
           case "scalar":
@@ -338992,8 +338992,8 @@ var require_parser2 = __commonJS({
         }
         const type = cst.tokenType(source);
         if (!type) {
-          const message2 = `Not a YAML token: ${source}`;
-          yield* this.pop({ type: "error", offset: this.offset, message: message2, source });
+          const message3 = `Not a YAML token: ${source}`;
+          yield* this.pop({ type: "error", offset: this.offset, message: message3, source });
           this.offset += source.length;
         } else if (type === "scalar") {
           this.atNewLine = false;
@@ -339083,8 +339083,8 @@ var require_parser2 = __commonJS({
       *pop(error2) {
         const token = error2 ?? this.stack.pop();
         if (!token) {
-          const message2 = "Tried to pop an empty stack";
-          yield { type: "error", offset: this.offset, source: "", message: message2 };
+          const message3 = "Tried to pop an empty stack";
+          yield { type: "error", offset: this.offset, source: "", message: message3 };
         } else if (this.stack.length === 0) {
           yield token;
         } else {
@@ -339897,19 +339897,19 @@ function toCommandProperties(annotationProperties) {
 }
 
 // node_modules/@actions/core/lib/command.js
-function issueCommand(command, properties, message2) {
-  const cmd = new Command(command, properties, message2);
+function issueCommand(command, properties, message3) {
+  const cmd = new Command(command, properties, message3);
   process.stdout.write(cmd.toString() + os.EOL);
 }
 var CMD_STRING = "::";
 var Command = class {
-  constructor(command, properties, message2) {
+  constructor(command, properties, message3) {
     if (!command) {
       command = "missing.command";
     }
     this.command = command;
     this.properties = properties;
-    this.message = message2;
+    this.message = message3;
   }
   toString() {
     let cmdStr = CMD_STRING + this.command;
@@ -340318,18 +340318,18 @@ function getInput(name, options) {
   }
   return val.trim();
 }
-function setFailed(message2) {
+function setFailed(message3) {
   process.exitCode = ExitCode.Failure;
-  error(message2);
+  error(message3);
 }
-function error(message2, properties = {}) {
-  issueCommand("error", toCommandProperties(properties), message2 instanceof Error ? message2.toString() : message2);
+function error(message3, properties = {}) {
+  issueCommand("error", toCommandProperties(properties), message3 instanceof Error ? message3.toString() : message3);
 }
-function warning(message2, properties = {}) {
-  issueCommand("warning", toCommandProperties(properties), message2 instanceof Error ? message2.toString() : message2);
+function warning(message3, properties = {}) {
+  issueCommand("warning", toCommandProperties(properties), message3 instanceof Error ? message3.toString() : message3);
 }
-function info(message2) {
-  process.stdout.write(message2 + os3.EOL);
+function info(message3) {
+  process.stdout.write(message3 + os3.EOL);
 }
 
 // node_modules/@actions/github/lib/context.js
@@ -341417,8 +341417,8 @@ var RequestError = class extends Error {
    * Response object if a response was received
    */
   response;
-  constructor(message2, statusCode, options) {
-    super(message2, { cause: options.cause });
+  constructor(message3, statusCode, options) {
+    super(message3, { cause: options.cause });
     this.name = "HttpError";
     this.status = Number.parseInt(statusCode);
     if (Number.isNaN(this.status)) {
@@ -341486,22 +341486,22 @@ async function fetchWrapper(requestOptions) {
       ...requestOptions.body && { duplex: "half" }
     });
   } catch (error2) {
-    let message2 = "Unknown Error";
+    let message3 = "Unknown Error";
     if (error2 instanceof Error) {
       if (error2.name === "AbortError") {
         error2.status = 500;
         throw error2;
       }
-      message2 = error2.message;
+      message3 = error2.message;
       if (error2.name === "TypeError" && "cause" in error2) {
         if (error2.cause instanceof Error) {
-          message2 = error2.cause.message;
+          message3 = error2.cause.message;
         } else if (typeof error2.cause === "string") {
-          message2 = error2.cause;
+          message3 = error2.cause;
         }
       }
     }
-    const requestError = new RequestError(message2, 500, {
+    const requestError = new RequestError(message3, 500, {
       request: requestOptions
     });
     requestError.cause = error2;
@@ -344618,7 +344618,7 @@ async function botThreads(c2) {
   return out;
 }
 function createGitHubClient(config) {
-  const { api, owner, repo, prNumber, checkName } = config;
+  const { api, owner, repo, prNumber } = config;
   const redact = redactor(config.secrets);
   return {
     getPull: () => getPull(config),
@@ -344642,8 +344642,8 @@ function createGitHubClient(config) {
     async resolveThread(id) {
       await api.graphql(RESOLVE_MUTATION, { id });
     },
-    async setCheck({ headSha, conclusion, title, summary: summary3 }) {
-      await api.request("POST /repos/{owner}/{repo}/check-runs", { owner, repo, name: checkName, head_sha: headSha, status: "completed", conclusion, output: { title, summary: summary3 } });
+    async setCheck({ name, headSha, conclusion, title: title2, summary: summary3 }) {
+      await api.request("POST /repos/{owner}/{repo}/check-runs", { owner, repo, name, head_sha: headSha, status: "completed", conclusion, output: { title: title2, summary: summary3 } });
     }
   };
 }
@@ -344661,6 +344661,13 @@ function required(source, name) {
   if (v2 === "") throw new Error(`Input required and not supplied: ${name}`);
   return v2;
 }
+function onOff(source, name) {
+  const raw = source.get(name).trim().toLowerCase();
+  if (raw === "") return void 0;
+  if (raw === "on" || raw === "true") return true;
+  if (raw === "off" || raw === "false") return false;
+  throw new Error(`Input ${name} must be on or off, got "${raw}"`);
+}
 var workflowOptions = (source) => ({
   depth: source.get("depth") || void 0,
   voters: intInput(source, "voters", 1),
@@ -344669,7 +344676,9 @@ var workflowOptions = (source) => ({
   maxDiffLines: intInput(source, "max_diff_lines", 1),
   maxFindings: intInput(source, "max_findings_to_verify", 1),
   concurrency: intInput(source, "max_concurrency", 1),
-  nitCap: intInput(source, "nit_cap", 0)
+  nitCap: intInput(source, "nit_cap", 0),
+  securityReview: onOff(source, "security_review"),
+  checkName: source.get("check_name") || void 0
 });
 function readInputs(source, event) {
   const prNumber = event.prNumber ?? intInput(source, "pr_number", 1);
@@ -344684,8 +344693,9 @@ function readInputs(source, event) {
     baseUrl: source.get("base_url"),
     finderModel: source.get("finder_model"),
     verifierModel: source.get("verifier_model"),
+    securityFinderModel: source.get("security_finder_model") || void 0,
+    securityVerifierModel: source.get("security_verifier_model") || void 0,
     botLogin: source.get("bot_login"),
-    checkName: source.get("check_name"),
     workflow: workflowOptions(source)
   };
 }
@@ -344756,6 +344766,57 @@ New changes since that comment:
 <diff>
 ${input2.diff}
 </diff>`;
+var SECURITY_FOCUS = {
+  "security-general": "Any exploitable vulnerability: injection, broken authentication/authorization, secrets and crypto misuse, unsafe deserialization or code execution, XSS, SSRF, sensitive data exposure, CI/supply-chain risks.",
+  injection: "Injection: SQL/NoSQL, OS command, template, LDAP and header injection; path traversal; XXE. Trace attacker input into queries, shells, templates and file paths.",
+  authz: "Authentication and authorization: auth bypass, missing or wrong permission checks, privilege escalation, IDOR (accessing another user's objects), session/JWT flaws, CSRF on state-changing endpoints.",
+  "secrets-crypto": "Secrets and crypto: hardcoded keys/tokens/passwords in source, weak hashing for passwords, predictable randomness for tokens, disabled TLS or certificate validation, keys logged or returned.",
+  "exposure-execution": "Code execution and exposure: unsafe deserialization, eval/dynamic code, XSS, SSRF, sensitive data in logs/errors/responses, untrusted input in CI workflow `run:` steps, risky dependency changes (typosquats, install scripts)."
+};
+var SEVERITY_SCALE = `Severity:
+- "high": remote or unauthenticated compromise: RCE, auth bypass, injection reaching data, mass data exposure, leaked production secret.
+- "medium": exploitable but needs authentication, user interaction or specific conditions; limited data exposure.
+- "low": real but minor impact.`;
+var SECURITY_FINDER_SYSTEM = `You are an application security engineer reviewing a pull request for exploitable vulnerabilities.
+${SHARED}
+
+Rules:
+- Report only vulnerabilities an attacker can actually exploit. For each one give:
+  source: the attacker-controlled input and how it arrives (e.g. "req.query.id from any HTTP client");
+  sink: the dangerous operation it reaches (e.g. "db.query"), with file and line in the NEW version of the file.
+    For a hardcoded secret, the file and line are where the secret literal is written, not where it is used;
+  exploit_scenario: exactly what the attacker sends and what happens;
+  impact: what the attacker gains;
+  evidence: code quoted exactly from the file at the sink.
+  If you cannot trace input from source to sink, do not report it.
+- Check for sanitization, parameterization, framework auto-escaping and auth middleware before reporting.
+- introduced: true if this PR added or changed the vulnerable path; false if it already existed.
+- vuln_class: a short kebab-case class (e.g. "sql-injection"). Report each location of the same mistake with the same class.
+- Do NOT report: denial of service, resource exhaustion, missing rate limiting, generic missing input validation without a proven exploit, open redirects, regex DoS, or anything in docs or test files.
+${SEVERITY_SCALE}
+- Finding nothing is a normal, good outcome. Do not invent issues.
+- Finish by calling submit_security_findings exactly once (an empty list if none). Do not reply with prose.`;
+var SECURITY_VERIFIER_SYSTEM = `You are a skeptical application security engineer verifying one reported vulnerability.
+${SHARED}
+
+Trace the reported path yourself in the code: does attacker-controlled input really reach the sink, unsanitized, without an authorization check stopping it? Look for parameterized queries, escaping, validation, allow-lists and auth middleware that would block it.
+exploitable=true only if every step holds; theoretical or "could be dangerous" issues are false.
+${SEVERITY_SCALE}
+Finish by calling submit_exploit_verdict exactly once with a one or two sentence reason. Do not reply with prose.`;
+var securityFinderPrompt = (focus, input2) => `Focus on: ${SECURITY_FOCUS[focus]}
+
+${context3(input2)}`;
+var exploitPrompt = (f4, input2) => `Reported vulnerability (${f4.severity}) at ${f4.file}:${f4.line}-${f4.endLine}
+Title: ${f4.title}
+Class: ${f4.vulnClass}
+Source: ${f4.source}
+Sink: ${f4.sink}
+Exploit scenario: ${f4.exploitScenario}
+Impact: ${f4.impact}
+Quoted evidence:
+${f4.evidence}
+
+${context3(input2)}`;
 
 // src/pi-reviewer/session.ts
 init_dist12();
@@ -344840,6 +344901,40 @@ var FindingsSchema = typebox_exports.Object({
   )
 });
 var VerdictSchema = typebox_exports.Object({ real: typebox_exports.Boolean(), reason: typebox_exports.String() });
+var Level = typebox_exports.Union([typebox_exports.Literal("high"), typebox_exports.Literal("medium"), typebox_exports.Literal("low")]);
+var SecurityFindingsSchema = typebox_exports.Object({
+  findings: typebox_exports.Array(
+    typebox_exports.Object({
+      file: typebox_exports.String({ description: "Repo-relative path of the sink" }),
+      line: typebox_exports.Integer({ minimum: 1, description: "Sink line, in the NEW version of the file" }),
+      end_line: typebox_exports.Optional(typebox_exports.Integer({ minimum: 1 })),
+      title: typebox_exports.String({ description: "One-line summary" }),
+      vuln_class: typebox_exports.String({ description: "Short kebab-case class, e.g. sql-injection" }),
+      source: typebox_exports.String({ description: "Attacker-controlled input and how it arrives" }),
+      sink: typebox_exports.String({ description: "Dangerous operation the input reaches" }),
+      exploit_scenario: typebox_exports.String({ description: "What the attacker sends and what happens" }),
+      impact: typebox_exports.String({ description: "What the attacker gains" }),
+      evidence: typebox_exports.String({ description: "Code quoted exactly from the file at the sink" }),
+      severity: Level,
+      introduced: typebox_exports.Boolean({ description: "True if this PR added or changed the vulnerable path" })
+    })
+  )
+});
+var ExploitVerdictSchema = typebox_exports.Object({ exploitable: typebox_exports.Boolean(), severity: Level, reason: typebox_exports.String() });
+var toSecurityFinding = (f4) => ({
+  file: f4.file.replace(/^\.?\//, ""),
+  line: f4.line,
+  endLine: Math.max(f4.end_line ?? f4.line, f4.line),
+  title: f4.title,
+  vulnClass: f4.vuln_class,
+  source: f4.source,
+  sink: f4.sink,
+  exploitScenario: f4.exploit_scenario,
+  impact: f4.impact,
+  evidence: f4.evidence,
+  severity: f4.severity,
+  introduced: f4.introduced
+});
 var toFinding = (f4) => ({
   file: f4.file.replace(/^\.?\//, ""),
   line: f4.line,
@@ -344928,16 +345023,109 @@ async function runStructured(rt2, cwd, task) {
 
 // src/pi-reviewer/pi-reviewer.ts
 async function createPiReviewer(config) {
-  const rt2 = await createRuntime({ baseUrl: config.baseUrl, apiKey: config.apiKey, models: [config.finderModel, config.verifierModel] });
-  const verdict = (system, prompt) => runStructured(rt2, config.cwd, { modelId: config.verifierModel, system, prompt, toolName: "submit_verdict", schema: VerdictSchema });
+  const securityFinder = config.securityFinderModel ?? config.finderModel;
+  const securityVerifier = config.securityVerifierModel ?? config.verifierModel;
+  const rt2 = await createRuntime({
+    baseUrl: config.baseUrl,
+    apiKey: config.apiKey,
+    models: [config.finderModel, config.verifierModel, securityFinder, securityVerifier]
+  });
+  const run = (task) => runStructured(rt2, config.cwd, task);
+  const verdict2 = (system, prompt) => run({ modelId: config.verifierModel, system, prompt, toolName: "submit_verdict", schema: VerdictSchema });
   return {
     async find(focus, input2) {
-      const task = { modelId: config.finderModel, system: FINDER_SYSTEM, prompt: finderPrompt(focus, input2), toolName: "submit_findings", schema: FindingsSchema };
-      return (await runStructured(rt2, config.cwd, task)).findings.map(toFinding);
+      const out = await run({ modelId: config.finderModel, system: FINDER_SYSTEM, prompt: finderPrompt(focus, input2), toolName: "submit_findings", schema: FindingsSchema });
+      return out.findings.map(toFinding);
     },
-    verify: (finding, input2) => verdict(VERIFIER_SYSTEM, verifierPrompt(finding, input2)),
-    recheck: async (issue2, input2) => (await verdict(RECHECK_SYSTEM, recheckPrompt(issue2, input2))).real
+    verify: (finding, input2) => verdict2(VERIFIER_SYSTEM, verifierPrompt(finding, input2)),
+    recheck: async (issue2, input2) => (await verdict2(RECHECK_SYSTEM, recheckPrompt(issue2, input2))).real,
+    async findVulnerabilities(focus, input2) {
+      const task = { modelId: securityFinder, system: SECURITY_FINDER_SYSTEM, prompt: securityFinderPrompt(focus, input2), toolName: "submit_security_findings", schema: SecurityFindingsSchema };
+      return (await run(task)).findings.map(toSecurityFinding);
+    },
+    judgeExploit: (finding, input2) => run({ modelId: securityVerifier, system: SECURITY_VERIFIER_SYSTEM, prompt: exploitPrompt(finding, input2), toolName: "submit_exploit_verdict", schema: ExploitVerdictSchema })
   };
+}
+
+// src/workflow/markers.ts
+init_build();
+init_value2();
+var STATE_RE = /<!-- anthropic-style-code-review:state (.*?) -->/g;
+var FINDING_RE = /<!-- anthropic-style-code-review:finding (important|pre_existing|nit) (\S+) -->/g;
+var StateSchema = typebox_exports.Object({
+  round: typebox_exports.Integer({ minimum: 1 }),
+  sha: typebox_exports.String(),
+  fingerprints: typebox_exports.Array(typebox_exports.String()),
+  securitySha: typebox_exports.Optional(typebox_exports.String())
+});
+var SECURITY_RE = /<!-- anthropic-style-code-review:security (high|medium|low) (new|pre) (\S+) -->/g;
+var SEVERITIES = ["important", "pre_existing", "nit"];
+var LEVELS2 = ["high", "medium", "low"];
+var isSeverity = (s2) => SEVERITIES.some((v2) => v2 === s2);
+var isLevel = (s2) => LEVELS2.some((v2) => v2 === s2);
+var encodeState = (s2) => `<!-- anthropic-style-code-review:state ${JSON.stringify(s2).replace(/>/g, "\\u003e")} -->`;
+function parseState2(json3) {
+  try {
+    const v2 = JSON.parse(json3);
+    return Check2(StateSchema, v2) ? v2 : void 0;
+  } catch {
+    return void 0;
+  }
+}
+function decodeState(bodies) {
+  return bodies.flatMap((b2) => [...b2.matchAll(STATE_RE)].map((m3) => parseState2(m3[1] ?? ""))).filter((s2) => s2 !== void 0).at(-1);
+}
+var encodeFindingMarker = (severity, fingerprint2) => `<!-- anthropic-style-code-review:finding ${severity} ${fingerprint2} -->`;
+function decodeFindingMarker(body) {
+  const m3 = [...body.matchAll(FINDING_RE)].at(-1);
+  const severity = m3?.[1];
+  const fp = m3?.[2];
+  return severity !== void 0 && fp !== void 0 && isSeverity(severity) ? { severity, fingerprint: fp } : void 0;
+}
+var countOpenImportant = (threads) => threads.filter((t2) => !t2.isResolved && decodeFindingMarker(t2.body)?.severity === "important").length;
+var encodeSecurityMarker = (level, introduced, fingerprint2) => `<!-- anthropic-style-code-review:security ${level} ${introduced ? "new" : "pre"} ${fingerprint2} -->`;
+function decodeSecurityMarker(body) {
+  const m3 = [...body.matchAll(SECURITY_RE)].at(-1);
+  const level = m3?.[1];
+  const fp = m3?.[3];
+  return level !== void 0 && fp !== void 0 && isLevel(level) ? { level, introduced: m3?.[2] === "new", fingerprint: fp } : void 0;
+}
+var countOpenSecurity = (threads) => threads.filter((t2) => {
+  const m3 = t2.isResolved ? void 0 : decodeSecurityMarker(t2.body);
+  return m3 !== void 0 && m3.introduced && m3.level !== "low";
+}).length;
+
+// src/workflow/gates.ts
+var title = (open5, noun) => open5 === 0 ? `No open ${noun}s` : `${open5} open ${noun}${open5 === 1 ? "" : "s"}`;
+var verdict = (blocked) => blocked ? "failure" : "success";
+var SECURITY_SUMMARY = [
+  "Fails while any **Security \xB7 High** or **Security \xB7 Medium** thread introduced by this PR is unresolved,",
+  "or while the latest commits have not been security-reviewed (the pass failed or was undecided and will retry on the next run,",
+  "the diff exceeded `max_diff_lines`, or the review is paused at the round cap; a human must review those).",
+  "Low and pre-existing findings never block."
+].join(" ");
+async function publishGates(github, headSha, names2) {
+  const threads = await github.botThreads();
+  const openImportant = countOpenImportant(threads);
+  await github.setCheck({
+    name: names2.name,
+    headSha,
+    conclusion: verdict(openImportant > 0),
+    title: title(openImportant, "important finding"),
+    summary: "Fails while any review thread tagged **Important** is unresolved. Fix it or resolve the thread with a reason."
+  });
+  if (!names2.security) return { conclusion: verdict(openImportant > 0), openImportant };
+  const openBlocking = countOpenSecurity(threads);
+  const reviewed = decodeState(await github.botReviewBodies())?.securitySha === headSha;
+  const conclusion = verdict(openBlocking > 0 || !reviewed);
+  await github.setCheck({
+    name: `${names2.name}/security`,
+    headSha,
+    conclusion,
+    title: openBlocking > 0 || reviewed ? title(openBlocking, "high/medium security finding") : "Latest commits not security-reviewed",
+    summary: SECURITY_SUMMARY
+  });
+  return { conclusion: verdict(openImportant > 0), openImportant, security: { conclusion, openBlocking, reviewed } };
 }
 
 // src/diff.ts
@@ -344954,6 +345142,7 @@ function pathOf(lines) {
 }
 function scanHunks(lines) {
   const rightLines = /* @__PURE__ */ new Set();
+  const addedLines2 = /* @__PURE__ */ new Set();
   let right = 0;
   let inHunk = false;
   let changed = 0;
@@ -344965,6 +345154,7 @@ function scanHunks(lines) {
     } else if (!inHunk) {
       continue;
     } else if (line.startsWith("+")) {
+      addedLines2.add(right);
       rightLines.add(right++);
       changed++;
     } else if (line.startsWith("-")) {
@@ -344973,7 +345163,7 @@ function scanHunks(lines) {
       rightLines.add(right++);
     }
   }
-  return { rightLines, changed };
+  return { rightLines, addedLines: addedLines2, changed };
 }
 function parseDiff(diff) {
   return diff.split(/(?=^diff --git )/m).filter((chunk) => chunk.startsWith("diff --git ")).map((text) => {
@@ -344994,7 +345184,9 @@ var FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
 var FrontmatterSchema = typebox_exports.Object({
   depth: typebox_exports.Optional(typebox_exports.String()),
   skip_paths: typebox_exports.Optional(typebox_exports.Array(typebox_exports.String())),
-  nit_cap: typebox_exports.Optional(typebox_exports.Integer({ minimum: 0 }))
+  nit_cap: typebox_exports.Optional(typebox_exports.Integer({ minimum: 0 })),
+  security_paths: typebox_exports.Optional(typebox_exports.Array(typebox_exports.String())),
+  security_exclude_paths: typebox_exports.Optional(typebox_exports.Array(typebox_exports.String()))
 });
 function parseFrontmatterYaml(yaml) {
   try {
@@ -345005,11 +345197,12 @@ function parseFrontmatterYaml(yaml) {
 }
 function frontmatterError(raw) {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) return new Error("REVIEW.md frontmatter must be a mapping");
-  const field2 = ["depth", "skip_paths", "nit_cap"].find((k2) => {
+  const field2 = ["depth", "skip_paths", "nit_cap", "security_paths", "security_exclude_paths"].find((k2) => {
     const v2 = Reflect.get(raw, k2);
     return v2 !== void 0 && !Check2(FrontmatterSchema.properties[k2], v2);
   });
-  const expected = { depth: "a string", skip_paths: "a list of glob strings", nit_cap: "a non-negative integer" };
+  const globs = "a list of glob strings";
+  const expected = { depth: "a string", skip_paths: globs, nit_cap: "a non-negative integer", security_paths: globs, security_exclude_paths: globs };
   return new Error(field2 ? `REVIEW.md ${field2} must be ${expected[field2]}` : "REVIEW.md frontmatter is invalid");
 }
 function parseReviewMd(text) {
@@ -345021,7 +345214,9 @@ function parseReviewMd(text) {
     config: {
       skipPaths: raw.skip_paths ?? [],
       ...raw.depth !== void 0 && { depth: raw.depth },
-      ...raw.nit_cap !== void 0 && { nitCap: raw.nit_cap }
+      ...raw.nit_cap !== void 0 && { nitCap: raw.nit_cap },
+      ...raw.security_paths !== void 0 && { securityPaths: raw.security_paths },
+      ...raw.security_exclude_paths !== void 0 && { securityExcludePaths: raw.security_exclude_paths }
     },
     body: text.slice(match3[0].length)
   };
@@ -345085,25 +345280,26 @@ function createLimiter2(max) {
 // src/review/review.ts
 import { createHash as createHash4 } from "node:crypto";
 
-// src/review/voting.ts
-var RANK = { important: 0, pre_existing: 1, nit: 2 };
-var bySeverity = (a, b2) => RANK[a.severity] - RANK[b2.severity];
-var overlaps = (a, b2) => a.file === b2.file && a.line <= b2.endLine && b2.line <= a.endLine;
+// src/consensus.ts
 var normClass = (c2) => c2.trim().toLowerCase().replace(/[\s_]+/g, "-");
+function sortByRank(items, rankOf2) {
+  return [...items].sort((a, b2) => rankOf2(a) - rankOf2(b2));
+}
+var overlaps = (a, b2) => a.file === b2.file && a.line <= b2.endLine && b2.line <= a.endLine;
 var locationOf = ({ file, line, endLine }) => ({ file, line, endLine });
-function dedupe(findings) {
-  const merged = [...findings].sort(bySeverity).reduce((acc, f4) => acc.some((m3) => overlaps(m3, f4)) ? acc : [...acc, f4], []);
+function dedupe(items, keys) {
+  const merged = sortByRank(items, keys.rankOf).reduce((acc, f4) => acc.some((m3) => overlaps(m3, f4)) ? acc : [...acc, f4], []);
   const groups = merged.reduce((acc, f4, i2) => {
-    const key = normClass(f4.bugClass) || `#${i2}`;
+    const key = normClass(keys.classOf(f4)) || `#${i2}`;
     const group = acc.get(key);
     return new Map(acc).set(key, group ? { ...group, rest: [...group.rest, f4] } : { primary: f4, rest: [] });
   }, /* @__PURE__ */ new Map());
   return [...groups.values()].map(({ primary, rest }) => rest.length === 0 ? primary : { ...primary, also: rest.map(locationOf) });
 }
-var tally = (votes, needed) => votes.filter((v2) => v2.real).length >= needed;
-function rank(findings, nitCap) {
-  const ranked = [...findings].sort(bySeverity);
-  return [...ranked.filter((f4) => f4.severity !== "nit"), ...ranked.filter((f4) => f4.severity === "nit").slice(0, nitCap)];
+var tally = (votes, needed) => votes.filter(Boolean).length >= needed;
+function median(values) {
+  const sorted = [...values].sort((a, b2) => a - b2);
+  return sorted[Math.floor((sorted.length - 1) / 2)];
 }
 
 // src/review/review.ts
@@ -345113,6 +345309,12 @@ var DEPTH_PRESETS = {
   standard: { finders: SPECIALISTS, voters: 3, needed: 2 },
   deep: { finders: [...SPECIALISTS, "general", "general"], voters: 5, needed: 3 }
 };
+var RANK = { important: 0, pre_existing: 1, nit: 2 };
+var SEVERITY_KEYS = { classOf: (f4) => f4.bugClass, rankOf: (f4) => RANK[f4.severity] };
+function rank(findings, nitCap) {
+  const ranked = sortByRank(findings, SEVERITY_KEYS.rankOf);
+  return [...ranked.filter((f4) => f4.severity !== "nit"), ...ranked.filter((f4) => f4.severity === "nit").slice(0, nitCap)];
+}
 var isDepth = (d) => Object.hasOwn(DEPTH_PRESETS, d);
 var message = (e2) => e2 instanceof Error ? e2.message : String(e2);
 function resolveDepth({ input: input2 = {}, frontmatterDepth }) {
@@ -345147,7 +345349,7 @@ function selectCandidates(raw, r2) {
   const plausible = raw.filter(
     (f4) => f4.category === "bug" && inDiff.has(f4.file) && f4.evidence.trim() !== "" && !posted.has(fingerprint(f4))
   );
-  return rank(dedupe(plausible), Infinity).slice(0, r2.maxFindings);
+  return rank(dedupe(plausible, SEVERITY_KEYS), Infinity).slice(0, r2.maxFindings);
 }
 async function voteOn(reviewer, f4, r2, limit3) {
   const votes = await Promise.all(
@@ -345159,10 +345361,10 @@ async function voteOn(reviewer, f4, r2, limit3) {
       )
     )
   );
-  return { finding: f4, kept: tally(votes.map((v2) => v2.vote), r2.depth.needed), errors: votes.flatMap((v2) => v2.error ? [v2.error] : []) };
+  return { finding: f4, kept: tally(votes.map((v2) => v2.vote.real), r2.depth.needed), errors: votes.flatMap((v2) => v2.error ? [v2.error] : []) };
 }
 async function runReview(reviewer, request3) {
-  const limit3 = createLimiter2(request3.concurrency);
+  const { limit: limit3 } = request3;
   const finders = await runFinders(reviewer, request3, limit3);
   const candidates = selectCandidates(finders.findings, request3);
   const votes = await Promise.all(candidates.map((f4) => voteOn(reviewer, f4, request3, limit3)));
@@ -345174,42 +345376,122 @@ async function runReview(reviewer, request3) {
   };
 }
 
-// src/workflow/markers.ts
-init_build();
-init_value2();
-var STATE_RE = /<!-- anthropic-style-code-review:state (.*?) -->/g;
-var FINDING_RE = /<!-- anthropic-style-code-review:finding (important|pre_existing|nit) (\S+) -->/g;
-var StateSchema = typebox_exports.Object({
-  round: typebox_exports.Integer({ minimum: 1 }),
-  sha: typebox_exports.String(),
-  fingerprints: typebox_exports.Array(typebox_exports.String())
-});
-var SEVERITIES = ["important", "pre_existing", "nit"];
-var isSeverity = (s2) => SEVERITIES.some((v2) => v2 === s2);
-var encodeState = (s2) => `<!-- anthropic-style-code-review:state ${JSON.stringify(s2).replace(/>/g, "\\u003e")} -->`;
-function parseState2(json3) {
-  try {
-    const v2 = JSON.parse(json3);
-    return Check2(StateSchema, v2) ? v2 : void 0;
-  } catch {
-    return void 0;
-  }
+// src/security/security.ts
+import { createHash as createHash5 } from "node:crypto";
+
+// src/security/escalation.ts
+import { basename as basename20, matchesGlob as matchesGlob2 } from "node:path";
+var RISKY_NAME = /(^|[/._-])(auth(?!or)|oauth|login|logout|session|token|jwt|crypto|cipher|secret|password|passwd|credential|permission|acl|rbac|iam|admin)/i;
+var RISKY_CAMEL = /(Auth(?!or)|OAuth|Login|Logout|Session|Token|Jwt|JWT|Crypto|Cipher|Secret|Password|Credential|Permission|Acl|Rbac|Admin)/;
+var MAX_LINE = 2e3;
+var RISKY_GLOBS = [".github/workflows/**", "**/Dockerfile*", "**/*.tf", "**/k8s/**", "**/helm/**", "**/*.dockerfile"];
+var MANIFEST = /^(package(-lock)?\.json|yarn\.lock|pnpm-lock\.yaml|go\.(mod|sum)|requirements.*\.txt|pyproject\.toml|poetry\.lock|Pipfile(\.lock)?|Cargo\.(toml|lock)|Gemfile(\.lock)?|composer\.(json|lock)|pom\.xml|build\.gradle(\.kts)?)$/;
+var RISKY_CODE = [
+  /\b(child_process|execSync|execFile|spawn|subprocess|os\.system|popen|Runtime\.getRuntime)\b|\bexec\s*\(/,
+  /\beval\s*\(|new Function\s*\(/,
+  /\binnerHTML\b|dangerouslySetInnerHTML/,
+  /\bpickle\.loads?\b|\byaml\.load\s*\(|\bunserialize\s*\(|Marshal\.load|ObjectInputStream/,
+  /Math\.random\s*\(/,
+  // SQL built from strings: a SQL verb plus interpolation or concatenation on the same line.
+  /\b(SELECT|INSERT|UPDATE|DELETE)\b[^\n]*(\$\{|["'`]\s*\+|\+\s*["'`]|%s|\.format\(|\bf["'])|\bf["'][^"'\n]*\b(SELECT|INSERT|UPDATE|DELETE)\b/i
+];
+var riskyPath = (path19, extraGlobs) => RISKY_NAME.test(path19) || RISKY_CAMEL.test(path19) || MANIFEST.test(basename20(path19)) || [...RISKY_GLOBS, ...extraGlobs].some((g) => matchesGlob2(path19, g));
+function addedLines(text) {
+  const lines = text.split("\n");
+  const firstHunk = lines.findIndex((l3) => l3.startsWith("@@"));
+  if (firstHunk < 0) return [];
+  return lines.slice(firstHunk).filter((l3) => l3.startsWith("+") && l3.length <= MAX_LINE).map((l3) => l3.slice(1));
 }
-function decodeState(bodies) {
-  return bodies.flatMap((b2) => [...b2.matchAll(STATE_RE)].map((m3) => parseState2(m3[1] ?? ""))).filter((s2) => s2 !== void 0).at(-1);
+function needsFullPass(files, extraGlobs) {
+  return files.some((f4) => riskyPath(f4.path, extraGlobs) || addedLines(f4.text).some((line) => RISKY_CODE.some((re) => re.test(line))));
 }
-var encodeFindingMarker = (severity, fingerprint2) => `<!-- anthropic-style-code-review:finding ${severity} ${fingerprint2} -->`;
-function decodeFindingMarker(body) {
-  const m3 = [...body.matchAll(FINDING_RE)].at(-1);
-  const severity = m3?.[1];
-  const fp = m3?.[2];
-  return severity !== void 0 && fp !== void 0 && isSeverity(severity) ? { severity, fingerprint: fp } : void 0;
+
+// src/security/exclusions.ts
+import { matchesGlob as matchesGlob3 } from "node:path";
+var EXCLUDED_CLASS = /^(denial-of-service|dos|(resource|memory|cpu)-exhaustion|(missing-)?rate-limit(ing)?|unbounded-[a-z-]+|infinite-loop|redos|regex-(dos|injection|denial-of-service)|catastrophic-backtracking|open-redirect|((missing|lack-of)-)?input-validation)$/;
+var EXCLUDED_PATHS = ["**/*.md", "test/**", "tests/**", "**/test/**", "**/tests/**", "**/__tests__/**", "**/*.test.*", "**/*.spec.*", "**/*_test.*"];
+var blank = (s2) => s2.trim() === "";
+function exclusionReason(f4, extraPaths) {
+  if ([...EXCLUDED_PATHS, ...extraPaths].some((g) => matchesGlob3(f4.file, g))) return `excluded path ${f4.file}`;
+  if (EXCLUDED_CLASS.test(normClass(f4.vulnClass))) return `excluded class ${f4.vulnClass}`;
+  if (blank(f4.source) || blank(f4.sink) || blank(f4.exploitScenario)) return "no exploit path";
+  return void 0;
 }
-var countOpenImportant = (threads) => threads.filter((t2) => !t2.isResolved && decodeFindingMarker(t2.body)?.severity === "important").length;
+
+// src/security/security.ts
+var SECURITY_PLANS = {
+  quick: { depth: "quick", finders: ["security-general", "security-general"], voters: 3, needed: 2 },
+  full: { depth: "full", finders: ["injection", "authz", "secrets-crypto", "exposure-execution"], voters: 3, needed: 2 }
+};
+function chooseSecurityPlan(files, options) {
+  return options.forceFull || needsFullPass(files, options.extraPaths ?? []) ? SECURITY_PLANS.full : SECURITY_PLANS.quick;
+}
+var securityFingerprint = (f4) => `sec:${createHash5("sha1").update(`${f4.file}\0${normClass(f4.vulnClass)}\0${f4.introduced ? "new" : "pre"}`).digest("hex").slice(0, 12)}`;
+var LEVELS3 = ["high", "medium", "low"];
+var rankOf = (f4) => (f4.introduced ? 0 : LEVELS3.length) + LEVELS3.indexOf(f4.severity);
+var KEYS = { classOf: (f4) => f4.vulnClass, rankOf };
+var message2 = (e2) => e2 instanceof Error ? e2.message : String(e2);
+async function runFinders2(reviewer, r2) {
+  const settled = await Promise.all(
+    r2.plan.finders.map(
+      (focus) => r2.limit(() => reviewer.findVulnerabilities(focus, r2.input)).then(
+        (findings) => ({ findings, error: void 0 }),
+        (e2) => ({ findings: [], error: `security finder ${focus}: ${message2(e2)}` })
+      )
+    )
+  );
+  const errors = settled.flatMap((s2) => s2.error ? [s2.error] : []);
+  if (errors.length === settled.length) throw new Error(`All security finders failed: ${errors.join("; ")}`);
+  return { findings: settled.flatMap((s2) => s2.findings), errors };
+}
+var withIntroduced = (f4, added) => added?.get(f4.file)?.has(f4.line) ? { ...f4, introduced: true } : f4;
+function selectCandidates2(raw, r2) {
+  const inDiff = new Set(r2.paths);
+  const posted = new Set(r2.posted);
+  const plausible = raw.map((f4) => withIntroduced(f4, r2.addedLines)).filter(
+    (f4) => inDiff.has(f4.file) && f4.evidence.trim() !== "" && !posted.has(securityFingerprint(f4)) && exclusionReason(f4, r2.excludePaths) === void 0
+  );
+  return sortByRank(dedupe(plausible, KEYS), rankOf).slice(0, r2.maxFindings);
+}
+async function judge(reviewer, f4, r2) {
+  const votes = await Promise.all(
+    Array.from(
+      { length: r2.plan.voters },
+      () => r2.limit(() => reviewer.judgeExploit(f4, r2.input)).then(
+        (vote) => ({ vote, error: void 0 }),
+        (e2) => ({ vote: { exploitable: false, severity: f4.severity, reason: "verifier error" }, error: `security voter: ${message2(e2)}` })
+      )
+    )
+  );
+  const yes = votes.filter((v2) => v2.vote.exploitable);
+  const answered = votes.filter((v2) => v2.error === void 0).length;
+  const inconclusive = yes.length < r2.plan.needed && answered - yes.length <= r2.plan.voters - r2.plan.needed;
+  const level = LEVELS3[median(yes.map((v2) => LEVELS3.indexOf(v2.vote.severity))) ?? -1] ?? f4.severity;
+  return {
+    finding: { ...f4, severity: level },
+    kept: tally(votes.map((v2) => v2.vote.exploitable), r2.plan.needed),
+    inconclusive,
+    errors: votes.flatMap((v2) => v2.error ? [v2.error] : [])
+  };
+}
+async function runSecurityReview(reviewer, request3) {
+  const finders = await runFinders2(reviewer, request3);
+  const candidates = selectCandidates2(finders.findings, request3);
+  const judged = await Promise.all(candidates.map((f4) => judge(reviewer, f4, request3)));
+  const confirmed = judged.filter((j2) => j2.kept).map((j2) => j2.finding);
+  return {
+    findings: sortByRank(confirmed, rankOf),
+    stats: { raw: finders.findings.length, candidates: candidates.length, confirmed: confirmed.length },
+    errors: [...finders.errors, ...judged.flatMap((j2) => j2.errors)],
+    inconclusive: judged.filter((j2) => j2.inconclusive).length
+  };
+}
 
 // src/workflow/comments.ts
 var LABEL4 = { important: "Important", pre_existing: "Pre-existing", nit: "Nit" };
 var ORDER = ["important", "pre_existing", "nit"];
+var LEVEL_LABEL = { high: "High", medium: "Medium", low: "Low" };
+var LEVEL_ORDER = ["high", "medium", "low"];
 var safe = (t2) => t2.replace(/<!--/g, "&lt;!--");
 var OUT_OF_DIFF_CAP = 20;
 var loc = (l3) => `\`${safe(l3.file)}:${l3.line}${l3.endLine > l3.line ? `-${l3.endLine}` : ""}\``;
@@ -345226,21 +345508,43 @@ function findingComment(f4) {
     encodeFindingMarker(f4.severity, fingerprint(f4))
   ].join("\n");
 }
-function countLine(findings) {
-  if (findings.length === 0) return "**No issues found.**";
-  const parts = ORDER.map((s2) => [s2, findings.filter((f4) => f4.severity === s2).length]).filter(([, n]) => n > 0).map(([s2, n]) => `${n} ${LABEL4[s2].toLowerCase()}`);
-  return `**${findings.length} issue${findings.length === 1 ? "" : "s"} found** (${parts.join(", ")})`;
-}
-function summary2({ findings, outOfDiff, resolved, state: state3, maxRounds }) {
+var securityLabel = (f4) => `Security \xB7 ${LEVEL_LABEL[f4.severity]}${f4.introduced ? "" : " \xB7 Pre-existing"}`;
+function securityComment(f4) {
   return [
-    countLine(findings),
+    `**${securityLabel(f4)}**: ${safe(f4.title)}`,
+    "",
+    `- **Source:** ${safe(f4.source)}`,
+    `- **Sink:** ${safe(f4.sink)}`,
+    `- **Exploit:** ${safe(f4.exploitScenario)}`,
+    `- **Impact:** ${safe(f4.impact)}`,
+    "",
+    quote(f4.evidence),
+    ...f4.also?.length ? ["", `Same vulnerability also at: ${f4.also.map(loc).join(", ")}`] : [],
+    "",
+    encodeSecurityMarker(f4.severity, f4.introduced, securityFingerprint(f4))
+  ].join("\n");
+}
+var breakdown = (keys, countOf, label) => keys.map((k2) => [k2, countOf(k2)]).filter(([, n]) => n > 0).map(([k2, n]) => `${n} ${label(k2).toLowerCase()}`).join(", ");
+function countLine(findings, security) {
+  if (findings.length === 0 && security.length === 0) return "**No issues found.**";
+  const bugs = findings.length ? `**${findings.length} issue${findings.length === 1 ? "" : "s"} found** (${breakdown(ORDER, (s2) => findings.filter((f4) => f4.severity === s2).length, (s2) => LABEL4[s2])})` : void 0;
+  const sec = security.length ? `**${security.length} security finding${security.length === 1 ? "" : "s"}** (${breakdown(LEVEL_ORDER, (l3) => security.filter((f4) => f4.severity === l3).length, (l3) => LEVEL_LABEL[l3])})` : void 0;
+  return [bugs, sec].filter((x3) => x3 !== void 0).join(" \xB7 ");
+}
+function outOfDiffLines(items) {
+  if (items.length === 0) return [];
+  return ["", "Outside the diff:", ...items.slice(0, OUT_OF_DIFF_CAP), ...items.length > OUT_OF_DIFF_CAP ? [`- \u2026and ${items.length - OUT_OF_DIFF_CAP} more`] : []];
+}
+function summary2({ findings, outOfDiff, security = [], securityOutOfDiff = [], notes = [], resolved, state: state3, maxRounds }) {
+  const outside = [
+    ...outOfDiff.map((f4) => `- ${loc(f4)} **${LABEL4[f4.severity]}**: ${safe(f4.title)}. ${safe(f4.explanation).trim()}`),
+    ...securityOutOfDiff.map((f4) => `- ${loc(f4)} **${securityLabel(f4)}**: ${safe(f4.title)}. ${safe(f4.exploitScenario).trim()}`)
+  ];
+  return [
+    countLine(findings, security),
+    ...notes.flatMap((n) => ["", `\u26A0\uFE0F ${n}`]),
     ...resolved > 0 ? ["", `${resolved} earlier finding${resolved === 1 ? "" : "s"} resolved by new commits.`] : [],
-    ...outOfDiff.length ? [
-      "",
-      "Outside the diff:",
-      ...outOfDiff.slice(0, OUT_OF_DIFF_CAP).map((f4) => `- ${loc(f4)} **${LABEL4[f4.severity]}**: ${safe(f4.title)}. ${safe(f4.explanation).trim()}`),
-      ...outOfDiff.length > OUT_OF_DIFF_CAP ? [`- \u2026and ${outOfDiff.length - OUT_OF_DIFF_CAP} more`] : []
-    ] : [],
+    ...outOfDiffLines(outside),
     "",
     `<sub>Review round ${state3.round}/${maxRounds}. Resolve each thread by fixing it or replying with a reason.</sub>`,
     encodeState(state3)
@@ -345254,25 +345558,11 @@ var stepBackComment = (maxRounds, state3) => [
 ].join("\n");
 var skippedComment = (reason, state3) => [`**Review skipped:** ${reason}`, "", "Later pushes will be reviewed incrementally.", encodeState(state3)].join("\n");
 
-// src/workflow/workflow.ts
-var DEFAULT_WORKFLOW_OPTIONS = {
-  maxRounds: 3,
-  maxDiffLines: 3e3,
-  maxFindings: 15,
-  concurrency: 3,
-  nitCap: 3
-};
+// src/workflow/round.ts
 var statusOf2 = (e2) => typeof e2 === "object" && e2 !== null && "status" in e2 && typeof e2.status === "number" ? e2.status : void 0;
 var errMsg = (e2) => e2 instanceof Error ? e2.message : String(e2);
-var skipped = (message2) => ({ status: "skipped", message: message2 });
-async function updateCheck(github, headSha) {
-  const openImportant = countOpenImportant(await github.botThreads());
-  const conclusion = openImportant > 0 ? "failure" : "success";
-  const title = openImportant === 0 ? "No open important findings" : `${openImportant} open important finding${openImportant === 1 ? "" : "s"}`;
-  const text = "Fails while any review thread tagged **Important** is unresolved. Fix it or resolve the thread with a reason.";
-  await github.setCheck({ headSha, conclusion, title, summary: text });
-  return { conclusion, openImportant };
-}
+var skipped = (message3) => ({ status: "skipped", message: message3 });
+var livePaths = (r2) => r2.files.filter((f4) => !f4.deleted).map((f4) => f4.path);
 async function pauseRound(ctx, pr, state3, round) {
   const { maxRounds } = ctx.settings;
   if (state3?.round === maxRounds) {
@@ -345280,17 +345570,34 @@ async function pauseRound(ctx, pr, state3, round) {
   }
   return { status: "paused", round, message: `Round cap (${maxRounds}) reached; not reviewing.` };
 }
-async function loadRange(ctx, pr, state3) {
-  const incremental = state3 !== void 0 && await ctx.github.isAncestor(state3.sha, pr.headSha);
-  if (state3 && !incremental) ctx.log.info(`Last reviewed ${state3.sha} is not an ancestor of HEAD (force push?); reviewing the full PR.`);
-  const allFiles = parseDiff(await ctx.github.compareDiff(incremental ? state3.sha : pr.baseSha, pr.headSha));
-  const repo = { read: (path19) => ctx.github.readAtRef(pr.baseSha, path19) };
-  const guidance = await loadGuidance(repo, allFiles.map((f4) => f4.path));
-  return { incremental, allFiles, guidance, files: filterDiff(allFiles, guidance.review?.config.skipPaths ?? []) };
+async function loadRanges(ctx, pr, state3, due) {
+  const cache2 = /* @__PURE__ */ new Map();
+  const diff = (base) => {
+    const hit = cache2.get(base) ?? ctx.github.compareDiff(base, pr.headSha).then(parseDiff);
+    cache2.set(base, hit);
+    return hit;
+  };
+  const since = async (sha) => {
+    const incremental = sha !== void 0 && await ctx.github.isAncestor(sha, pr.headSha);
+    if (sha !== void 0 && !incremental) ctx.log.info(`Last reviewed ${sha} is not an ancestor of HEAD (force push?); reviewing the full PR.`);
+    return diff(incremental ? sha : pr.baseSha);
+  };
+  const bugAll = due.bug ? await since(state3?.sha) : void 0;
+  const securityAll = due.security ? await since(state3?.securitySha) : void 0;
+  const changed = [...bugAll ?? [], ...securityAll ?? []].map((f4) => f4.path);
+  const guidance = await loadGuidance({ read: (path19) => ctx.github.readAtRef(pr.baseSha, path19) }, [...new Set(changed)]);
+  const skip = guidance.review?.config.skipPaths ?? [];
+  return {
+    bug: bugAll && { files: filterDiff(bugAll, skip) },
+    security: securityAll && { files: filterDiff(securityAll, skip) },
+    prFiles: await diff(pr.baseSha),
+    // cached when a range already starts at the base
+    guidance
+  };
 }
-var buildInput = (pr, range2) => ({
+var buildInput = (pr, range2, guidance) => ({
   diff: range2.files.map((f4) => f4.text).join(""),
-  guidance: renderGuidance(range2.guidance),
+  guidance: renderGuidance(guidance),
   intent: `${pr.title}
 
 ${pr.body}`.trim()
@@ -345307,10 +345614,8 @@ async function isFixed(ctx, reviewer, limit3, t2, input2, depth) {
   );
   return answers.filter((still) => !still).length >= depth.needed;
 }
-async function autoResolve(ctx, reviewer, range2, input2, depth) {
-  const touched = new Set(range2.files.map((f4) => f4.path));
+async function autoResolve(ctx, reviewer, limit3, touched, input2, depth) {
   const open5 = (await ctx.github.botThreads()).filter((t2) => !t2.isResolved && touched.has(t2.path));
-  const limit3 = createLimiter2(ctx.settings.concurrency);
   const fixed2 = await Promise.all(
     open5.map(async (t2) => {
       const yes = await isFixed(ctx, reviewer, limit3, t2, input2, depth);
@@ -345320,66 +345625,165 @@ async function autoResolve(ctx, reviewer, range2, input2, depth) {
   );
   return fixed2.filter(Boolean).length;
 }
-async function postReview(ctx, pr, findings, isInline, body) {
-  const inline = findings.filter(isInline);
-  const comments = inline.map((f4) => ({ path: f4.file, line: f4.line, body: findingComment(f4) }));
+async function runBugPass(ctx, a) {
+  const range2 = a.ranges.bug;
+  if (!range2 || range2.files.length === 0) return void 0;
+  const nitCap = ctx.settings.nitCap ?? a.ranges.guidance.review?.config.nitCap ?? ctx.settings.nitCapDefault;
+  const input2 = buildInput(a.pr, range2, a.ranges.guidance);
+  return runReview(a.reviewer, { input: input2, paths: livePaths(range2), depth: a.depth, posted: a.posted, nitCap, maxFindings: ctx.settings.maxFindings, limit: a.limit });
+}
+async function runSecurityPass(ctx, a) {
+  const range2 = a.ranges.security;
+  if (!range2) return void 0;
+  const config = a.ranges.guidance.review?.config;
+  const plan = chooseSecurityPlan(range2.files, { extraPaths: config?.securityPaths ?? [], forceFull: a.depth.depth === "deep" });
+  if (range2.files.length === 0) return { status: "done", depth: plan.depth, result: { findings: [], stats: { raw: 0, candidates: 0, confirmed: 0 }, errors: [], inconclusive: 0 } };
+  const addedLines2 = new Map(a.ranges.prFiles.map((f4) => [f4.path, f4.addedLines]));
+  const request3 = {
+    input: buildInput(a.pr, range2, a.ranges.guidance),
+    paths: livePaths(range2),
+    plan,
+    posted: a.posted,
+    maxFindings: ctx.settings.maxFindings,
+    excludePaths: config?.securityExcludePaths ?? [],
+    limit: a.limit,
+    addedLines: addedLines2
+  };
   try {
-    await ctx.github.createReview({ headSha: pr.headSha, body: body(findings.filter((f4) => !isInline(f4))), comments });
+    return { status: "done", depth: plan.depth, result: await runSecurityReview(a.reviewer, request3) };
   } catch (e2) {
-    if (statusOf2(e2) !== 422 || inline.length === 0) throw e2;
-    ctx.log.warning(`GitHub rejected inline comments (${errMsg(e2)}); posting all findings in the summary.`);
-    await ctx.github.createReview({ headSha: pr.headSha, body: body(findings), comments: [] });
+    return { status: "failed", reason: errMsg(e2) };
   }
 }
-async function commentableCheck(ctx, pr, range2) {
-  const prFiles = range2.incremental ? parseDiff(await ctx.github.compareDiff(pr.baseSha, pr.headSha)) : range2.allFiles;
-  const commentable = new Map(prFiles.map((f4) => [f4.path, f4.rightLines]));
-  return (f4) => commentable.get(f4.file)?.has(f4.line) ?? false;
+var securityComplete = (s2) => s2?.status === "done" && s2.result.inconclusive === 0;
+function securityNote(s2) {
+  if (s2?.status === "failed") return `Security review did not complete (${s2.reason}); it will retry on the next run, and its check stays red until then.`;
+  if (s2?.status === "done" && s2.result.inconclusive > 0) {
+    return `Security review left ${s2.result.inconclusive} finding(s) undecided (verifier errors); it will retry on the next run, and its check stays red until then.`;
+  }
+  return void 0;
 }
-async function reviewRange(ctx, pr, state3, round, range2) {
-  const { settings: settings2 } = ctx;
-  const depth = resolveDepth({
-    input: { depth: settings2.depth, voters: settings2.voters, votesNeeded: settings2.votesNeeded },
-    frontmatterDepth: range2.guidance.review?.config.depth
+function placement(prFiles) {
+  const lines = new Map(prFiles.map((f4) => [f4.path, [...f4.rightLines]]));
+  return {
+    exact: (l3) => lines.get(l3.file)?.includes(l3.line) ?? false,
+    nearest: (l3) => (lines.get(l3.file) ?? []).reduce((best, n) => best === void 0 || Math.abs(n - l3.line) < Math.abs(best - l3.line) ? n : best, void 0)
+  };
+}
+var blocking = (f4) => f4.introduced && f4.severity !== "low";
+function layout(found, prFiles) {
+  const at2 = placement(prFiles);
+  const securityLine = (f4) => at2.exact(f4) ? f4.line : blocking(f4) ? at2.nearest(f4) : void 0;
+  const securityComments = found.security.flatMap((f4) => {
+    const line = securityLine(f4);
+    if (line === void 0) return [];
+    const note = line === f4.line ? "" : `_Reported at line ${f4.line}; anchored to the nearest changed line._
+
+`;
+    return [{ finding: f4, comment: { path: f4.file, line, body: note + securityComment(f4) } }];
   });
-  const input2 = buildInput(pr, range2);
+  return {
+    bugComments: found.bugs.filter(at2.exact).map((f4) => ({ path: f4.file, line: f4.line, body: findingComment(f4) })),
+    securityComments,
+    outside: { bugs: found.bugs.filter((f4) => !at2.exact(f4)), security: found.security.filter((f4) => securityLine(f4) === void 0) }
+  };
+}
+async function postReview(ctx, pr, found, prFiles, body) {
+  const { bugComments, securityComments, outside } = layout(found, prFiles);
+  const comments = [...bugComments, ...securityComments.map((c2) => c2.comment)];
+  try {
+    await ctx.github.createReview({ headSha: pr.headSha, body: body(outside), comments });
+  } catch (e2) {
+    if (statusOf2(e2) !== 422 || comments.length === 0) throw e2;
+    ctx.log.warning(`GitHub rejected inline comments (${errMsg(e2)}); posting all findings in the summary.`);
+    await ctx.github.createReview({ headSha: pr.headSha, body: body(found), comments: [] });
+    for (const { finding, comment } of securityComments.filter((c2) => blocking(c2.finding))) {
+      await ctx.github.createReview({ headSha: pr.headSha, body: "", comments: [comment] }).catch((err) => ctx.log.warning(`Could not post blocking security finding ${finding.file}:${finding.line} inline: ${errMsg(err)}`));
+    }
+  }
+}
+async function reviewRanges(ctx, pr, state3, round, ranges) {
+  const { settings: settings2 } = ctx;
+  const depth = resolveDepth({ input: { depth: settings2.depth, voters: settings2.voters, votesNeeded: settings2.votesNeeded }, frontmatterDepth: ranges.guidance.review?.config.depth });
   const reviewer = await ctx.createReviewer();
-  const resolved = state3 ? await autoResolve(ctx, reviewer, range2, input2, depth) : 0;
-  const nitCap = settings2.nitCap ?? range2.guidance.review?.config.nitCap ?? DEFAULT_WORKFLOW_OPTIONS.nitCap;
-  const paths = range2.files.filter((f4) => !f4.deleted).map((f4) => f4.path);
+  const limit3 = createLimiter2(settings2.concurrency);
+  const touched = new Set([...ranges.bug?.files ?? [], ...ranges.security?.files ?? []].map((f4) => f4.path));
+  const anyRange = ranges.bug ?? ranges.security;
+  const resolved = state3 && anyRange ? await autoResolve(ctx, reviewer, limit3, touched, buildInput(pr, anyRange, ranges.guidance), depth) : 0;
   const posted = state3?.fingerprints ?? [];
-  const result = await runReview(reviewer, { input: input2, paths, depth, posted, nitCap, maxFindings: settings2.maxFindings, concurrency: settings2.concurrency });
-  result.errors.forEach((e2) => ctx.log.warning(e2));
-  const newState = { round, sha: pr.headSha, fingerprints: [...posted, ...result.findings.map(fingerprint)] };
-  const isInline = await commentableCheck(ctx, pr, range2);
+  const args = { reviewer, limit: limit3, ranges, pr, depth, posted };
+  const [bugs, security] = await Promise.all([runBugPass(ctx, args), runSecurityPass(ctx, args)]);
+  for (const e2 of [...bugs?.errors ?? [], ...security?.status === "done" ? security.result.errors : []]) ctx.log.warning(e2);
+  if (security?.status === "failed") ctx.log.warning(`Security review failed: ${security.reason}`);
+  return finishRound(ctx, pr, state3, round, { ranges, bugs, security, resolved, posted, depth });
+}
+async function finishRound(ctx, pr, state3, round, r2) {
+  const bugFindings = r2.bugs?.findings ?? [];
+  const vulns = r2.security?.status === "done" ? r2.security.result.findings : [];
+  const securitySha = securityComplete(r2.security) ? pr.headSha : state3?.securitySha;
+  const newState = {
+    round,
+    sha: r2.ranges.bug ? pr.headSha : state3?.sha ?? pr.headSha,
+    fingerprints: [...r2.posted, ...bugFindings.map(fingerprint), ...vulns.map(securityFingerprint)],
+    ...securitySha !== void 0 && { securitySha }
+  };
+  const note = securityNote(r2.security);
   await postReview(
     ctx,
     pr,
-    result.findings,
-    isInline,
-    (outOfDiff) => summary2({ findings: result.findings, outOfDiff, resolved, state: newState, maxRounds: settings2.maxRounds })
+    { bugs: bugFindings, security: vulns },
+    r2.ranges.prFiles,
+    (outside) => summary2({ findings: bugFindings, outOfDiff: outside.bugs, security: vulns, securityOutOfDiff: outside.security, notes: note ? [note] : [], resolved: r2.resolved, state: newState, maxRounds: ctx.settings.maxRounds })
   );
-  const { raw, candidates, confirmed } = result.stats;
-  const message2 = `Round ${round}: ${raw} raw \u2192 ${candidates} voted on \u2192 ${confirmed} confirmed (${depth.depth}); ${resolved} resolved.`;
-  return { status: "reviewed", message: message2, round, findings: result.findings, resolved, stats: result.stats };
+  const stats = r2.bugs?.stats ?? { raw: 0, candidates: 0, confirmed: 0 };
+  const sec = r2.security?.status === "done" ? `; security ${r2.security.result.stats.confirmed} confirmed (${r2.security.depth})` : r2.security ? "; security FAILED" : "";
+  const message3 = `Round ${round}: ${stats.raw} raw \u2192 ${stats.candidates} voted on \u2192 ${stats.confirmed} confirmed (${r2.depth.depth})${sec}; ${r2.resolved} resolved.`;
+  const security = r2.security?.status === "done" ? { depth: r2.security.depth, findings: vulns, stats: r2.security.result.stats } : void 0;
+  return { status: "reviewed", message: message3, round, findings: bugFindings, resolved: r2.resolved, stats, security };
+}
+async function recordNothingToReview(ctx, pr, state3, round, ranges) {
+  const depth = resolveDepth({ input: { depth: ctx.settings.depth, voters: ctx.settings.voters, votesNeeded: ctx.settings.votesNeeded }, frontmatterDepth: ranges.guidance.review?.config.depth });
+  const empty = { findings: [], stats: { raw: 0, candidates: 0, confirmed: 0 }, errors: [], inconclusive: 0 };
+  const outcome = await finishRound(ctx, pr, state3, round, { ranges, bugs: void 0, security: { status: "done", depth: "quick", result: empty }, resolved: 0, posted: state3?.fingerprints ?? [], depth });
+  return { ...outcome, message: "No reviewable changes." };
+}
+async function skipOversized(ctx, pr, state3, round, changed) {
+  const reason = `diff too large (${changed} changed lines > max_diff_lines ${ctx.settings.maxDiffLines}).`;
+  ctx.log.warning(`Review skipped: ${reason}`);
+  const advanced = {
+    round,
+    sha: pr.headSha,
+    fingerprints: state3?.fingerprints ?? [],
+    ...state3?.securitySha !== void 0 && { securitySha: state3.securitySha }
+  };
+  await ctx.github.createReview({ headSha: pr.headSha, body: skippedComment(reason, advanced), comments: [] });
+  return skipped(`Review skipped: ${reason}`);
 }
 async function reviewRound(ctx, pr) {
   const state3 = decodeState(await ctx.github.botReviewBodies());
-  if (state3?.sha === pr.headSha) return { status: "up-to-date", message: "HEAD already reviewed." };
-  const round = (state3?.round ?? 0) + 1;
-  if (round > ctx.settings.maxRounds) return pauseRound(ctx, pr, state3, round);
-  const range2 = await loadRange(ctx, pr, state3);
-  if (range2.files.length === 0) return skipped("No reviewable changes.");
-  const changed = range2.files.reduce((n, f4) => n + f4.changed, 0);
-  if (changed > ctx.settings.maxDiffLines) {
-    const reason = `diff too large (${changed} changed lines > max_diff_lines ${ctx.settings.maxDiffLines}).`;
-    ctx.log.warning(`Review skipped: ${reason}`);
-    const advanced = { round, sha: pr.headSha, fingerprints: state3?.fingerprints ?? [] };
-    await ctx.github.createReview({ headSha: pr.headSha, body: skippedComment(reason, advanced), comments: [] });
-    return skipped(`Review skipped: ${reason}`);
-  }
-  return reviewRange(ctx, pr, state3, round, range2);
+  const due = { bug: state3?.sha !== pr.headSha, security: ctx.settings.securityReview && state3?.securitySha !== pr.headSha };
+  if (!due.bug && !due.security) return { status: "up-to-date", message: "HEAD already reviewed." };
+  const round = due.bug ? (state3?.round ?? 0) + 1 : state3?.round ?? 1;
+  if (due.bug && round > ctx.settings.maxRounds) return pauseRound(ctx, pr, state3, round);
+  const ranges = await loadRanges(ctx, pr, state3, due);
+  const reviewable = [ranges.bug, ranges.security].some((r2) => r2 !== void 0 && r2.files.length > 0);
+  if (!reviewable && !due.security) return skipped("No reviewable changes.");
+  if (!reviewable) return recordNothingToReview(ctx, pr, state3, round, ranges);
+  const changed = Math.max(...[ranges.bug, ranges.security].map((r2) => (r2?.files ?? []).reduce((n, f4) => n + f4.changed, 0)));
+  if (changed > ctx.settings.maxDiffLines) return skipOversized(ctx, pr, state3, round, changed);
+  return reviewRanges(ctx, pr, state3, round, ranges);
 }
+
+// src/workflow/workflow.ts
+var DEFAULT_WORKFLOW_OPTIONS = {
+  maxRounds: 3,
+  maxDiffLines: 3e3,
+  maxFindings: 15,
+  concurrency: 3,
+  nitCap: 3,
+  securityReview: true,
+  checkName: "anthropic-style-code-review"
+};
 function createWorkflow(config, options = {}) {
   const d = DEFAULT_WORKFLOW_OPTIONS;
   const settings2 = {
@@ -345387,20 +345791,24 @@ function createWorkflow(config, options = {}) {
     maxRounds: options.maxRounds ?? d.maxRounds,
     maxDiffLines: options.maxDiffLines ?? d.maxDiffLines,
     maxFindings: options.maxFindings ?? d.maxFindings,
-    concurrency: options.concurrency ?? d.concurrency
+    concurrency: options.concurrency ?? d.concurrency,
+    securityReview: options.securityReview ?? d.securityReview,
+    checkName: options.checkName ?? d.checkName,
+    nitCapDefault: d.nitCap
   };
   const ctx = { ...config, settings: settings2 };
+  const gates = { name: settings2.checkName, security: settings2.securityReview };
   return {
     async review({ allowFork = false } = {}) {
       const pr = await ctx.github.getPull();
-      if (pr.isFork && !allowFork) return skipped("Fork PR: skipped (no secrets). A maintainer can run workflow_dispatch with pr_number.");
-      const outcome = pr.draft ? skipped("Draft PR: review skipped.") : await reviewRound(ctx, pr);
-      await updateCheck(ctx.github, pr.headSha);
+      if (pr.isFork && !allowFork) return { status: "skipped", message: "Fork PR: skipped (no secrets). A maintainer can run workflow_dispatch with pr_number." };
+      const outcome = pr.draft ? { status: "skipped", message: "Draft PR: review skipped." } : await reviewRound(ctx, pr);
+      await publishGates(ctx.github, pr.headSha, gates);
       return outcome;
     },
     async gate() {
       const pr = await ctx.github.getPull();
-      return updateCheck(ctx.github, pr.headSha);
+      return publishGates(ctx.github, pr.headSha, gates);
     }
   };
 }
@@ -345417,14 +345825,22 @@ async function main2() {
     ...context2.repo,
     prNumber: inputs.prNumber,
     botLogin: inputs.botLogin,
-    checkName: inputs.checkName,
     secrets: [inputs.apiKey, inputs.githubToken]
   });
-  const createReviewer = () => createPiReviewer({ baseUrl: inputs.baseUrl, apiKey: inputs.apiKey, finderModel: inputs.finderModel, verifierModel: inputs.verifierModel, cwd: workspace });
+  const createReviewer = () => createPiReviewer({
+    baseUrl: inputs.baseUrl,
+    apiKey: inputs.apiKey,
+    finderModel: inputs.finderModel,
+    verifierModel: inputs.verifierModel,
+    securityFinderModel: inputs.securityFinderModel,
+    securityVerifierModel: inputs.securityVerifierModel,
+    cwd: workspace
+  });
   const workflow = createWorkflow({ github, createReviewer, log: { info, warning } }, inputs.workflow);
   if (inputs.event === "gate") {
     const gate = await workflow.gate();
-    info(`Gate: ${gate.conclusion} (${gate.openImportant} open important)`);
+    const sec = gate.security ? `; security ${gate.security.conclusion} (${gate.security.openBlocking} open high/medium)` : "";
+    info(`Gate: ${gate.conclusion} (${gate.openImportant} open important)${sec}`);
   } else {
     info((await workflow.review({ allowFork: inputs.allowFork })).message);
   }

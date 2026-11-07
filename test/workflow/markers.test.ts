@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { countOpenImportant, decodeFindingMarker, decodeState, encodeFindingMarker, encodeState } from '../../src/workflow/markers.js'
+import {
+  countOpenImportant,
+  countOpenSecurity,
+  decodeFindingMarker,
+  decodeSecurityMarker,
+  decodeState,
+  encodeFindingMarker,
+  encodeSecurityMarker,
+  encodeState,
+} from '../../src/workflow/markers.js'
 
 describe('review state marker', () => {
   const s = { round: 2, sha: 'abc', fingerprints: ['f1', 'f2'] }
@@ -26,6 +35,12 @@ describe('review state marker', () => {
   it('returns undefined for no bodies or no markers', () => {
     expect(decodeState([])).toBeUndefined()
     expect(decodeState(['hello', ''])).toBeUndefined()
+  })
+
+  it('round-trips the optional securitySha and still reads states without it', () => {
+    const withSec = { round: 1, sha: 'a', fingerprints: [], securitySha: 'b' }
+    expect(decodeState([encodeState(withSec)])).toEqual(withSec)
+    expect(decodeState(['<!-- anthropic-style-code-review:state {"round":1,"sha":"a","fingerprints":[]} -->'])).toEqual({ round: 1, sha: 'a', fingerprints: [] })
   })
 
   it('cannot be broken by "-->" in content', () => {
@@ -71,5 +86,42 @@ describe('countOpenImportant', () => {
         thread(false, 'human says important'),
       ]),
     ).toBe(0)
+  })
+})
+
+describe('security marker', () => {
+  it.each([
+    ['high', true],
+    ['medium', false],
+    ['low', true],
+  ] as const)('round-trips %s introduced=%s', (level, introduced) => {
+    expect(decodeSecurityMarker(`x\n${encodeSecurityMarker(level, introduced, 'sec:abc')}`)).toEqual({ level, introduced, fingerprint: 'sec:abc' })
+  })
+
+  it('uses the last marker, and ignores bug markers and junk', () => {
+    expect(decodeSecurityMarker(`<!-- anthropic-style-code-review:security low new f -->\n${encodeSecurityMarker('high', true, 'g')}`)).toMatchObject({ level: 'high' })
+    expect(decodeSecurityMarker(encodeFindingMarker('important', 'x'))).toBeUndefined()
+    expect(decodeSecurityMarker('<!-- anthropic-style-code-review:security critical new f -->')).toBeUndefined()
+  })
+
+  it('is invisible to the bug gate', () => {
+    expect(countOpenImportant([{ isResolved: false, body: encodeSecurityMarker('high', true, 'x') }])).toBe(0)
+  })
+})
+
+describe('countOpenSecurity', () => {
+  const t = (isResolved: boolean, body: string) => ({ isResolved, body })
+  it('counts unresolved, introduced High and Medium only', () => {
+    expect(
+      countOpenSecurity([
+        t(false, encodeSecurityMarker('high', true, 'a')),
+        t(false, encodeSecurityMarker('medium', true, 'b')),
+        t(false, encodeSecurityMarker('low', true, 'c')),
+        t(false, encodeSecurityMarker('high', false, 'd')),
+        t(true, encodeSecurityMarker('high', true, 'e')),
+        t(false, encodeFindingMarker('important', 'f')),
+      ]),
+    ).toBe(2)
+    expect(countOpenSecurity([])).toBe(0)
   })
 })

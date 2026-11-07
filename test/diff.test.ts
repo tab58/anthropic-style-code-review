@@ -44,6 +44,11 @@ describe('parseDiff', () => {
     expect([...files[0]!.rightLines].sort((a, b) => a - b)).toEqual([1, 2, 3, 4, 21, 22])
   })
 
+  it('records added lines separately from context lines', () => {
+    expect([...files[0]!.addedLines].sort((a, b) => a - b)).toEqual([2, 3, 22])
+    expect(files[1]!.addedLines.size).toBe(0)
+  })
+
   it('counts changed lines', () => {
     expect(files.map((f) => f.changed)).toEqual([5, 1, 2])
   })

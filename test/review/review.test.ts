@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { createLimiter } from '../../src/limiter.js'
 import { type DepthConfig, type Finding, fingerprint, type Reviewer, type ReviewRequest, resolveDepth, runReview } from '../../src/review/index.js'
 
 const f = (over: Partial<Finding> = {}): Finding => ({
@@ -96,7 +97,7 @@ describe('runReview', () => {
     posted: [],
     maxFindings: 10,
     nitCap: 3,
-    concurrency: 2,
+    limit: createLimiter(2),
   }
 
   const reviewer = (findings: Partial<Record<string, readonly Finding[]>>, verdict: (f: Finding, i: number) => boolean): Reviewer => {
@@ -198,7 +199,7 @@ describe('runReview', () => {
       return v
     }
     const r: Reviewer = { find: () => slow([f()]), verify: () => slow({ real: true, reason: '' }), recheck: vi.fn() }
-    await runReview(r, { ...request, concurrency: 1 })
+    await runReview(r, { ...request, limit: createLimiter(1) })
     expect(peak).toBe(1)
   })
 })

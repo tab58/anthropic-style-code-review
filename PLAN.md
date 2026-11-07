@@ -131,3 +131,102 @@ dist/                esbuild ESM bundle (committed, required for JS actions; ncc
 - **Verifier errors count as "no"**. The finding isn't recorded, so it can come back next round.
 - **Git-quoted paths** (non-ASCII or special characters) are not unquoted, so findings in those files are dropped.
 - - **Cost**: Standard ≈ 4 + 3×findings sessions per round. The guardrails cap it.
+
+---
+
+# Phase 2: Security review
+
+A second find → vote pass focused on exploitable vulnerabilities, posted in the same review, with its own merge-gate check. Modeled on the article's "security review is a separate pass; open findings from either review block merge", plus the false-positive rules of Anthropic's open-source [claude-code-security-review](https://github.com/anthropics/claude-code-security-review).
+
+## Decisions
+
+| Topic | Decision |
+|---|---|
+| When | **Every PR.** A quick pass by default; a **full pass** when the diff touches risky paths or patterns (see Escalation) or the bug-review depth is `deep` |
+| Output | Same PR review as the bug findings. Inline comments tagged **Security · High/Medium/Low**, with **Pre-existing** added when the PR didn't introduce the vulnerability |
+| Gate | New check `<check_name>/security`. It fails while any unresolved **High or Medium** security thread *introduced by this PR* is open. Low is informational. Required separately in branch protection |
+| Verification | A finding needs an **exploit path**: attacker-controlled source → path → vulnerable sink line → impact. A finding without one is dropped before voting. Voters judge *exploitability*; the same majority rule applies; each voter also assigns a severity, and the **median** of the "real" votes becomes the final severity |
+| Hard exclusions (dropped by rules before voting) | DoS / resource exhaustion / rate limiting; generic missing input validation; open redirect; regex DoS; anything in docs or test files (`*.md`, `docs/**`, `test/**`, `tests/**`, `**/*.test.*`, `**/*.spec.*`, `**/*_test.*`) |
+| Pre-existing vulnerabilities | Posted and tagged Pre-existing; they **never block** |
+| Models | New inputs `security_finder_model` / `security_verifier_model`, defaulting to `finder_model` / `verifier_model` |
+
+## Depth
+
+| Pass | Finders | Voters | Needed |
+|---|---|---|---|
+| quick (default) | 2 × `security-general` | 3 | 2 |
+| full | `injection` (SQL/NoSQL/shell/template/path traversal/XXE), `authz` (authn bypass, privilege escalation, session/JWT, IDOR), `secrets-crypto` (hardcoded secrets, weak crypto/randomness, cert validation), `exposure-execution` (unsafe deserialization, eval, XSS, sensitive data in logs or responses, CI workflow / dependency risks) | 3 | 2 |
+
+Voting stays at 3/2 even on quick: precision comes from verification, and security findings are few, so the voter cost is small.
+
+### Escalation to full (default rules; REVIEW.md frontmatter `security_paths` adds globs)
+
+- **Paths:** `**/*auth*/**`, `**/*login*`, `**/*session*`, `**/*token*`, `**/*crypto*`, `**/*secret*`, `**/*password*`, `**/*permission*`, `**/*acl*`, `**/*admin*`, `.github/workflows/**`, `**/Dockerfile*`, dependency manifests and lockfiles (`package.json`, `*.lock`, `go.mod`, `requirements*.txt`, `pyproject.toml`, `Cargo.toml`, …), infrastructure (`**/*.tf`, `**/k8s/**`, `**/helm/**`).
+- **Added-line patterns:** process execution (`exec`, `spawn`, `subprocess`, `os.system`, `child_process`), `eval`/`Function(`, raw SQL built with strings or templates, `innerHTML`/`dangerouslySetInnerHTML`, `pickle`/`yaml.load`/`unserialize`, `crypto`/`random` used for tokens.
+
+## Pipeline (per round, alongside the bug review)
+
+1. Choose quick or full via escalation (pure function over the diff).
+2. **Finders** return `{ file, line, end_line, title, vuln_class, source, sink, exploit_scenario, impact, evidence, severity: high|medium|low, introduced: bool }`.
+3. **Rules filter:** drop excluded classes and paths; drop findings with no `source`, `sink` or `exploit_scenario`; drop findings outside the diff, already posted, or without evidence (same as the bug review).
+4. **Dedupe:** overlapping lines or the same `vuln_class`, same logic as the bug review.
+5. **Vote:** each voter returns `{ exploitable, severity, reason }`. Keep the finding if exploitable votes ≥ needed; final severity = median of the exploitable votes.
+6. **Post:** in the same `createReview` call as the bug findings. The summary's first line counts both, e.g. `**2 issues found** (1 important, 1 nit) · **1 security finding** (1 high)`.
+7. **Auto-resolve:** the existing quorum recheck also covers security threads.
+8. **Checks:** the bug gate is unchanged; the new security gate counts open `introduced` High/Medium security threads.
+
+## Architecture changes
+
+- **New module `src/security/`**: `runSecurityReview(reviewer: SecurityReviewer, request)`, the `SecurityReviewer` interface, `SecurityFinding`, `chooseSecurityDepth(files, extraPaths)`, plus internal `exclusions.ts` and `escalation.ts`.
+- **New shared module `src/consensus.ts`**: generic `dedupe` / `tally` / `rank` extracted from `review/voting.ts`, so both reviews use one implementation.
+- **Shared limiter:** `ReviewRequest.concurrency` becomes an injected `limit: Limiter`, so both passes run in parallel without exceeding `max_concurrency` together.
+- **`pi-reviewer/`**: `createPiReviewer` returns `Reviewer & SecurityReviewer`, adding security prompts, schemas and the `submit_security_findings` / `submit_exploitability` tools.
+- **`workflow/`**:
+  - runs both passes in the same round;
+  - adds the security marker `<!-- anthropic-style-code-review:security <high|medium|low> <new|pre> <fp> -->` (the existing bug marker regex ignores it, so the bug gate is unaffected);
+  - security fingerprints prefixed `sec:`, kept in the same state;
+  - adds a second `setCheck`.
+- **`GitHub` interface:** `CheckRun` gains a `name` field, so one client can publish both checks. Today the name is fixed in the client config.
+- **Inputs:** `security_finder_model`, `security_verifier_model`, `security_review` (`on` | `off`, default `on`).
+- **REVIEW.md frontmatter:** `security_paths` (extra escalation globs) and `security_exclude_paths` (extra exclusion globs).
+
+## Eval
+
+Add cases:
+- **Positives:** string-concatenated SQL, shell injection via `child_process`, a hardcoded API key in source, missing authorization on an admin route.
+- **Negatives (must stay clean):** a parameterized query, a fake key in a test fixture (excluded), an unbounded loop (DoS, excluded).
+
+Extend `expected.json` with `security: [{ file, line, severity }]` and report security recall and false positives separately.
+
+## Build order (TDD)
+
+1. Extract `consensus.ts` from `review/voting.ts` (behavior unchanged; existing tests move with it), and switch `ReviewRequest` to an injected limiter.
+2. `security/escalation.ts` + `security/exclusions.ts`: pure functions, exhaustive tests.
+3. `security/security.ts`: `runSecurityReview` with a fake `SecurityReviewer`.
+4. `pi-reviewer` security prompts and schemas; extend the fake-SSE integration test.
+5. `workflow`: both passes in one round, the marker, combined summary, second check; extend the workflow tests.
+6. `inputs.ts` + `action.yml` + README (inputs, the new required check, the REVIEW.md keys).
+7. Eval cases; run on Ollama Cloud; tune prompts until security recall is 100% with 0 false positives on the fixture set.
+8. Release `v1.1.0` (additive inputs, so it's backward compatible) and move the `v1` tag.
+
+## Status
+
+Built: 359 tests passing. On the live eval (quick depth, Ollama Cloud), security recall is 4/4 with 0 false positives, and the bug eval still passes.
+
+Changes after code review:
+- **Exclusions:** match the normalized vulnerability *class* only, never the free-text title (a title like "SQL injection due to missing input validation" was being dropped). Code under `docs/` is scanned; only `*.md` is excluded.
+- **Separate security completion:** state now records `securitySha`, the last head the security pass completed on.
+  - Bug and security ranges are tracked independently.
+  - A failed or undecided security pass no longer discards the bug review; it retries on the next run.
+  - The security gate fails closed whenever `securitySha` ≠ HEAD: a failed pass, an oversized diff, the round cap, or a PR first reviewed before v1.1.
+- **Introduced is decided by the diff:** a finding on a line the PR added is forced to `introduced: true` before fingerprinting.
+- **Security fingerprints** include `introduced`.
+- **Blocking findings outside the diff** are anchored to the nearest changed line. After a 422, blocking comments are retried one review each.
+- **Escalation:** matches camelCase names (`userAuth`, `LoginController`) but not `author`; skips lines over 2,000 characters; scans hunk content only.
+
+## Risks
+
+- **Existing `@v1` users** get the security pass by default (`security_review: on`). That means new LLM spend, a new `/security` check (not required unless they add it), and, for PRs first reviewed before v1.1, a red security check until the next push. Call this out in the release notes.
+- **Prompt injection is worse here.** A malicious diff can try to talk voters out of a real vulnerability. Mitigations: the finder sees the diff only as untrusted data, voters must cite the sink line, and auto-resolve needs a quorum. Like Anthropic's action, this is **not hardened against a determined attacker**; forks stay manual-dispatch only.
+- **Escalation heuristics miss things.** A vulnerability outside the risky paths gets only the quick pass (2 general finders). Accepted: quick still runs on every PR.
+- **Cost.** Quick adds about 2 + 3×findings sessions per round; full adds about 4 + 3×findings.

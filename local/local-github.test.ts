@@ -55,7 +55,7 @@ describe('createLocalGitHub', () => {
 
     await gh.resolveThread('t1')
     expect((await gh.botThreads())[0]?.isResolved).toBe(true)
-    await gh.setCheck({ headSha, conclusion: 'success', title: 'ok', summary: '' })
+    await gh.setCheck({ name: 'gate', headSha, conclusion: 'success', title: 'ok', summary: '' })
     expect(printed.at(-1)).toContain('pass')
   })
 })

@@ -104,8 +104,8 @@ export function createLocalGitHub(c: LocalGitHubConfig): GitHub {
       c.print(`\n✓ Auto-resolved ${id} (fixed by new commits)`)
       await update((s) => ({ ...s, threads: s.threads.map((t) => (t.id === id ? { ...t, isResolved: true } : t)) }))
     },
-    async setCheck({ conclusion, title }: CheckRun) {
-      c.print(`\n━━━ Check: ${conclusion === 'success' ? '✅ pass' : '❌ fail'} (${title}) ━━━`)
+    async setCheck({ name, conclusion, title }: CheckRun) {
+      c.print(`\n━━━ ${name}: ${conclusion === 'success' ? '✅ pass' : '❌ fail'} (${title}) ━━━`)
     },
   }
 }

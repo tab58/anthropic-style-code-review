@@ -15,10 +15,10 @@ import { createPiReviewer } from '../src/pi-reviewer/index.js'
 import { createWorkflow } from '../src/workflow/index.js'
 import { createLocalGitHub } from './local-github.js'
 
-const USAGE = `Usage: npm run local -- [--repo <path>] [--base <ref>] [--depth quick|standard|deep] [--title <text>] [--reset]
+const USAGE = `Usage: npm run local -- [--repo <path>] [--base <ref>] [--depth quick|standard|deep] [--title <text>] [--reset] [--no-security]
 
 Env: PROVIDER_API_KEY (or OLLAMA_API_KEY), PROVIDER_BASE_URL (default https://ollama.com/v1),
-     FINDER_MODEL (glm-5.3), VERIFIER_MODEL (deepseek-v4.1-flash), CONCURRENCY (3)`
+     FINDER_MODEL (glm-5.3), VERIFIER_MODEL (deepseek-v4.1-flash), SECURITY_FINDER_MODEL, SECURITY_VERIFIER_MODEL, CONCURRENCY (3)`
 
 async function main() {
   const { values } = parseArgs({
@@ -28,6 +28,7 @@ async function main() {
       depth: { type: 'string' },
       title: { type: 'string' },
       reset: { type: 'boolean', default: false },
+      'no-security': { type: 'boolean', default: false },
       help: { type: 'boolean', default: false },
     },
   })
@@ -46,10 +47,12 @@ async function main() {
       apiKey,
       finderModel: process.env.FINDER_MODEL ?? 'glm-5.3',
       verifierModel: process.env.VERIFIER_MODEL ?? 'deepseek-v4.1-flash',
+      securityFinderModel: process.env.SECURITY_FINDER_MODEL,
+      securityVerifierModel: process.env.SECURITY_VERIFIER_MODEL,
       cwd: repo,
     })
   const log = { info: (m: string) => console.error(`· ${m}`), warning: (m: string) => console.error(`⚠ ${m}`) }
-  const workflow = createWorkflow({ github, createReviewer, log }, { depth: values.depth, concurrency: Number(process.env.CONCURRENCY ?? 3) })
+  const workflow = createWorkflow({ github, createReviewer, log }, { depth: values.depth, concurrency: Number(process.env.CONCURRENCY ?? 3), securityReview: !values['no-security'] })
 
   console.error(`Reviewing ${repo} (${values.base}...HEAD)…`)
   const outcome = await workflow.review()

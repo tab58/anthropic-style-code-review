@@ -22,8 +22,6 @@ export type GitHubClientConfig = {
   readonly prNumber: number
   /** REST login of the identity posting reviews, e.g. `github-actions[bot]`; `[bot]` suffix optional. */
   readonly botLogin: string
-  /** Name of the merge-gate check run. */
-  readonly checkName: string
   /** Values to redact from anything posted (API key, token); values shorter than 8 characters are ignored. */
   readonly secrets: readonly string[]
 }
@@ -177,7 +175,7 @@ async function botThreads(c: GitHubClientConfig): Promise<readonly BotThread[]> 
  *   "Unexpected GitHub response" when a response does not match the expected shape. Implements {@link GitHub}.
  */
 export function createGitHubClient(config: GitHubClientConfig): GitHub {
-  const { api, owner, repo, prNumber, checkName } = config
+  const { api, owner, repo, prNumber } = config
   const redact = redactor(config.secrets)
   return {
     getPull: () => getPull(config),
@@ -201,8 +199,8 @@ export function createGitHubClient(config: GitHubClientConfig): GitHub {
     async resolveThread(id) {
       await api.graphql(RESOLVE_MUTATION, { id })
     },
-    async setCheck({ headSha, conclusion, title, summary }) {
-      await api.request('POST /repos/{owner}/{repo}/check-runs', { owner, repo, name: checkName, head_sha: headSha, status: 'completed', conclusion, output: { title, summary } })
+    async setCheck({ name, headSha, conclusion, title, summary }) {
+      await api.request('POST /repos/{owner}/{repo}/check-runs', { owner, repo, name, head_sha: headSha, status: 'completed', conclusion, output: { title, summary } })
     },
   }
 }

@@ -12,6 +12,7 @@ export {
   type ReviewerFactory,
   type ReviewTrigger,
   type RoundOutcome,
+  type SecurityOutcome,
   type Workflow,
   type WorkflowConfig,
   type WorkflowOptions,

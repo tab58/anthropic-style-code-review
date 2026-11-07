@@ -13,6 +13,7 @@ import {
 } from '@earendil-works/pi-coding-agent'
 import { type Static, type TSchema, Type } from 'typebox'
 import type { Finding } from '../review/index.js'
+import type { SecurityFinding } from '../security/index.js'
 import { confinedTools } from './sandbox.js'
 
 const PROVIDER = 'anthropic-style-code-review'
@@ -51,6 +52,47 @@ export const FindingsSchema = Type.Object({
 
 /** Verifier output schema. */
 export const VerdictSchema = Type.Object({ real: Type.Boolean(), reason: Type.String() })
+
+const Level = Type.Union([Type.Literal('high'), Type.Literal('medium'), Type.Literal('low')])
+
+/** Security finder output schema (snake_case, as the model sees it). */
+export const SecurityFindingsSchema = Type.Object({
+  findings: Type.Array(
+    Type.Object({
+      file: Type.String({ description: 'Repo-relative path of the sink' }),
+      line: Type.Integer({ minimum: 1, description: 'Sink line, in the NEW version of the file' }),
+      end_line: Type.Optional(Type.Integer({ minimum: 1 })),
+      title: Type.String({ description: 'One-line summary' }),
+      vuln_class: Type.String({ description: 'Short kebab-case class, e.g. sql-injection' }),
+      source: Type.String({ description: 'Attacker-controlled input and how it arrives' }),
+      sink: Type.String({ description: 'Dangerous operation the input reaches' }),
+      exploit_scenario: Type.String({ description: 'What the attacker sends and what happens' }),
+      impact: Type.String({ description: 'What the attacker gains' }),
+      evidence: Type.String({ description: 'Code quoted exactly from the file at the sink' }),
+      severity: Level,
+      introduced: Type.Boolean({ description: 'True if this PR added or changed the vulnerable path' }),
+    }),
+  ),
+})
+
+/** Security verifier output schema. */
+export const ExploitVerdictSchema = Type.Object({ exploitable: Type.Boolean(), severity: Level, reason: Type.String() })
+
+/** Maps one raw security finding to a {@link SecurityFinding} (normalized path, `endLine >= line`). */
+export const toSecurityFinding = (f: Static<typeof SecurityFindingsSchema>['findings'][number]): SecurityFinding => ({
+  file: f.file.replace(/^\.?\//, ''),
+  line: f.line,
+  endLine: Math.max(f.end_line ?? f.line, f.line),
+  title: f.title,
+  vulnClass: f.vuln_class,
+  source: f.source,
+  sink: f.sink,
+  exploitScenario: f.exploit_scenario,
+  impact: f.impact,
+  evidence: f.evidence,
+  severity: f.severity,
+  introduced: f.introduced,
+})
 
 /** Maps one raw finder finding to a {@link Finding} (normalized path, `endLine >= line`). */
 export const toFinding = (f: Static<typeof FindingsSchema>['findings'][number]): Finding => ({

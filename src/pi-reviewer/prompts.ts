@@ -1,4 +1,5 @@
 import type { FinderFocus, Finding, PostedIssue, ReviewInput } from '../review/index.js'
+import type { SecurityFinding, SecurityFocus } from '../security/index.js'
 
 /** What each finder focus concentrates on. */
 export const FOCUS: Record<FinderFocus, string> = {
@@ -76,3 +77,68 @@ ${context(input)}`
 /** User prompt asking whether a posted issue survives the new commits. */
 export const recheckPrompt = (issue: PostedIssue, input: ReviewInput) =>
   `Earlier comment at ${issue.file}:${issue.line}:\n${issue.text}\n\nNew changes since that comment:\n<diff>\n${input.diff}\n</diff>`
+
+/** What each security finder focus concentrates on. */
+export const SECURITY_FOCUS: Record<SecurityFocus, string> = {
+  'security-general':
+    'Any exploitable vulnerability: injection, broken authentication/authorization, secrets and crypto misuse, unsafe deserialization or code execution, XSS, SSRF, sensitive data exposure, CI/supply-chain risks.',
+  injection: 'Injection: SQL/NoSQL, OS command, template, LDAP and header injection; path traversal; XXE. Trace attacker input into queries, shells, templates and file paths.',
+  authz:
+    'Authentication and authorization: auth bypass, missing or wrong permission checks, privilege escalation, IDOR (accessing another user\'s objects), session/JWT flaws, CSRF on state-changing endpoints.',
+  'secrets-crypto':
+    'Secrets and crypto: hardcoded keys/tokens/passwords in source, weak hashing for passwords, predictable randomness for tokens, disabled TLS or certificate validation, keys logged or returned.',
+  'exposure-execution':
+    'Code execution and exposure: unsafe deserialization, eval/dynamic code, XSS, SSRF, sensitive data in logs/errors/responses, untrusted input in CI workflow `run:` steps, risky dependency changes (typosquats, install scripts).',
+}
+
+const SEVERITY_SCALE = `Severity:
+- "high": remote or unauthenticated compromise: RCE, auth bypass, injection reaching data, mass data exposure, leaked production secret.
+- "medium": exploitable but needs authentication, user interaction or specific conditions; limited data exposure.
+- "low": real but minor impact.`
+
+/** System prompt for security finder agents. */
+export const SECURITY_FINDER_SYSTEM = `You are an application security engineer reviewing a pull request for exploitable vulnerabilities.
+${SHARED}
+
+Rules:
+- Report only vulnerabilities an attacker can actually exploit. For each one give:
+  source: the attacker-controlled input and how it arrives (e.g. "req.query.id from any HTTP client");
+  sink: the dangerous operation it reaches (e.g. "db.query"), with file and line in the NEW version of the file.
+    For a hardcoded secret, the file and line are where the secret literal is written, not where it is used;
+  exploit_scenario: exactly what the attacker sends and what happens;
+  impact: what the attacker gains;
+  evidence: code quoted exactly from the file at the sink.
+  If you cannot trace input from source to sink, do not report it.
+- Check for sanitization, parameterization, framework auto-escaping and auth middleware before reporting.
+- introduced: true if this PR added or changed the vulnerable path; false if it already existed.
+- vuln_class: a short kebab-case class (e.g. "sql-injection"). Report each location of the same mistake with the same class.
+- Do NOT report: denial of service, resource exhaustion, missing rate limiting, generic missing input validation without a proven exploit, open redirects, regex DoS, or anything in docs or test files.
+${SEVERITY_SCALE}
+- Finding nothing is a normal, good outcome. Do not invent issues.
+- Finish by calling submit_security_findings exactly once (an empty list if none). Do not reply with prose.`
+
+/** System prompt for security verifier agents. */
+export const SECURITY_VERIFIER_SYSTEM = `You are a skeptical application security engineer verifying one reported vulnerability.
+${SHARED}
+
+Trace the reported path yourself in the code: does attacker-controlled input really reach the sink, unsanitized, without an authorization check stopping it? Look for parameterized queries, escaping, validation, allow-lists and auth middleware that would block it.
+exploitable=true only if every step holds; theoretical or "could be dangerous" issues are false.
+${SEVERITY_SCALE}
+Finish by calling submit_exploit_verdict exactly once with a one or two sentence reason. Do not reply with prose.`
+
+/** User prompt for a security finder with the given focus. */
+export const securityFinderPrompt = (focus: SecurityFocus, input: ReviewInput) => `Focus on: ${SECURITY_FOCUS[focus]}\n\n${context(input)}`
+
+/** User prompt asking a verifier to judge one reported vulnerability. */
+export const exploitPrompt = (f: SecurityFinding, input: ReviewInput) =>
+  `Reported vulnerability (${f.severity}) at ${f.file}:${f.line}-${f.endLine}
+Title: ${f.title}
+Class: ${f.vulnClass}
+Source: ${f.source}
+Sink: ${f.sink}
+Exploit scenario: ${f.exploitScenario}
+Impact: ${f.impact}
+Quoted evidence:
+${f.evidence}
+
+${context(input)}`

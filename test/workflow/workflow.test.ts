@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { type Finding, fingerprint, type Reviewer } from '../../src/review/index.js'
+import { type SecurityFinding, securityFingerprint, type SecurityReviewer } from '../../src/security/index.js'
 import { encodeState, decodeState } from '../../src/workflow/markers.js'
 import { type BotThread, createWorkflow, type GitHub, type WorkflowOptions } from '../../src/workflow/index.js'
 
@@ -34,7 +35,7 @@ type FakeOpts = {
 function fakeGitHub(opts: FakeOpts = {}) {
   const reviews: { body: string; comments: readonly { path: string; line: number; body: string }[] }[] = []
   const threads: BotThread[] = [...(opts.threads ?? [])]
-  const checks: { conclusion: string; title: string }[] = []
+  const checks: { name: string; conclusion: string; title: string }[] = []
   const compared: string[] = []
   const github: GitHub = {
     getPull: async () => ({ number: 1, headSha: 'h2', baseSha: 'b0', title: 'Add x', body: 'desc', isFork: opts.fork ?? false, draft: opts.draft ?? false }),
@@ -64,14 +65,22 @@ function fakeGitHub(opts: FakeOpts = {}) {
   return { github, reviews, threads, checks, compared }
 }
 
-const fakeReviewer = (findings: readonly Finding[], over: Partial<Reviewer> = {}): Reviewer => ({
+const fakeReviewer = (findings: readonly Finding[], over: Partial<Reviewer & SecurityReviewer> = {}): Reviewer & SecurityReviewer => ({
   find: vi.fn(async () => findings),
   verify: vi.fn(async () => ({ real: true, reason: '' })),
   recheck: vi.fn(async () => true),
+  findVulnerabilities: vi.fn(async () => []),
+  judgeExploit: vi.fn(async () => ({ exploitable: true, severity: 'high' as const, reason: '' })),
   ...over,
 })
 
-const options: WorkflowOptions = { depth: 'quick', maxRounds: 3, maxDiffLines: 1000, maxFindings: 10, concurrency: 2 }
+const vuln = (over: Partial<SecurityFinding> = {}): SecurityFinding => ({
+  file: 'src/a.ts', line: 2, endLine: 2, title: 'Command injection', vulnClass: 'command-injection', source: 'req.body.cmd', sink: 'exec',
+  exploitScenario: 'cmd=rm -rf /', impact: 'RCE', evidence: 'x()', severity: 'high', introduced: true, ...over,
+})
+
+// Bug-flow tests run without the security pass; it has its own describe block below.
+const options: WorkflowOptions = { depth: 'quick', maxRounds: 3, maxDiffLines: 1000, maxFindings: 10, concurrency: 2, securityReview: false }
 const log = () => ({ info: vi.fn(), warning: vi.fn() })
 const important = (id: string, path: string, isResolved = false): BotThread => ({
   id,
@@ -261,17 +270,215 @@ describe('createWorkflow().review', () => {
 })
 
 describe('createWorkflow().gate', () => {
-  it('passes when no important thread is open', async () => {
-    const gh = fakeGitHub({ threads: [important('t', 'a', true)] })
+  it('passes when nothing is open and HEAD is security-reviewed', async () => {
+    const gh = fakeGitHub({ threads: [important('t', 'a', true)], bodies: [encodeState({ round: 1, sha: 'h2', fingerprints: [], securitySha: 'h2' })] })
     const createReviewer = vi.fn()
-    expect(await createWorkflow({ github: gh.github, createReviewer, log: log() }).gate()).toEqual({ conclusion: 'success', openImportant: 0 })
+    expect(await createWorkflow({ github: gh.github, createReviewer, log: log() }).gate()).toEqual({
+      conclusion: 'success',
+      openImportant: 0,
+      security: { conclusion: 'success', openBlocking: 0, reviewed: true },
+    })
     expect(createReviewer).not.toHaveBeenCalled()
-    expect(gh.checks).toEqual([expect.objectContaining({ conclusion: 'success', title: 'No open important findings' })])
+    expect(gh.checks).toEqual([
+      expect.objectContaining({ name: 'anthropic-style-code-review', conclusion: 'success', title: 'No open important findings' }),
+      expect.objectContaining({ name: 'anthropic-style-code-review/security', conclusion: 'success' }),
+    ])
   })
 
   it('fails while important threads are open', async () => {
     const gh = fakeGitHub({ threads: [important('t1', 'a'), important('t2', 'b')] })
-    expect(await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }).gate()).toEqual({ conclusion: 'failure', openImportant: 2 })
+    expect(await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }).gate()).toEqual({
+      conclusion: 'failure',
+      openImportant: 2,
+      security: { conclusion: 'failure', openBlocking: 0, reviewed: false },
+    })
     expect(gh.checks[0]?.title).toBe('2 open important findings')
+    expect(gh.checks[1]).toMatchObject({ conclusion: 'failure', title: 'Latest commits not security-reviewed' })
+  })
+})
+
+describe('security pass', () => {
+  const sec: WorkflowOptions = { ...options, securityReview: true }
+  const run = async (gh: ReturnType<typeof fakeGitHub>, reviewer: Reviewer & SecurityReviewer, opts: WorkflowOptions = sec) =>
+    createWorkflow({ github: gh.github, createReviewer: async () => reviewer, log: log() }, opts).review()
+
+  it('posts vulnerabilities inline, counts them in the summary, and fails only the security gate', async () => {
+    const gh = fakeGitHub()
+    const outcome = await run(gh, fakeReviewer([], { findVulnerabilities: vi.fn(async () => [vuln()]) }))
+    expect(gh.reviews[0]?.body.split('\n')[0]).toBe('**1 security finding** (1 high)')
+    expect(gh.reviews[0]?.comments).toEqual([expect.objectContaining({ path: 'src/a.ts', line: 2, body: expect.stringContaining('**Security · High**') })])
+    expect(gh.checks).toEqual([
+      expect.objectContaining({ name: 'anthropic-style-code-review', conclusion: 'success' }),
+      expect.objectContaining({ name: 'anthropic-style-code-review/security', conclusion: 'failure', title: '1 open high/medium security finding' }),
+    ])
+    expect(outcome).toMatchObject({ status: 'reviewed', security: { depth: 'quick', findings: [{ vulnClass: 'command-injection' }] } })
+    expect(outcome.message).toContain('security 1 confirmed (quick)')
+  })
+
+  it('does not block on low or pre-existing vulnerabilities', async () => {
+    const gh = fakeGitHub()
+    const judgeExploit = vi.fn(async (f: SecurityFinding) => ({ exploitable: true, severity: f.severity, reason: '' }))
+    // Line 1 is a context line, so the diff doesn't force the pre-existing finding to "introduced".
+    const findVulnerabilities = vi.fn(async () => [vuln({ severity: 'low' }), vuln({ line: 1, endLine: 1, vulnClass: 'xss', introduced: false })])
+    await run(gh, fakeReviewer([], { findVulnerabilities, judgeExploit }))
+    expect(gh.checks.find((c) => c.name.endsWith('/security'))?.conclusion).toBe('success')
+  })
+
+  it('uses the quick plan for ordinary diffs and the full plan for risky paths or deep depth', async () => {
+    const quick = fakeReviewer([])
+    await run(fakeGitHub(), quick)
+    expect(vi.mocked(quick.findVulnerabilities).mock.calls.map((c) => c[0])).toEqual(['security-general', 'security-general'])
+
+    const risky = fakeReviewer([])
+    await run(fakeGitHub({ diffs: { b0: diffFor('src/auth/login.ts', ['x()']) } }), risky)
+    expect(vi.mocked(risky.findVulnerabilities).mock.calls.map((c) => c[0])).toEqual(['injection', 'authz', 'secrets-crypto', 'exposure-execution'])
+
+    const deep = fakeReviewer([])
+    await run(fakeGitHub(), deep, { ...sec, depth: 'deep' })
+    expect(deep.findVulnerabilities).toHaveBeenCalledTimes(4)
+  })
+
+  it('applies REVIEW.md security_paths and security_exclude_paths', async () => {
+    const escalated = fakeReviewer([])
+    await run(fakeGitHub({ files: { 'REVIEW.md': '---\nsecurity_paths: ["src/a.ts"]\n---\n' } }), escalated)
+    expect(escalated.findVulnerabilities).toHaveBeenCalledTimes(4)
+
+    const gh = fakeGitHub({ files: { 'REVIEW.md': '---\nsecurity_exclude_paths: ["src/**"]\n---\n' } })
+    const excluded = fakeReviewer([], { findVulnerabilities: vi.fn(async () => [vuln()]) })
+    await run(gh, excluded)
+    expect(excluded.judgeExploit).not.toHaveBeenCalled()
+  })
+
+  it('saves security fingerprints and never reposts them', async () => {
+    const gh = fakeGitHub()
+    await run(gh, fakeReviewer([], { findVulnerabilities: vi.fn(async () => [vuln()]) }))
+    expect(decodeState([gh.reviews[0]?.body ?? ''])?.fingerprints).toContain(securityFingerprint(vuln()))
+
+    const again = fakeGitHub({ bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [securityFingerprint(vuln())] })] })
+    const reviewer = fakeReviewer([], { findVulnerabilities: vi.fn(async () => [vuln()]) })
+    await run(again, reviewer)
+    expect(reviewer.judgeExploit).not.toHaveBeenCalled()
+  })
+
+  it('anchors blocking findings outside the diff to the nearest changed line; non-blocking ones stay in the summary', async () => {
+    const gh = fakeGitHub()
+    const judgeExploit = vi.fn(async (f: SecurityFinding) => ({ exploitable: true, severity: f.severity, reason: '' }))
+    const findVulnerabilities = vi.fn(async () => [vuln({ line: 40, endLine: 40 }), vuln({ line: 50, endLine: 50, vulnClass: 'info-leak', severity: 'low' })])
+    await run(gh, fakeReviewer([], { findVulnerabilities, judgeExploit }))
+    expect(gh.reviews[0]?.comments).toEqual([expect.objectContaining({ line: 3, body: expect.stringContaining('Reported at line 40') })])
+    expect(gh.reviews[0]?.body).toContain('`src/a.ts:50` **Security · Low**')
+    expect(gh.checks.find((c) => c.name.endsWith('/security'))?.conclusion).toBe('failure')
+  })
+
+  it('posts bug and security findings together, and logs security agent errors', async () => {
+    const gh = fakeGitHub()
+    const l = log()
+    const reviewer = fakeReviewer([finding({ line: 3, endLine: 3 })], {
+      findVulnerabilities: vi.fn(async () => [vuln()]),
+      judgeExploit: vi.fn().mockRejectedValueOnce(new Error('timeout')).mockResolvedValue({ exploitable: true, severity: 'high', reason: '' }),
+    })
+    await createWorkflow({ github: gh.github, createReviewer: async () => reviewer, log: l }, sec).review()
+    expect(gh.reviews[0]?.body.split('\n')[0]).toBe('**1 issue found** (1 important) · **1 security finding** (1 high)')
+    expect(gh.reviews[0]?.comments).toHaveLength(2)
+    expect(l.warning).toHaveBeenCalledWith('security voter: timeout')
+  })
+
+  it('still posts the bug review when the security pass fails, and keeps the security gate red for a retry', async () => {
+    const gh = fakeGitHub()
+    const reviewer = fakeReviewer([finding()], { findVulnerabilities: vi.fn().mockRejectedValue(new Error('down')) })
+    const outcome = await run(gh, reviewer)
+    expect(outcome).toMatchObject({ status: 'reviewed', findings: [{ bugClass: 'boom' }], security: undefined })
+    expect(gh.reviews[0]?.body).toContain('Security review did not complete')
+    const state = decodeState([gh.reviews[0]?.body ?? ''])
+    expect(state).toMatchObject({ sha: 'h2' })
+    expect(state?.securitySha).toBeUndefined()
+    expect(gh.checks.find((c) => c.name.endsWith('/security'))).toMatchObject({ conclusion: 'failure', title: 'Latest commits not security-reviewed' })
+  })
+
+  it('retries only the security pass when HEAD is bug-reviewed but not security-reviewed', async () => {
+    const gh = fakeGitHub({ bodies: [encodeState({ round: 2, sha: 'h2', fingerprints: [] })] })
+    const reviewer = fakeReviewer([finding()])
+    const outcome = await run(gh, reviewer)
+    expect(reviewer.find).not.toHaveBeenCalled()
+    expect(reviewer.findVulnerabilities).toHaveBeenCalled()
+    expect(decodeState([gh.reviews[0]?.body ?? ''])).toMatchObject({ round: 2, sha: 'h2', securitySha: 'h2' })
+    expect(outcome).toMatchObject({ status: 'reviewed', round: 2 })
+    expect(gh.checks.find((c) => c.name.endsWith('/security'))?.conclusion).toBe('success')
+  })
+
+  it('is up-to-date only when both passes have covered HEAD', async () => {
+    const gh = fakeGitHub({ bodies: [encodeState({ round: 1, sha: 'h2', fingerprints: [], securitySha: 'h2' })] })
+    const createReviewer = vi.fn()
+    const outcome = await createWorkflow({ github: gh.github, createReviewer, log: log() }, sec).review()
+    expect(outcome.status).toBe('up-to-date')
+    expect(createReviewer).not.toHaveBeenCalled()
+  })
+
+  it('reviews security incrementally from securitySha, independently of the bug range', async () => {
+    const gh = fakeGitHub({ bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [], securitySha: 's1' })] })
+    await run(gh, fakeReviewer([]))
+    expect(gh.compared).toEqual(['h1...h2', 's1...h2', 'b0...h2'])
+  })
+
+  it('reviews the full PR for security when the saved state predates securitySha', async () => {
+    const gh = fakeGitHub({ bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [] })] })
+    await run(gh, fakeReviewer([]))
+    expect(gh.compared).toEqual(['h1...h2', 'b0...h2'])
+  })
+
+  it('does not mark security complete when votes are left undecided', async () => {
+    const gh = fakeGitHub()
+    const reviewer = fakeReviewer([], {
+      findVulnerabilities: vi.fn(async () => [vuln()]),
+      judgeExploit: vi.fn().mockRejectedValueOnce(new Error('429')).mockRejectedValueOnce(new Error('429')).mockResolvedValue({ exploitable: true, severity: 'high', reason: '' }),
+    })
+    await run(gh, reviewer)
+    expect(decodeState([gh.reviews[0]?.body ?? ''])?.securitySha).toBeUndefined()
+    expect(gh.reviews[0]?.body).toContain('undecided')
+  })
+
+  it('fails the security gate closed on oversized diffs and at the round cap', async () => {
+    const big = fakeGitHub()
+    await run(big, fakeReviewer([]), { ...sec, maxDiffLines: 1 })
+    expect(decodeState([big.reviews[0]?.body ?? ''])).toMatchObject({ sha: 'h2' })
+    expect(big.checks.find((c) => c.name.endsWith('/security'))?.title).toBe('Latest commits not security-reviewed')
+
+    const capped = fakeGitHub({ bodies: [encodeState({ round: 3, sha: 'h1', fingerprints: [], securitySha: 'h1' })] })
+    expect((await run(capped, fakeReviewer([]))).status).toBe('paused')
+    expect(capped.checks.find((c) => c.name.endsWith('/security'))?.conclusion).toBe('failure')
+  })
+
+  it('records security as complete without agents when everything matches skip_paths', async () => {
+    const gh = fakeGitHub({ files: { 'REVIEW.md': '---\nskip_paths: ["src/**"]\n---\n' } })
+    const createReviewer = vi.fn()
+    const outcome = await createWorkflow({ github: gh.github, createReviewer, log: log() }, sec).review()
+    expect(createReviewer).not.toHaveBeenCalled()
+    expect(outcome.message).toBe('No reviewable changes.')
+    expect(decodeState([gh.reviews[0]?.body ?? ''])).toMatchObject({ sha: 'h2', securitySha: 'h2' })
+    expect(gh.checks.find((c) => c.name.endsWith('/security'))?.conclusion).toBe('success')
+  })
+
+  it('after a 422, reposts blocking security findings one per review so they still get a thread', async () => {
+    let calls = 0
+    const gh = fakeGitHub({ reviewError: (n) => (n > 0 && calls++ === 0 ? Object.assign(new Error('bad line'), { status: 422 }) : undefined) })
+    await run(gh, fakeReviewer([], { findVulnerabilities: vi.fn(async () => [vuln()]) }))
+    expect(gh.reviews).toHaveLength(2)
+    expect(gh.reviews[1]?.comments).toEqual([expect.objectContaining({ path: 'src/a.ts', line: 2 })])
+    expect(gh.threads).toHaveLength(1)
+  })
+
+  it('skips the pass and its gate when securityReview is off', async () => {
+    const gh = fakeGitHub()
+    const reviewer = fakeReviewer([])
+    const outcome = await run(gh, reviewer, { ...sec, securityReview: false })
+    expect(reviewer.findVulnerabilities).not.toHaveBeenCalled()
+    expect(gh.checks.map((c) => c.name)).toEqual(['anthropic-style-code-review'])
+    expect(outcome).toMatchObject({ security: undefined })
+  })
+
+  it('uses a custom check name for both gates', async () => {
+    const gh = fakeGitHub()
+    await run(gh, fakeReviewer([]), { ...sec, checkName: 'review' })
+    expect(gh.checks.map((c) => c.name)).toEqual(['review', 'review/security'])
   })
 })

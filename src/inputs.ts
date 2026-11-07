@@ -32,10 +32,12 @@ export type ActionInputs = {
   readonly finderModel: string
   /** Verifier model ID. */
   readonly verifierModel: string
+  /** Security finder model ID; undefined → the finder model. */
+  readonly securityFinderModel: string | undefined
+  /** Security verifier model ID; undefined → the verifier model. */
+  readonly securityVerifierModel: string | undefined
   /** Login the reviews are posted as. */
   readonly botLogin: string
-  /** Merge-gate check run name. */
-  readonly checkName: string
   /** Workflow tuning; unset inputs are left undefined so workflow and REVIEW.md defaults apply. */
   readonly workflow: WorkflowOptions
 }
@@ -56,6 +58,15 @@ function required(source: InputSource, name: string): string {
   return v
 }
 
+/** `on`/`off` switch; empty means unset. */
+function onOff(source: InputSource, name: string): boolean | undefined {
+  const raw = source.get(name).trim().toLowerCase()
+  if (raw === '') return undefined
+  if (raw === 'on' || raw === 'true') return true
+  if (raw === 'off' || raw === 'false') return false
+  throw new Error(`Input ${name} must be on or off, got "${raw}"`)
+}
+
 /** Workflow tuning inputs, validated. */
 const workflowOptions = (source: InputSource): WorkflowOptions => ({
   depth: source.get('depth') || undefined,
@@ -66,6 +77,8 @@ const workflowOptions = (source: InputSource): WorkflowOptions => ({
   maxFindings: intInput(source, 'max_findings_to_verify', 1),
   concurrency: intInput(source, 'max_concurrency', 1),
   nitCap: intInput(source, 'nit_cap', 0),
+  securityReview: onOff(source, 'security_review'),
+  checkName: source.get('check_name') || undefined,
 })
 
 /**
@@ -75,7 +88,7 @@ const workflowOptions = (source: InputSource): WorkflowOptions => ({
  * @param event - The triggering event; its PR number wins over the `pr_number` input.
  * @returns Validated inputs.
  * @throws {@link Error} If there is no PR number, `github_token` is empty, `provider_api_key` is empty on a review
- *   event, or a numeric input is not an integer in range.
+ *   event, a numeric input is not an integer in range, or `security_review` is not on/off.
  */
 export function readInputs(source: InputSource, event: EventInfo): ActionInputs {
   const prNumber = event.prNumber ?? intInput(source, 'pr_number', 1)
@@ -90,8 +103,9 @@ export function readInputs(source: InputSource, event: EventInfo): ActionInputs 
     baseUrl: source.get('base_url'),
     finderModel: source.get('finder_model'),
     verifierModel: source.get('verifier_model'),
+    securityFinderModel: source.get('security_finder_model') || undefined,
+    securityVerifierModel: source.get('security_verifier_model') || undefined,
     botLogin: source.get('bot_login'),
-    checkName: source.get('check_name'),
     workflow: workflowOptions(source),
   }
 }
