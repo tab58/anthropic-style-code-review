@@ -131,6 +131,16 @@ describe('createPiReviewer (against a fake OpenAI-compatible server)', () => {
     expect(lines.some((l) => l.includes('submit_findings'))).toBe(false)
   })
 
+  it('numbers repeated labels so parallel voters can be told apart', async () => {
+    turns = [{ tool: 'submit_verdict', args: { real: true, reason: 'x' } }, { tool: 'submit_verdict', args: { real: true, reason: 'x' } }]
+    const lines: string[] = []
+    const r = await reviewer((l) => lines.push(l))
+    const finding = { ...rawFinding, file: 'a.ts', endLine: 3, bugClass: 'boom' } as Finding
+    await r.verify(finding, input)
+    await r.verify(finding, input)
+    expect(lines.filter((l) => l.startsWith('▶'))).toEqual(['▶ verify a.ts:3 "Boom" (verifier-m)', '▶ verify a.ts:3 "Boom" #2 (verifier-m)'])
+  })
+
   it('logs a failed agent with the reason', async () => {
     turns = [{ httpError: 400 }]
     const lines: string[] = []

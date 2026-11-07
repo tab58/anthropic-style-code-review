@@ -41,6 +41,23 @@ describe('checkToolArgs', () => {
   })
 })
 
+describe('checkToolArgs per tool', () => {
+  it('lets grep search file contents for any text, including leading / and ../', async () => {
+    expect(await checkToolArgs(root, { pattern: '/resolve', path: 'src' }, 'grep')).toBeUndefined()
+    expect(await checkToolArgs(root, { pattern: '../config|~/x' }, 'grep')).toBeUndefined()
+  })
+
+  it('still confines grep globs and paths', async () => {
+    expect(await checkToolArgs(root, { pattern: 'x', glob: '/etc/**' }, 'grep')).toMatch(/glob/)
+    expect(await checkToolArgs(root, { pattern: 'x', path: '/etc' }, 'grep')).toMatch(/outside/)
+  })
+
+  it('confines find patterns (they are file globs)', async () => {
+    expect(await checkToolArgs(root, { pattern: '/etc/*' }, 'find')).toMatch(/pattern/)
+    expect(await checkToolArgs(root, { pattern: '**/*.ts' }, 'find')).toBeUndefined()
+  })
+})
+
 describe('checkToolArgs input shapes', () => {
   it.each([[null], ['str'], [42]])('rejects non-object args %j', async (args) => {
     expect(await checkToolArgs(root, args)).toMatch(/must be an object/)
@@ -58,6 +75,13 @@ describe('checkToolArgs input shapes', () => {
 describe('confinedTools', () => {
   it('provides read, grep, find and ls', () => {
     expect(confinedTools(root).map((t) => t.name)).toEqual(['read', 'grep', 'find', 'ls'])
+  })
+
+  it('lets the grep tool search for a leading-slash pattern', async () => {
+    const grep = confinedTools(root).find((t) => t.name === 'grep')
+    if (!grep) throw new Error('grep tool missing')
+    const ctx = {} as never
+    await expect(grep.execute('id', { pattern: '/nothing-matches-this' }, undefined, undefined, ctx)).resolves.toBeDefined()
   })
 
   it('refuses out-of-repo paths before running the tool, and runs allowed calls', async () => {

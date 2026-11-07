@@ -28,9 +28,9 @@ async function real(p: string): Promise<string> {
 
 const ESCAPES_GLOB = /(^|\/)\.\.(\/|$)/
 
-/** Rejects `pattern`/`glob` values that point outside the repo. */
-function checkPatterns(args: object): string | undefined {
-  for (const key of ['pattern', 'glob'] as const) {
+/** Rejects path-like `pattern`/`glob` values that point outside the repo. grep's `pattern` is a content regex, not a path. */
+function checkPatterns(args: object, tool: string | undefined): string | undefined {
+  for (const key of tool === 'grep' ? (['glob'] as const) : (['pattern', 'glob'] as const)) {
     const v: unknown = Reflect.get(args, key)
     if (typeof v === 'string' && (ESCAPES_GLOB.test(v) || v.startsWith('/') || v.startsWith('~'))) {
       return `Invalid ${key} "${v}": search patterns must stay inside the repository.`
@@ -54,10 +54,13 @@ async function checkPath(cwd: string, raw: unknown): Promise<string | undefined>
   return undefined
 }
 
-/** Validates a tool call's arguments; resolves with an error message to return to the model, or undefined if allowed. */
-export async function checkToolArgs(cwd: string, args: unknown): Promise<string | undefined> {
+/**
+ * Validates a tool call's arguments; resolves with an error message to return to the model, or undefined if allowed.
+ * `tool` is the tool's name; for `grep`, `pattern` is file content to search for and is not treated as a path.
+ */
+export async function checkToolArgs(cwd: string, args: unknown, tool?: string): Promise<string | undefined> {
   if (typeof args !== 'object' || args === null) return 'tool arguments must be an object'
-  return checkPatterns(args) ?? (await checkPath(cwd, Reflect.get(args, 'path')))
+  return checkPatterns(args, tool) ?? (await checkPath(cwd, Reflect.get(args, 'path')))
 }
 
 /** Wraps a tool so every call's arguments pass {@link checkToolArgs} first; `defineTool` erases its generics for the session. */
@@ -65,7 +68,7 @@ function confine<T extends TSchema, D>(cwd: string, def: ToolDefinition<T, D>) {
   return defineTool<T, D>({
     ...def,
     async execute(id, params, ...rest) {
-      const err = await checkToolArgs(cwd, params)
+      const err = await checkToolArgs(cwd, params, def.name)
       if (err) throw new Error(err)
       return def.execute(id, params, ...rest)
     },

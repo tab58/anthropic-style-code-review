@@ -71,7 +71,14 @@ export async function createPiReviewer(config: PiReviewerConfig): Promise<Review
     apiKey: config.apiKey,
     models: [config.finderModel, config.verifierModel, securityFinder, securityVerifier],
   })
-  const run = <S extends TSchema>(task: StructuredTask<S>) => runStructured(rt, config.cwd, task, config.log)
+  // Voters and rechecks run in parallel under the same label; number repeats so their log lines can be told apart.
+  const seen = new Map<string, number>()
+  const numbered = (label: string) => {
+    const n = (seen.get(label) ?? 0) + 1
+    seen.set(label, n)
+    return n === 1 ? label : `${label} #${n}`
+  }
+  const run = <S extends TSchema>(task: StructuredTask<S>) => runStructured(rt, config.cwd, { ...task, label: numbered(task.label) }, config.log)
   const verdict = (label: string, system: string, prompt: string) =>
     run({ label, modelId: config.verifierModel, system, prompt, toolName: 'submit_verdict', schema: VerdictSchema })
 

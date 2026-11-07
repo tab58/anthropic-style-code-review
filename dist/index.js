@@ -345168,8 +345168,8 @@ async function real(p) {
   }
 }
 var ESCAPES_GLOB = /(^|\/)\.\.(\/|$)/;
-function checkPatterns(args) {
-  for (const key of ["pattern", "glob"]) {
+function checkPatterns(args, tool) {
+  for (const key of tool === "grep" ? ["glob"] : ["pattern", "glob"]) {
     const v2 = Reflect.get(args, key);
     if (typeof v2 === "string" && (ESCAPES_GLOB.test(v2) || v2.startsWith("/") || v2.startsWith("~"))) {
       return `Invalid ${key} "${v2}": search patterns must stay inside the repository.`;
@@ -345189,15 +345189,15 @@ async function checkPath(cwd, raw) {
   if (rel.split(sep12).includes(".git")) return `Path "${raw}" is inside .git; read source files instead.`;
   return void 0;
 }
-async function checkToolArgs(cwd, args) {
+async function checkToolArgs(cwd, args, tool) {
   if (typeof args !== "object" || args === null) return "tool arguments must be an object";
-  return checkPatterns(args) ?? await checkPath(cwd, Reflect.get(args, "path"));
+  return checkPatterns(args, tool) ?? await checkPath(cwd, Reflect.get(args, "path"));
 }
 function confine(cwd, def) {
   return defineTool({
     ...def,
     async execute(id, params, ...rest) {
-      const err = await checkToolArgs(cwd, params);
+      const err = await checkToolArgs(cwd, params, def.name);
       if (err) throw new Error(err);
       return def.execute(id, params, ...rest);
     }
@@ -345405,7 +345405,13 @@ async function createPiReviewer(config) {
     apiKey: config.apiKey,
     models: [config.finderModel, config.verifierModel, securityFinder, securityVerifier]
   });
-  const run = (task) => runStructured(rt2, config.cwd, task, config.log);
+  const seen = /* @__PURE__ */ new Map();
+  const numbered = (label) => {
+    const n = (seen.get(label) ?? 0) + 1;
+    seen.set(label, n);
+    return n === 1 ? label : `${label} #${n}`;
+  };
+  const run = (task) => runStructured(rt2, config.cwd, { ...task, label: numbered(task.label) }, config.log);
   const verdict2 = (label, system, prompt) => run({ label, modelId: config.verifierModel, system, prompt, toolName: "submit_verdict", schema: VerdictSchema });
   return {
     async find(focus, input2) {
