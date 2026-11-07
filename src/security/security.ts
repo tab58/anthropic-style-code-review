@@ -121,6 +121,8 @@ export type SecurityRequest = {
   readonly limit: Limiter
   /** Lines the PR added, per file. A finding on one of them is introduced, whatever the model said. Default none. */
   readonly addedLines?: ReadonlyMap<string, ReadonlySet<number>>
+  /** Receives a line per finder result, the candidate funnel and each vote. Default: discard. */
+  readonly onProgress?: (message: string) => void
 }
 
 /** The outcome of {@link runSecurityReview}. */
@@ -142,13 +144,22 @@ const KEYS = { classOf: (f: SecurityFinding) => f.vulnClass, rankOf }
 /** Error message of any thrown value. */
 const message = (e: unknown) => (e instanceof Error ? e.message : String(e))
 
+/** `1 finding`, `2 findings`. */
+const count = (n: number, noun: string) => `${n} ${noun}${n === 1 ? '' : 's'}`
+
 /** Runs every planned finder (bounded); a failed finder is recorded, but all failing is fatal. */
 async function runFinders(reviewer: SecurityReviewer, r: SecurityRequest) {
   const settled = await Promise.all(
     r.plan.finders.map((focus) =>
       r.limit(() => reviewer.findVulnerabilities(focus, r.input)).then(
-        (findings) => ({ findings, error: undefined }),
-        (e: unknown) => ({ findings: [], error: `security finder ${focus}: ${message(e)}` }),
+        (findings) => {
+          r.onProgress?.(`security finder ${focus}: ${count(findings.length, 'finding')}`)
+          return { findings, error: undefined }
+        },
+        (e: unknown) => {
+          r.onProgress?.(`security finder ${focus}: failed (${message(e)})`)
+          return { findings: [], error: `security finder ${focus}: ${message(e)}` }
+        },
       ),
     ),
   )
@@ -186,9 +197,12 @@ async function judge(reviewer: SecurityReviewer, f: SecurityFinding, r: Security
   // Undecided if the votes that arrived can neither confirm nor rule out the finding.
   const inconclusive = yes.length < r.plan.needed && answered - yes.length <= r.plan.voters - r.plan.needed
   const level = LEVELS[median(yes.map((v) => LEVELS.indexOf(v.vote.severity))) ?? -1] ?? f.severity
+  const kept = tally(votes.map((v) => v.vote.exploitable), r.plan.needed)
+  const outcome = kept ? `confirmed (${level})` : inconclusive ? 'undecided (voter errors)' : 'dropped'
+  r.onProgress?.(`exploit vote ${f.file}:${f.line} "${f.title}": ${yes.length}/${r.plan.voters} exploitable → ${outcome}`)
   return {
     finding: { ...f, severity: level },
-    kept: tally(votes.map((v) => v.vote.exploitable), r.plan.needed),
+    kept,
     inconclusive,
     errors: votes.flatMap((v) => (v.error ? [v.error] : [])),
   }
@@ -205,6 +219,7 @@ async function judge(reviewer: SecurityReviewer, f: SecurityFinding, r: Security
 export async function runSecurityReview(reviewer: SecurityReviewer, request: SecurityRequest): Promise<SecurityResult> {
   const finders = await runFinders(reviewer, request)
   const candidates = selectCandidates(finders.findings, request)
+  request.onProgress?.(`${finders.findings.length} raw → ${count(candidates.length, 'candidate')} for voting`)
   const judged = await Promise.all(candidates.map((f) => judge(reviewer, f, request)))
   const confirmed = judged.filter((j) => j.kept).map((j) => j.finding)
   return {

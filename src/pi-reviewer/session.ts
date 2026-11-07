@@ -146,6 +146,8 @@ export async function createRuntime(cfg: RuntimeConfig) {
 
 /** One structured agent task: which model, prompts and submit tool. */
 export type StructuredTask<S extends TSchema> = {
+  /** Short name for logs, e.g. `finder:logic` or `verify src/a.ts:12 "Title"`. */
+  readonly label: string
   /** Model ID. */
   readonly modelId: string
   /** System prompt. */
@@ -183,11 +185,50 @@ function failureReason(session: AgentSession, toolName: string): Error {
   return new Error(err ? `model error: ${err}` : `agent ended without calling ${toolName}`)
 }
 
+/** Sink for per-agent progress lines. */
+export type AgentLog = (line: string) => void
+
+/** A string field of an untyped tool-args object, flattened to one line and shortened. */
+function arg(args: unknown, key: string): string | undefined {
+  const v: unknown = typeof args === 'object' && args !== null ? Reflect.get(args, key) : undefined
+  if (typeof v !== 'string' && typeof v !== 'number') return undefined
+  const s = String(v).replace(/\s+/g, ' ')
+  return s.length > 80 ? `${s.slice(0, 77)}...` : s
+}
+
+/** `grep "pattern" in path`, `read path:offset`, `ls path`. */
+function describeCall(tool: string, args: unknown): string {
+  const pattern = arg(args, 'pattern')
+  const path = arg(args, 'path')
+  const offset = arg(args, 'offset')
+  const target = [pattern === undefined ? undefined : `"${pattern}"`, path === undefined ? undefined : `${pattern === undefined ? '' : 'in '}${path}${offset ? `:${offset}` : ''}`]
+  return [tool, ...target.filter((t) => t !== undefined)].join(' ')
+}
+
+/** Logs one session's tool calls, failed tools and retries; returns the unsubscribe function and a tool counter. */
+function watch(session: AgentSession, task: StructuredTask<TSchema>, log: AgentLog) {
+  let calls = 0
+  const off = session.subscribe((e) => {
+    if (e.type === 'tool_execution_start' && e.toolName !== task.toolName) {
+      calls++
+      log(`  ${task.label} ${describeCall(e.toolName, e.args)}`)
+    } else if (e.type === 'tool_execution_end' && e.isError && e.toolName !== task.toolName) {
+      log(`  ${task.label} ✗ ${e.toolName} failed`)
+    } else if (e.type === 'auto_retry_start') {
+      log(`  ${task.label} ⟳ retry ${e.attempt}/${e.maxAttempts} in ${Math.round(e.delayMs / 1000)}s (${e.errorMessage})`)
+    }
+  })
+  return { off, calls: () => calls }
+}
+
+/** Whole seconds since `start`. */
+const since = (start: number) => `${Math.round((Date.now() - start) / 1000)}s`
+
 /**
  * Runs one agent session until it calls the submit tool, nudging once if it answers in prose
  * (we can't rely on tool_choice; Ollama, among others, lacks it).
  */
-export async function runStructured<S extends TSchema>(rt: Runtime, cwd: string, task: StructuredTask<S>): Promise<Static<S>> {
+export async function runStructured<S extends TSchema>(rt: Runtime, cwd: string, task: StructuredTask<S>, log: AgentLog = () => {}): Promise<Static<S>> {
   let result: Static<S> | undefined
   const submit = defineTool({
     name: task.toolName,
@@ -199,15 +240,26 @@ export async function runStructured<S extends TSchema>(rt: Runtime, cwd: string,
       return { content: [{ type: 'text', text: 'Recorded.' }], details: {}, terminate: true }
     },
   })
+  const start = Date.now()
+  log(`▶ ${task.label} (${task.modelId})`)
   const session = await openSession(rt, cwd, task, submit)
+  const watcher = watch(session, task, log)
   const timer = setTimeout(() => void session.abort(), AGENT_TIMEOUT_MS)
   try {
     await session.prompt(task.prompt)
-    if (result === undefined) await session.prompt(`Call ${task.toolName} now with your final answer. Do not reply with prose.`)
+    if (result === undefined) {
+      log(`  ${task.label} answered in prose; nudging it to submit`)
+      await session.prompt(`Call ${task.toolName} now with your final answer. Do not reply with prose.`)
+    }
     if (result === undefined) throw failureReason(session, task.toolName)
+    log(`✔ ${task.label} ${since(start)}, ${watcher.calls()} tool call${watcher.calls() === 1 ? '' : 's'}`)
     return result
+  } catch (e) {
+    log(`✗ ${task.label} failed after ${since(start)}: ${e instanceof Error ? e.message : String(e)}`)
+    throw e
   } finally {
     clearTimeout(timer)
+    watcher.off()
     session.dispose()
   }
 }

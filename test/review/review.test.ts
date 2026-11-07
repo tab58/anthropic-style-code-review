@@ -109,6 +109,28 @@ describe('runReview', () => {
     }
   }
 
+  it('reports progress: each finder, the candidate funnel, and each vote', async () => {
+    const r = reviewer({ logic: [f({ bugClass: 'real' })], 'edge-cases': [f({ line: 3, endLine: 3, bugClass: 'fake', title: 'Fake\nbug' })] }, (x) => x.bugClass === 'real')
+    const progress: string[] = []
+    await runReview(r, { ...request, onProgress: (m) => progress.push(m) })
+    expect(progress).toEqual(
+      expect.arrayContaining([
+        'finder logic: 1 finding',
+        'finder edge-cases: 1 finding',
+        '2 raw → 2 candidates for voting',
+        expect.stringMatching(/^vote a\.ts:\d+ ".*": 3\/3 real → confirmed$/),
+        'vote a.ts:3 "Fake\nbug": 0/3 real → dropped', // one-lined by the log sink
+      ]),
+    )
+  })
+
+  it('reports a failed finder in progress', async () => {
+    const r: Reviewer = { find: vi.fn().mockRejectedValueOnce(new Error('429')).mockResolvedValue([]), verify: vi.fn(), recheck: vi.fn() }
+    const progress: string[] = []
+    await runReview(r, { ...request, onProgress: (m) => progress.push(m) })
+    expect(progress).toContain('finder logic: failed (429)')
+  })
+
   it('runs every finder and keeps findings that win the vote', async () => {
     const r = reviewer({ logic: [f({ bugClass: 'real' })], 'edge-cases': [f({ line: 3, endLine: 3, bugClass: 'fake' })] }, (x) => x.bugClass === 'real')
     const out = await runReview(r, request)

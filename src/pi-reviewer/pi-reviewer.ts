@@ -21,6 +21,7 @@ import {
   ExploitVerdictSchema,
   FindingsSchema,
   RiskSchema,
+  type AgentLog,
   runStructured,
   SecurityFindingsSchema,
   type StructuredTask,
@@ -28,6 +29,9 @@ import {
   toSecurityFinding,
   VerdictSchema,
 } from './session.js'
+
+/** `file:line` for a log label. */
+const at = (l: { readonly file: string; readonly line: number }) => `${l.file}:${l.line}`
 
 /** Endpoint, models and checkout for {@link createPiReviewer}. */
 export type PiReviewerConfig = {
@@ -45,6 +49,8 @@ export type PiReviewerConfig = {
   readonly securityVerifierModel?: string
   /** Absolute path of the repo checkout the agents may read (and nothing outside it). */
   readonly cwd: string
+  /** Receives one line per agent start, tool call, retry and finish. Lines can quote model text. Default: discard. */
+  readonly log?: AgentLog
 }
 
 /**
@@ -65,23 +71,23 @@ export async function createPiReviewer(config: PiReviewerConfig): Promise<Review
     apiKey: config.apiKey,
     models: [config.finderModel, config.verifierModel, securityFinder, securityVerifier],
   })
-  const run = <S extends TSchema>(task: StructuredTask<S>) => runStructured(rt, config.cwd, task)
-  const verdict = (system: string, prompt: string) =>
-    run({ modelId: config.verifierModel, system, prompt, toolName: 'submit_verdict', schema: VerdictSchema })
+  const run = <S extends TSchema>(task: StructuredTask<S>) => runStructured(rt, config.cwd, task, config.log)
+  const verdict = (label: string, system: string, prompt: string) =>
+    run({ label, modelId: config.verifierModel, system, prompt, toolName: 'submit_verdict', schema: VerdictSchema })
 
   return {
     async find(focus, input) {
-      const out = await run({ modelId: config.finderModel, system: FINDER_SYSTEM, prompt: finderPrompt(focus, input), toolName: 'submit_findings', schema: FindingsSchema })
-      return out.findings.map(toFinding)
+      const task = { label: `finder:${focus}`, modelId: config.finderModel, system: FINDER_SYSTEM, prompt: finderPrompt(focus, input), toolName: 'submit_findings', schema: FindingsSchema }
+      return (await run(task)).findings.map(toFinding)
     },
-    verify: (finding, input) => verdict(VERIFIER_SYSTEM, verifierPrompt(finding, input)),
-    recheck: async (issue, input) => (await verdict(RECHECK_SYSTEM, recheckPrompt(issue, input))).real,
+    verify: (finding, input) => verdict(`verify ${at(finding)} "${finding.title}"`, VERIFIER_SYSTEM, verifierPrompt(finding, input)),
+    recheck: async (issue, input) => (await verdict(`recheck ${issue.file}:${issue.line}`, RECHECK_SYSTEM, recheckPrompt(issue, input))).real,
     async findVulnerabilities(focus, input) {
-      const task = { modelId: securityFinder, system: SECURITY_FINDER_SYSTEM, prompt: securityFinderPrompt(focus, input), toolName: 'submit_security_findings', schema: SecurityFindingsSchema }
+      const task = { label: `security:${focus}`, modelId: securityFinder, system: SECURITY_FINDER_SYSTEM, prompt: securityFinderPrompt(focus, input), toolName: 'submit_security_findings', schema: SecurityFindingsSchema }
       return (await run(task)).findings.map(toSecurityFinding)
     },
     judgeExploit: (finding, input) =>
-      run({ modelId: securityVerifier, system: SECURITY_VERIFIER_SYSTEM, prompt: exploitPrompt(finding, input), toolName: 'submit_exploit_verdict', schema: ExploitVerdictSchema }),
-    classifyRisk: (input) => run({ modelId: config.verifierModel, system: RISK_SYSTEM, prompt: riskPrompt(input), toolName: 'submit_risk', schema: RiskSchema }),
+      run({ label: `exploit ${at(finding)} "${finding.title}"`, modelId: securityVerifier, system: SECURITY_VERIFIER_SYSTEM, prompt: exploitPrompt(finding, input), toolName: 'submit_exploit_verdict', schema: ExploitVerdictSchema }),
+    classifyRisk: (input) => run({ label: 'risk', modelId: config.verifierModel, system: RISK_SYSTEM, prompt: riskPrompt(input), toolName: 'submit_risk', schema: RiskSchema }),
   }
 }

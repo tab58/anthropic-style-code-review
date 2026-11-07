@@ -93,13 +93,18 @@ async function loadRanges(ctx: Context, pr: PullRequest, state: ReviewState | un
     cache.set(base, hit)
     return hit
   }
-  const since = async (sha: string | undefined) => {
+  const logged = new Set<string>()
+  const since = async (pass: string, sha: string | undefined) => {
     const incremental = sha !== undefined && (await ctx.github.isAncestor(sha, pr.headSha))
-    if (sha !== undefined && !incremental) ctx.log.info(`Last reviewed ${sha} is not an ancestor of HEAD (force push?); reviewing the full PR.`)
-    return diff(incremental ? sha : pr.baseSha)
+    if (sha !== undefined && !incremental) ctx.log.info(`Last reviewed ${short(sha)} is not an ancestor of HEAD (force push?); reviewing the full PR.`)
+    const base = incremental ? sha : pr.baseSha
+    const files = await diff(base)
+    if (!logged.has(base)) ctx.log.info(`${pass}: ${describeRange(files)}, ${short(base)}...${short(pr.headSha)} (${incremental ? 'new commits since the last review' : 'whole PR'})`)
+    logged.add(base)
+    return files
   }
-  const bugAll = due.bug ? await since(state?.sha) : undefined
-  const securityAll = due.security ? await since(state?.securitySha) : undefined
+  const bugAll = due.bug ? await since('Range', state?.sha) : undefined
+  const securityAll = due.security ? await since('Security range', state?.securitySha) : undefined
   const changed = [...(bugAll ?? []), ...(securityAll ?? [])].map((f) => f.path)
   const guidance = await loadGuidance({ read: (path) => ctx.github.readAtRef(pr.baseSha, path) }, [...new Set(changed)])
   const skip = guidance.review?.config.skipPaths ?? []
@@ -115,6 +120,16 @@ async function loadRanges(ctx: Context, pr: PullRequest, state: ReviewState | un
 const fixedFields = (state: ReviewState | undefined, added: readonly string[]) => {
   const fixedThreads = [...(state?.fixedThreads ?? []), ...added]
   return fixedThreads.length > 0 ? { fixedThreads } : {}
+}
+
+/** First 7 characters of a SHA. */
+const short = (sha: string) => sha.slice(0, 7)
+
+/** `3 files, +120/-30 lines`. */
+function describeRange(files: readonly FileDiff[]): string {
+  const added = files.reduce((n, f) => n + f.addedLines.size, 0)
+  const removed = files.reduce((n, f) => n + f.changed, 0) - added
+  return `${plural(files.length, 'file')}, +${added}/-${removed} lines`
 }
 
 /** What the agents see for a range. */
@@ -134,7 +149,10 @@ async function isFixed(ctx: Context, reviewer: Reviewer, limit: Limiter, t: BotT
       }),
     ),
   )
-  return answers.filter((still) => !still).length >= depth.needed
+  const fixedVotes = answers.filter((still) => !still).length
+  const fixed = fixedVotes >= depth.needed
+  ctx.log.info(`recheck ${t.path}:${t.line ?? 'outdated'}: ${fixedVotes}/${depth.voters} say fixed → ${fixed ? 'fixed' : 'still open'}`)
+  return fixed
 }
 
 /** Threads a quorum found fixed this round, and which of them the token couldn't resolve. */
@@ -155,6 +173,7 @@ async function tryResolve(ctx: Context, t: BotThread): Promise<boolean> {
 async function autoResolve(ctx: Context, state: ReviewState, a: { reviewer: Reviewer; limit: Limiter; touched: ReadonlySet<string>; input: ReviewInput; depth: DepthConfig }): Promise<AutoResolved> {
   const { reviewer, limit, input, depth } = a
   const open = (await openThreads(ctx.github, state)).filter((t) => a.touched.has(t.path))
+  if (open.length > 0) ctx.log.info(`Rechecking ${plural(open.length, 'open finding')} in changed files`)
   const results = await Promise.all(
     open.map(async (t) => {
       if (!(await isFixed(ctx, reviewer, limit, t, input, depth))) return undefined
@@ -181,7 +200,7 @@ async function runBugPass(ctx: Context, a: PassArgs): Promise<ReviewResult | und
   if (!range || range.files.length === 0) return undefined
   const nitCap = ctx.settings.nitCap ?? a.ranges.guidance.review?.config.nitCap ?? ctx.settings.nitCapDefault
   const input = buildInput(a.pr, range, a.ranges.guidance)
-  return runReview(a.reviewer, { input, paths: livePaths(range), depth: a.depth, posted: a.posted, nitCap, maxFindings: ctx.settings.maxFindings, limit: a.limit })
+  return runReview(a.reviewer, { input, paths: livePaths(range), depth: a.depth, posted: a.posted, nitCap, maxFindings: ctx.settings.maxFindings, limit: a.limit, onProgress: ctx.log.info })
 }
 
 /** Runs the security pass if due. Failures are caught, so they never discard the bug review. */
@@ -190,6 +209,8 @@ async function runSecurityPass(ctx: Context, a: PassArgs): Promise<SecurityPass>
   if (!range) return undefined
   const config = a.ranges.guidance.review?.config
   const plan = chooseSecurityPlan(range.files, { extraPaths: config?.securityPaths ?? [], forceFull: a.depth.depth === 'deep' })
+  const why = plan.depth === 'quick' ? '' : a.depth.depth === 'deep' ? ' (depth deep)' : ' (security-sensitive paths or code)'
+  if (range.files.length > 0) ctx.log.info(`Security plan: ${plan.depth}${why}, ${plural(plan.finders.length, 'finder')} (${plan.finders.join(', ')}), ${plan.needed} of ${plan.voters} votes needed`)
   if (range.files.length === 0) return { status: 'done', depth: plan.depth, result: { findings: [], stats: { raw: 0, candidates: 0, confirmed: 0 }, errors: [], inconclusive: 0 } }
   const addedLines = new Map(a.ranges.prFiles.map((f) => [f.path, f.addedLines]))
   const request = {
@@ -201,6 +222,7 @@ async function runSecurityPass(ctx: Context, a: PassArgs): Promise<SecurityPass>
     excludePaths: config?.securityExcludePaths ?? [],
     limit: a.limit,
     addedLines,
+    onProgress: ctx.log.info,
   }
   try {
     return { status: 'done', depth: plan.depth, result: await runSecurityReview(a.reviewer, request) }
@@ -258,6 +280,7 @@ function layout(found: Posting, prFiles: readonly FileDiff[]) {
 async function postReview(ctx: Context, pr: PullRequest, found: Posting, prFiles: readonly FileDiff[], body: (outside: Posting) => string) {
   const { bugComments, securityComments, outside } = layout(found, prFiles)
   const comments = [...bugComments, ...securityComments.map((c) => c.comment)]
+  ctx.log.info(`Posting review: ${plural(comments.length, 'inline comment')}, ${outside.bugs.length + outside.security.length} in the summary only`)
   try {
     await ctx.github.createReview({ headSha: pr.headSha, body: body(outside), comments })
   } catch (e) {
@@ -276,6 +299,9 @@ async function postReview(ctx: Context, pr: PullRequest, found: Posting, prFiles
 async function reviewRanges(ctx: Context, pr: PullRequest, state: ReviewState | undefined, round: number, ranges: Ranges): Promise<RoundOutcome> {
   const { settings } = ctx
   const depth = resolveDepth({ input: { depth: settings.depth, voters: settings.voters, votesNeeded: settings.votesNeeded }, frontmatterDepth: ranges.guidance.review?.config.depth })
+  if (ranges.bug && ranges.bug.files.length > 0) {
+    ctx.log.info(`Code review plan: ${depth.depth}, ${plural(depth.finders.length, 'finder')} (${depth.finders.join(', ')}), ${depth.needed} of ${depth.voters} votes needed`)
+  }
   const reviewer = await ctx.createReviewer()
   const limit = createLimiter(settings.concurrency) // one pool for every agent session this round
   const touched = new Set([...(ranges.bug?.files ?? []), ...(ranges.security?.files ?? [])].map((f) => f.path))
@@ -306,7 +332,7 @@ type RoundResult = {
 /** The round's tier (undefined when risk tiers are off) and the summary line for it. */
 async function roundRisk(ctx: Context, pr: PullRequest, state: ReviewState | undefined, r: RoundResult, found: { bugs: readonly Finding[]; security: readonly SecurityFinding[] }) {
   if (!ctx.settings.riskTiers) return { risk: undefined, line: undefined }
-  const risk: RiskAssessment = await assessRound(pr, state, { prFiles: r.ranges.prFiles, guidance: r.ranges.guidance, ...found, skipped: false }, r.classifier)
+  const risk: RiskAssessment = await assessRound(pr, state, { prFiles: r.ranges.prFiles, guidance: r.ranges.guidance, ...found, skipped: false }, r.classifier, ctx.log.info)
   const n = requiredApprovals(risk.tier, r.ranges.guidance.review?.config.riskApprovals)
   const tier = `${TIER_ICON[risk.tier]} ${risk.tier[0]?.toUpperCase()}${risk.tier.slice(1)}`
   return { risk, line: `${tier}: ${plural(n, 'approval')} needed (${risk.reasons.join('; ')})` }
@@ -404,6 +430,7 @@ export async function reviewRound(ctx: Context, pr: PullRequest): Promise<RoundO
   const round = due.bug ? (state?.round ?? 0) + 1 : (state?.round ?? 1)
   if (due.bug && round > ctx.settings.maxRounds) return pauseRound(ctx, pr, state, round)
 
+  ctx.log.info(`PR #${pr.number} "${pr.title}" at ${short(pr.headSha)}: round ${round}, ${[due.bug && 'code review due', due.security && 'security review due'].filter(Boolean).join(', ')}`)
   const ranges = await loadRanges(ctx, pr, state, due)
   const reviewable = [ranges.bug, ranges.security].some((r) => r !== undefined && r.files.length > 0)
   if (!reviewable && !due.security) return skipped('No reviewable changes.')

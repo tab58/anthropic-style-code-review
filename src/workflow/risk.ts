@@ -30,7 +30,7 @@ export function stickyTier(state: ReviewState | undefined, next: RiskAssessment)
 export const tierFields = (r: RiskAssessment | undefined) => (r ? { tier: r.tier, tierReasons: r.reasons } : {})
 
 /** Rule floor for this round, raised by the classifier when one is given, then made sticky. */
-export async function assessRound(pr: PullRequest, state: ReviewState | undefined, round: RiskRound, classifier?: RiskClassifier): Promise<RiskAssessment> {
+export async function assessRound(pr: PullRequest, state: ReviewState | undefined, round: RiskRound, classifier?: RiskClassifier, log?: (line: string) => void): Promise<RiskAssessment> {
   const config = round.guidance?.review?.config
   const floor = assessRisk({
     files: round.prFiles,
@@ -43,5 +43,7 @@ export async function assessRound(pr: PullRequest, state: ReviewState | undefine
   const intent = `${pr.title}\n\n${pr.body}`.trim()
   const diff = round.prFiles.map((f) => f.text).join('')
   const assessed = classifier ? await classifyRisk(classifier, { diff, intent, floor }) : floor
-  return stickyTier(state, assessed)
+  const final = stickyTier(state, assessed)
+  log?.(`Risk: rules say ${floor.tier}${classifier ? `, after classifier ${assessed.tier}` : ''}${final.tier !== assessed.tier ? `, kept ${final.tier} from an earlier round` : ''} → ${final.tier} (${final.reasons.join('; ')})`)
+  return final
 }

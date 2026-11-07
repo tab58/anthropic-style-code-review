@@ -119,6 +119,8 @@ export type ReviewRequest = {
   readonly nitCap: number
   /** Shared concurrency pool for agent sessions (share one across passes to cap total load). */
   readonly limit: Limiter
+  /** Receives a line per finder result, the candidate funnel and each vote. Default: discard. */
+  readonly onProgress?: (message: string) => void
 }
 
 /** Counts at each stage of a review. */
@@ -194,13 +196,22 @@ export function resolveDepth({ input = {}, frontmatterDepth }: DepthSelection): 
 export const fingerprint = (f: Pick<Finding, 'file' | 'bugClass'>): string =>
   createHash('sha1').update(`${f.file}\0${normClass(f.bugClass)}`).digest('hex').slice(0, 12)
 
+/** `1 finding`, `2 findings`. */
+const count = (n: number, noun: string) => `${n} ${noun}${n === 1 ? '' : 's'}`
+
 /** Runs every finder (bounded); a failed finder is recorded, but all failing is fatal. */
 async function runFinders(reviewer: Reviewer, r: ReviewRequest, limit: Limiter) {
   const settled = await Promise.all(
     r.depth.finders.map((focus) =>
       limit(() => reviewer.find(focus, r.input)).then(
-        (findings) => ({ findings, error: undefined }),
-        (e: unknown) => ({ findings: [], error: `finder ${focus}: ${message(e)}` }),
+        (findings) => {
+          r.onProgress?.(`finder ${focus}: ${count(findings.length, 'finding')}`)
+          return { findings, error: undefined }
+        },
+        (e: unknown) => {
+          r.onProgress?.(`finder ${focus}: failed (${message(e)})`)
+          return { findings: [], error: `finder ${focus}: ${message(e)}` }
+        },
       ),
     ),
   )
@@ -229,7 +240,10 @@ async function voteOn(reviewer: Reviewer, f: Finding, r: ReviewRequest, limit: L
       ),
     ),
   )
-  return { finding: f, kept: tally(votes.map((v) => v.vote.real), r.depth.needed), errors: votes.flatMap((v) => (v.error ? [v.error] : [])) }
+  const kept = tally(votes.map((v) => v.vote.real), r.depth.needed)
+  const yes = votes.filter((v) => v.vote.real).length
+  r.onProgress?.(`vote ${f.file}:${f.line} "${f.title}": ${yes}/${r.depth.voters} real → ${kept ? 'confirmed' : 'dropped'}`)
+  return { finding: f, kept, errors: votes.flatMap((v) => (v.error ? [v.error] : [])) }
 }
 
 /**
@@ -244,6 +258,7 @@ export async function runReview(reviewer: Reviewer, request: ReviewRequest): Pro
   const { limit } = request
   const finders = await runFinders(reviewer, request, limit)
   const candidates = selectCandidates(finders.findings, request)
+  request.onProgress?.(`${finders.findings.length} raw → ${count(candidates.length, 'candidate')} for voting`)
   const votes = await Promise.all(candidates.map((f) => voteOn(reviewer, f, request, limit)))
   const confirmed = votes.filter((v) => v.kept).map((v) => v.finding)
   return {

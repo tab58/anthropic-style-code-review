@@ -120,6 +120,23 @@ describe('createWorkflow().review', () => {
     expect(outcome).toMatchObject({ status: 'reviewed', round: 1, resolved: 0, stats: { confirmed: 1 } })
   })
 
+  it('logs each stage: what is due, the range, the plan, finder progress, posting and the checks', async () => {
+    const gh = fakeGitHub()
+    const l = log()
+    await createWorkflow({ github: gh.github, createReviewer: async () => fakeReviewer([finding()]), log: l }, options).review()
+    const lines = l.info.mock.calls.map(([m]) => String(m))
+    expect(lines).toEqual(
+      expect.arrayContaining([
+        'PR #1 "Add x" at h2: round 1, code review due',
+        'Range: 1 file, +2/-0 lines, b0...h2 (whole PR)',
+        'Code review plan: quick, 2 finders (general, general), 1 of 1 votes needed',
+        'finder general: 1 finding',
+        'Posting review: 1 inline comment, 0 in the summary only',
+        'Checks: anthropic-style-code-review ❌ 1 open important finding',
+      ]),
+    )
+  })
+
   it('works with default options (standard depth from presets)', async () => {
     const gh = fakeGitHub()
     const reviewer = fakeReviewer([])

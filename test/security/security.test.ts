@@ -76,6 +76,17 @@ describe('runSecurityReview', () => {
     judgeExploit: vi.fn(judge),
   })
 
+  it('reports progress: each finder, the candidate funnel, and each exploitability vote', async () => {
+    const progress: string[] = []
+    await runSecurityReview(reviewer([f()]), { ...request, onProgress: (m) => progress.push(m) })
+    expect(progress).toEqual([
+      'security finder security-general: 1 finding',
+      'security finder security-general: 1 finding',
+      '2 raw → 1 candidate for voting',
+      'exploit vote src/db.ts:3 "SQL injection": 3/3 exploitable → confirmed (high)',
+    ])
+  })
+
   it('runs every planned finder and keeps findings a majority judges exploitable', async () => {
     const r = reviewer([f()])
     const out = await runSecurityReview(r, request)

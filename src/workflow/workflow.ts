@@ -262,6 +262,7 @@ export function createWorkflow(config: WorkflowConfig, options: WorkflowOptions 
       if (settings.riskTiers) await publishApprovals(ctx.github, pr, settings.checkName)
       const outcome: RoundOutcome = pr.draft ? { status: 'skipped', message: 'Draft PR: review skipped.' } : await reviewRound(ctx, pr)
       const gate = await publishGates(ctx.github, pr, gates)
+      ctx.log.info(describeGates(settings.checkName, gate))
       if (gate.approvals?.assessed) await labelRisk(ctx, gate.approvals.tier)
       return outcome
     },
@@ -270,6 +271,18 @@ export function createWorkflow(config: WorkflowConfig, options: WorkflowOptions 
       return publishGates(ctx.github, pr, gates)
     },
   }
+}
+
+/** `Checks: name ✅ … · name/security ❌ …` for the log. */
+function describeGates(name: string, g: GateResult): string {
+  const icon = (c: CheckConclusion) => (c === 'success' ? '✅' : '❌')
+  const n = (count: number, noun: string) => (count === 0 ? `no open ${noun}s` : `${count} open ${noun}${count === 1 ? '' : 's'}`)
+  const parts = [
+    `${name} ${icon(g.conclusion)} ${n(g.openImportant, 'important finding')}`,
+    ...(g.security ? [`${name}/security ${icon(g.security.conclusion)} ${g.security.reviewed ? n(g.security.openBlocking, 'high/medium finding') : 'latest commits not security-reviewed'}`] : []),
+    ...(g.approvals ? [`${name}/approvals ${icon(g.approvals.conclusion)} ${g.approvals.tier}: ${g.approvals.approved.length} of ${g.approvals.required} approvals`] : []),
+  ]
+  return `Checks: ${parts.join(' · ')}`
 }
 
 /** Labels the PR with its tier; a missing `issues: write` permission only warns. */

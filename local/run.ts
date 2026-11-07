@@ -51,6 +51,7 @@ async function main() {
       securityFinderModel: process.env.SECURITY_FINDER_MODEL,
       securityVerifierModel: process.env.SECURITY_VERIFIER_MODEL,
       cwd: repo,
+      log: (m) => console.error(m),
     })
   const log = { info: (m: string) => console.error(`· ${m}`), warning: (m: string) => console.error(`⚠ ${m}`) }
   const workflow = createWorkflow({ github, createReviewer, log }, { depth: values.depth, concurrency: Number(process.env.CONCURRENCY ?? 3), securityReview: !values['no-security'], riskTiers: values.risk })
