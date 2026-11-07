@@ -208,6 +208,20 @@ nit_cap: 1
 
 AGENTS.md (or CLAUDE.md, if there's no AGENTS.md) is loaded from the root and from every directory above a changed file. Each one applies to the files under its directory.
 
+## Running locally (no GitHub)
+
+Review any local branch with the real agents. Nothing is posted; the review is printed to the terminal:
+
+```sh
+git clone https://github.com/tab58/anthropic-style-code-review && cd anthropic-style-code-review && npm ci
+PROVIDER_API_KEY=... npm run local -- --repo ../my-project --base main
+```
+
+- Reviews `base...HEAD`, **committed changes only**. The agents read the working tree, so commit first for accurate line numbers.
+- Rounds, posted findings and threads persist in `<repo>/.git/anthropic-style-code-review/state.json`. Re-running after new commits behaves like a push (incremental review, auto-resolve, no repeats). Add `--reset` to start over.
+- Options: `--depth quick|standard|deep`, `--title "PR title"`. Env: `PROVIDER_BASE_URL`, `FINDER_MODEL`, `VERIFIER_MODEL`, `CONCURRENCY`.
+- **Fully offline:** run `ollama serve`, `ollama pull <a tool-calling coding model>`, then set `PROVIDER_BASE_URL=http://localhost:11434/v1`, `PROVIDER_API_KEY=ollama` and both model variables to that model.
+
 ## Development
 
 ```sh

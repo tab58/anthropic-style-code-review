@@ -5,7 +5,7 @@ import tseslint from 'typescript-eslint'
 const MODULES = ['review', 'workflow', 'pi-reviewer']
 
 export default tseslint.config({
-  files: ['src/**/*.ts', 'eval/**/*.ts'],
+  files: ['src/**/*.ts', 'eval/**/*.ts', 'local/**/*.ts'],
   languageOptions: { parser: tseslint.parser },
   rules: {
     'no-restricted-imports': [
