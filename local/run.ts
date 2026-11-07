@@ -8,6 +8,7 @@
  * so re-running after new commits behaves like a push: incremental review, auto-resolve, no repeats.
  * Use --reset to start over.
  */
+import { execFileSync } from 'node:child_process'
 import { rm } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
@@ -38,7 +39,9 @@ async function main() {
   if (!apiKey) throw new Error(`Set PROVIDER_API_KEY.\n\n${USAGE}`)
 
   const repo = resolve(values.repo)
-  const statePath = join(repo, '.git', 'anthropic-style-code-review', 'state.json')
+  // --git-dir, not <repo>/.git: in a worktree .git is a file.
+  const gitDir = resolve(repo, execFileSync('git', ['rev-parse', '--git-dir'], { cwd: repo, encoding: 'utf8' }).trim())
+  const statePath = join(gitDir, 'anthropic-style-code-review', 'state.json')
   if (values.reset) await rm(statePath, { force: true })
 
   const github = createLocalGitHub({ repo, base: values.base, title: values.title, statePath, print: (t) => console.log(t) })
