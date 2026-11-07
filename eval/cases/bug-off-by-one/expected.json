@@ -1,0 +1,1 @@
+{ "intent": "Add getPage helper for pagination", "bugs": [{ "file": "src/page.ts", "line": 8 }] }

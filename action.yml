@@ -1,0 +1,59 @@
+name: Anthropic-Style Code Review
+description: Parallel bug-finder agents, verifier voting, severity-ranked inline comments, and a merge gate. Runs on any OpenAI-compatible API (default Ollama Cloud) via the Pi agent harness.
+branding:
+  icon: eye
+  color: purple
+
+inputs:
+  provider_api_key:
+    description: API key for the OpenAI-compatible endpoint at base_url (sent as Bearer token). Required for review runs; not needed for thread-resolution (gate) runs.
+    required: false
+  github_token:
+    description: Token with contents:read, pull-requests:write, checks:write.
+    default: ${{ github.token }}
+  base_url:
+    description: OpenAI-compatible endpoint.
+    default: https://ollama.com/v1
+  finder_model:
+    description: Model for bug finders.
+    default: glm-5.3
+  verifier_model:
+    description: Model for verifier votes (a different model family gives more independent votes).
+    default: deepseek-v4.1-flash
+  depth:
+    description: quick | standard | deep. Overrides REVIEW.md frontmatter. Default standard.
+    required: false
+  voters:
+    description: Override the preset's number of verifier votes per finding.
+    required: false
+  votes_needed:
+    description: Override the preset's votes needed to post a finding.
+    required: false
+  max_concurrency:
+    description: Max agent sessions (and so concurrent LLM requests) at once.
+    default: "3"
+  max_rounds:
+    description: Review rounds before posting a "step back" note and stopping.
+    default: "3"
+  max_diff_lines:
+    description: Skip review when more lines than this changed.
+    default: "3000"
+  max_findings_to_verify:
+    description: Cap on deduped findings sent to voting (most severe first).
+    default: "15"
+  nit_cap:
+    description: Max nits per review. Overrides REVIEW.md nit_cap. Default 3.
+    required: false
+  pr_number:
+    description: PR to review (for workflow_dispatch).
+    required: false
+  bot_login:
+    description: Login that posts the reviews; used to find this action's own reviews and threads.
+    default: github-actions[bot]
+  check_name:
+    description: Name of the merge-gating check run.
+    default: anthropic-style-code-review
+
+runs:
+  using: node24
+  main: dist/index.js

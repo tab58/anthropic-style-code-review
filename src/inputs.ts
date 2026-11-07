@@ -1,0 +1,97 @@
+import type { WorkflowOptions } from './workflow/index.js'
+
+/** Where action inputs come from (e.g. `@actions/core`'s `getInput`). */
+export interface InputSource {
+  /** The input's value, or an empty string when unset. */
+  get(name: string): string
+}
+
+/** The triggering GitHub event. */
+export type EventInfo = {
+  /** Event name, e.g. `pull_request`, `pull_request_review_thread`, `workflow_dispatch`. */
+  readonly name: string
+  /** PR number from the event payload, when the event carries one. */
+  readonly prNumber?: number
+}
+
+/** Validated action inputs. */
+export type ActionInputs = {
+  /** `gate` for thread (un)resolution events (no LLM calls), `review` otherwise. */
+  readonly event: 'review' | 'gate'
+  /** PR to act on. */
+  readonly prNumber: number
+  /** True only for `workflow_dispatch`, where a maintainer chose to review a fork PR. */
+  readonly allowFork: boolean
+  /** Provider API key; empty string on gate runs. */
+  readonly apiKey: string
+  /** GitHub token. */
+  readonly githubToken: string
+  /** OpenAI-compatible base URL. */
+  readonly baseUrl: string
+  /** Finder model ID. */
+  readonly finderModel: string
+  /** Verifier model ID. */
+  readonly verifierModel: string
+  /** Login the reviews are posted as. */
+  readonly botLogin: string
+  /** Merge-gate check run name. */
+  readonly checkName: string
+  /** Workflow tuning; unset inputs are left undefined so workflow and REVIEW.md defaults apply. */
+  readonly workflow: WorkflowOptions
+}
+
+/** Parses an optional integer input; undefined when unset. */
+function intInput(source: InputSource, name: string, min: number): number | undefined {
+  const raw = source.get(name)
+  if (raw === '') return undefined
+  const n = Number(raw)
+  if (!Number.isInteger(n) || n < min) throw new Error(`Input ${name} must be an integer >= ${min}, got "${raw}"`)
+  return n
+}
+
+/** A required string input; throws like `@actions/core` when it is empty. */
+function required(source: InputSource, name: string): string {
+  const v = source.get(name)
+  if (v === '') throw new Error(`Input required and not supplied: ${name}`)
+  return v
+}
+
+/** Workflow tuning inputs, validated. */
+const workflowOptions = (source: InputSource): WorkflowOptions => ({
+  depth: source.get('depth') || undefined,
+  voters: intInput(source, 'voters', 1),
+  votesNeeded: intInput(source, 'votes_needed', 1),
+  maxRounds: intInput(source, 'max_rounds', 1),
+  maxDiffLines: intInput(source, 'max_diff_lines', 1),
+  maxFindings: intInput(source, 'max_findings_to_verify', 1),
+  concurrency: intInput(source, 'max_concurrency', 1),
+  nitCap: intInput(source, 'nit_cap', 0),
+})
+
+/**
+ * Reads and validates the action's inputs for an event.
+ *
+ * @param source - Input values (empty string = unset).
+ * @param event - The triggering event; its PR number wins over the `pr_number` input.
+ * @returns Validated inputs.
+ * @throws {@link Error} If there is no PR number, `github_token` is empty, `provider_api_key` is empty on a review
+ *   event, or a numeric input is not an integer in range.
+ */
+export function readInputs(source: InputSource, event: EventInfo): ActionInputs {
+  const prNumber = event.prNumber ?? intInput(source, 'pr_number', 1)
+  if (prNumber === undefined) throw new Error('No pull request: run on pull_request / pull_request_review_thread, or pass pr_number.')
+  const kind = event.name === 'pull_request_review_thread' ? 'gate' : 'review'
+  return {
+    event: kind,
+    prNumber,
+    allowFork: event.name === 'workflow_dispatch',
+    apiKey: kind === 'review' ? required(source, 'provider_api_key') : source.get('provider_api_key'),
+    githubToken: required(source, 'github_token'),
+    baseUrl: source.get('base_url'),
+    finderModel: source.get('finder_model'),
+    verifierModel: source.get('verifier_model'),
+    botLogin: source.get('bot_login'),
+    checkName: source.get('check_name'),
+    workflow: workflowOptions(source),
+  }
+}
