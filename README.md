@@ -23,7 +23,7 @@ Agents run on the [Pi](https://github.com/earendil-works/pi) SDK against any Ope
 
 ## Using it in your project
 
-Setup takes about five minutes. The examples assume this action is published at `YOUR_ORG/anthropic-style-code-review` with a `v1` tag (see [Releasing](#releasing)). Replace `YOUR_ORG` with the real owner.
+Setup takes about five minutes. The action is published at `tab58/anthropic-style-code-review`; pin `@v1` (see [Releasing](#releasing)). In the examples, `YOUR_ORG/your-project` stands for your own repository.
 
 ### 1. Make the action reachable
 
@@ -78,7 +78,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || format('refs/pull/{0}/head', inputs.pr_number) }}
           persist-credentials: false
-      - uses: YOUR_ORG/anthropic-style-code-review@v1
+      - uses: tab58/anthropic-style-code-review@v1
         with:
           provider_api_key: ${{ secrets.PROVIDER_API_KEY }}
           pr_number: ${{ inputs.pr_number }}
@@ -101,7 +101,7 @@ What each part does:
 The defaults use Ollama Cloud with `glm-5.3` for finders and `deepseek-v4.1-flash` for verifiers. Any OpenAI-compatible endpoint that supports tool calling works:
 
 ```yaml
-      - uses: YOUR_ORG/anthropic-style-code-review@v1
+      - uses: tab58/anthropic-style-code-review@v1
         with:
           provider_api_key: ${{ secrets.PROVIDER_API_KEY }}
           pr_number: ${{ inputs.pr_number }}
@@ -148,7 +148,7 @@ gh workflow run review.yml --repo YOUR_ORG/your-project -f pr_number=123
 ### Pinning a version
 
 - `@v1` follows compatible releases.
-- For supply-chain safety, pin a full commit SHA instead: `uses: YOUR_ORG/anthropic-style-code-review@<sha> # v1.0.0`.
+- For supply-chain safety, pin a full commit SHA instead: `uses: tab58/anthropic-style-code-review@<sha> # v1.0.0`.
 
 ### Troubleshooting
 
