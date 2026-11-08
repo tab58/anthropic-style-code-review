@@ -303,6 +303,26 @@ describe('createWorkflow().review', () => {
     expect(gh.reviews[0]?.body).toContain('<code>src/a.ts#L5</code>')
   })
 
+  it('leaves files merged in from the base branch out of an incremental range', async () => {
+    const incremental = diffFor('src/a.ts', ['z()']) + diffFor('.github/workflows/ci.yml', ['run: x'])
+    const gh = fakeGitHub({ bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [] })], diffs: { h1: incremental } })
+    const reviewer = fakeReviewer([])
+    const l = log()
+    await createWorkflow({ github: gh.github, createReviewer: async () => reviewer, log: l }, options).review()
+    const reviewed = vi.mocked(reviewer.find).mock.calls[0]?.[1].diff ?? ''
+    expect(reviewed).toContain('src/a.ts')
+    expect(reviewed).not.toContain('ci.yml')
+    expect(l.info).toHaveBeenCalledWith("Ignoring 1 file the PR doesn't change (merged in from the base branch)")
+  })
+
+  it('keeps every file of a full-PR (non-incremental) range', async () => {
+    const gh = fakeGitHub({ diffs: { b0: diffFor('src/a.ts', ['x()']) + diffFor('src/b.ts', ['y()']) } })
+    const reviewer = fakeReviewer([])
+    await createWorkflow({ github: gh.github, createReviewer: async () => reviewer, log: log() }, options).review()
+    const reviewed = vi.mocked(reviewer.find).mock.calls[0]?.[1].diff ?? ''
+    expect(reviewed).toContain('src/b.ts')
+  })
+
   it('retries without inline comments when GitHub rejects a line (422)', async () => {
     const gh = fakeGitHub({ reviewError: (n) => (n > 0 ? Object.assign(new Error('Line could not be resolved'), { status: 422 }) : undefined) })
     const l = log()
@@ -525,7 +545,7 @@ describe('security pass', () => {
   it('reviews security incrementally from securitySha, independently of the bug range', async () => {
     const gh = fakeGitHub({ bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [], securitySha: 's1' })] })
     await run(gh, fakeReviewer([]))
-    expect(gh.compared).toEqual(['h1...h2', 's1...h2', 'b0...h2'])
+    expect([...gh.compared].sort()).toEqual(['b0...h2', 'h1...h2', 's1...h2'])
   })
 
   it('reviews the full PR for security when the saved state predates securitySha', async () => {

@@ -98,10 +98,20 @@ async function loadRanges(ctx: Context, pr: PullRequest, state: ReviewState | un
     const incremental = sha !== undefined && (await ctx.github.isAncestor(sha, pr.headSha))
     if (sha !== undefined && !incremental) ctx.log.info(`Last reviewed ${short(sha)} is not an ancestor of HEAD (force push?); reviewing the full PR.`)
     const base = incremental ? sha : pr.baseSha
-    const files = await diff(base)
+    const files = incremental ? await prOnly(await diff(base)) : await diff(base)
     if (!logged.has(base)) ctx.log.info(`${pass}: ${describeRange(files)}, ${short(base)}...${short(pr.headSha)} (${incremental ? 'new commits since the last review' : 'whole PR'})`)
     logged.add(base)
     return files
+  }
+  // An incremental range also contains whatever a merge from the base branch brought in. Keep only files the PR
+  // itself changes (base...head diffs from the merge base, so merged-in base commits aren't in it).
+  // ponytail: per-file, so a file both the PR and the base changed still shows the base's hunks; a hunk-level
+  // subtraction would fix that.
+  const prOnly = async (files: readonly FileDiff[]) => {
+    const prPaths = new Set((await diff(pr.baseSha)).map((f) => f.path))
+    const kept = files.filter((f) => prPaths.has(f.path))
+    if (kept.length < files.length) ctx.log.info(`Ignoring ${plural(files.length - kept.length, 'file')} the PR doesn't change (merged in from the base branch)`)
+    return kept
   }
   const bugAll = due.bug ? await since('Range', state?.sha) : undefined
   const securityAll = due.security ? await since('Security range', state?.securitySha) : undefined

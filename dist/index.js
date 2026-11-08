@@ -346099,10 +346099,16 @@ async function loadRanges(ctx, pr, state3, due) {
     const incremental = sha !== void 0 && await ctx.github.isAncestor(sha, pr.headSha);
     if (sha !== void 0 && !incremental) ctx.log.info(`Last reviewed ${short(sha)} is not an ancestor of HEAD (force push?); reviewing the full PR.`);
     const base = incremental ? sha : pr.baseSha;
-    const files = await diff(base);
+    const files = incremental ? await prOnly(await diff(base)) : await diff(base);
     if (!logged.has(base)) ctx.log.info(`${pass}: ${describeRange(files)}, ${short(base)}...${short(pr.headSha)} (${incremental ? "new commits since the last review" : "whole PR"})`);
     logged.add(base);
     return files;
+  };
+  const prOnly = async (files) => {
+    const prPaths = new Set((await diff(pr.baseSha)).map((f4) => f4.path));
+    const kept = files.filter((f4) => prPaths.has(f4.path));
+    if (kept.length < files.length) ctx.log.info(`Ignoring ${plural(files.length - kept.length, "file")} the PR doesn't change (merged in from the base branch)`);
+    return kept;
   };
   const bugAll = due.bug ? await since2("Range", state3?.sha) : void 0;
   const securityAll = due.security ? await since2("Security range", state3?.securitySha) : void 0;
