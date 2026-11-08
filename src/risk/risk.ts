@@ -120,7 +120,8 @@ const sourceChanges = (files: readonly FileDiff[]) => files.filter((f) => !DOCS_
 
 /** Every rule that fired, as [tier, reason]. */
 function rules(s: RiskSignals): readonly (readonly [RiskTier, string])[] {
-  const paths = s.files.map((f) => f.path)
+  // Path rules ignore comment-only edits: a comment can't change behavior, even in auth code.
+  const paths = s.files.filter((f) => !commentOnly(f)).map((f) => f.path)
   const forced = matching(paths, s.highPaths)
   const medium = matching(paths, s.mediumPaths)
   const workflows = matching(paths, ['.github/workflows/**'])

@@ -344580,7 +344580,7 @@ var list = (paths) => paths.slice(0, 3).join(", ") + (paths.length > 3 ? ` and $
 var matching = (paths, globs = []) => paths.filter((p) => globs.some((g) => matchesGlobDot(p, g)));
 var sourceChanges = (files) => files.filter((f4) => !DOCS_AND_TESTS.some((g) => matchesGlob2(f4.path, g)) && !commentOnly(f4)).map((f4) => f4.path);
 function rules(s2) {
-  const paths = s2.files.map((f4) => f4.path);
+  const paths = s2.files.filter((f4) => !commentOnly(f4)).map((f4) => f4.path);
   const forced = matching(paths, s2.highPaths);
   const medium = matching(paths, s2.mediumPaths);
   const workflows = matching(paths, [".github/workflows/**"]);

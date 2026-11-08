@@ -86,6 +86,12 @@ describe('assessRisk', () => {
     expect(assessRisk(signals(diffOf('src/a.ts'), { defaultTier: 'low', mediumPaths: ['src/**'], highPaths: ['src/a.ts'] })).tier).toBe('high')
   })
 
+  it('ignores comment-only edits for path rules, but not test or code edits', () => {
+    const comment = `diff --git a/auth/a.go b/auth/a.go\n--- a/auth/a.go\n+++ b/auth/a.go\n@@ -1,1 +1,1 @@\n-// old\n+// new\n`
+    expect(assessRisk(signals(comment, { defaultTier: 'low', highPaths: ['auth/**'], mediumPaths: ['auth/**'] })).tier).toBe('low')
+    expect(assessRisk(signals(diffOf('auth/a_test.go'), { defaultTier: 'low', highPaths: ['auth/**'] })).tier).toBe('high')
+  })
+
   it('uses risk_large_pr_lines and leaves skip_paths out of the count', () => {
     expect(assessRisk(signals(diffOf('src/a.ts', 300), { defaultTier: 'low', largeLines: 1000 })).tier).toBe('low')
     expect(assessRisk(signals(diffOf('src/a.ts', 1001), { defaultTier: 'low', largeLines: 1000 }))).toEqual({ tier: 'medium', reasons: ['1001 changed lines (> 1000)'] })
