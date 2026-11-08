@@ -168,6 +168,29 @@ async function botReviewBodies(c: GitHubClientConfig): Promise<readonly string[]
   return (await listReviews(c, ReviewSchema)).filter((r) => r.user && sameLogin(r.user.login, c.botLogin)).map((r) => r.body ?? '')
 }
 
+/** Hidden first line of the bot's summary comment, so it can be found and updated in place. */
+const SUMMARY_MARKER = '<!-- anthropic-style-code-review:summary -->'
+const IssueCommentSchema = Type.Object({ id: Type.Integer(), body: Type.Optional(Type.String()), user: Type.Union([Type.Object({ login: Type.String() }), Type.Null()]) })
+
+/** The bot's latest summary comment (paginated over the PR's issue comments), if any. */
+async function findSummary(c: GitHubClientConfig): Promise<Static<typeof IssueCommentSchema> | undefined> {
+  let found: Static<typeof IssueCommentSchema> | undefined
+  for (let page = 1; ; page++) {
+    const { data } = await c.api.request('GET /repos/{owner}/{repo}/issues/{issue_number}/comments', { owner: c.owner, repo: c.repo, issue_number: c.prNumber, per_page: PAGE_SIZE, page })
+    const comments = expect(Type.Array(IssueCommentSchema), data, 'issues.listComments')
+    found = comments.findLast((m) => m.user !== null && sameLogin(m.user.login, c.botLogin) && (m.body ?? '').startsWith(SUMMARY_MARKER)) ?? found
+    if (comments.length < PAGE_SIZE) return found
+  }
+}
+
+/** Updates the bot's summary comment, or creates it on first use. */
+async function upsertSummary(c: GitHubClientConfig, body: string): Promise<void> {
+  const full = `${SUMMARY_MARKER}\n${body}`
+  const existing = await findSummary(c)
+  if (existing) await c.api.request('PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}', { owner: c.owner, repo: c.repo, comment_id: existing.id, body: full })
+  else await c.api.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', { owner: c.owner, repo: c.repo, issue_number: c.prNumber, body: full })
+}
+
 /** Every review on the PR, oldest first; reviews by deleted users are dropped. */
 async function pullReviews(c: GitHubClientConfig): Promise<readonly PullReview[]> {
   return (await listReviews(c, PullReviewSchema)).flatMap((r) => (r.user ? [{ login: r.user.login, isBot: r.user.type === 'Bot', state: r.state, commitId: r.commit_id ?? '' }] : []))
@@ -257,6 +280,8 @@ export function createGitHubClient(config: GitHubClientConfig): GitHub {
     isAncestor: (ancestor, head) => isAncestor(config, ancestor, head),
     readAtRef: (ref, path) => requestText(config, 'GET /repos/{owner}/{repo}/contents/{path}', { path, ref, mediaType: { format: 'raw' } }, true),
     botReviewBodies: () => botReviewBodies(config),
+    botSummary: async () => (await findSummary(config))?.body,
+    upsertSummary: (body) => upsertSummary(config, redact(body)),
     botThreads: () => botThreads(config),
     pullReviews: () => pullReviews(config),
     canApprove(login) {

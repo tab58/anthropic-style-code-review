@@ -4,6 +4,15 @@ import { RESOLVE_COMMAND } from './prior.js'
 import { countOpenImportant, countOpenSecurity, decodeState, type ReviewState } from './markers.js'
 import type { ApprovalsResult, BotThread, CheckConclusion, GateResult, GitHub, PullRequest } from './workflow.js'
 
+/**
+ * The PR's saved review state: the summary comment's, or for PRs reviewed before the summary comment existed, the
+ * latest review's.
+ */
+export async function loadState(github: GitHub): Promise<ReviewState | undefined> {
+  const summary = await github.botSummary()
+  return decodeState([...(await github.botReviewBodies()), ...(summary === undefined ? [] : [summary])])
+}
+
 /** Which checks to publish. */
 export type GateNames = {
   /** Bug gate check name; the others are `<name>/security` and `<name>/approvals`. */
@@ -61,7 +70,7 @@ async function untrustedReason(github: GitHub, pr: PullRequest, team: string | u
  * head it is at least `medium` until the round finishes, so a push after a `low` round never starts green.
  */
 export async function publishApprovals(github: GitHub, pr: PullRequest, name: string, known?: ReviewState): Promise<ApprovalsResult> {
-  const state = known ?? decodeState(await github.botReviewBodies())
+  const state = known ?? (await loadState(github))
   const assessed = state?.tier !== undefined && state.sha === pr.headSha
   const tier = assessed ? (state?.tier ?? 'medium') : maxTier(state?.tier, 'medium')
   const reasons = assessed ? (state?.tierReasons ?? []) : ['not assessed yet for this commit; assuming at least medium until the review finishes', ...(state?.tierReasons ?? [])]
@@ -121,7 +130,7 @@ export async function openThreads(github: GitHub, state: ReviewState | undefined
 
 /** Counts blocking threads, checks security coverage of HEAD, and publishes the enabled gates. */
 export async function publishGates(github: GitHub, pr: PullRequest, names: GateNames): Promise<GateResult> {
-  const state = decodeState(await github.botReviewBodies())
+  const state = await loadState(github)
   const threads = await openThreads(github, state, pr.author)
   const openImportant = countOpenImportant(threads)
   await github.setCheck({

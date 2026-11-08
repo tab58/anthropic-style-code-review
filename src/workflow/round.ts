@@ -24,11 +24,11 @@ import {
 } from '../security/index.js'
 import { requiredApprovals, type RiskAssessment, type RiskClassifier } from '../risk/index.js'
 import { findingComment, type Linker, permalinker, securityComment, skippedComment, stepBackComment, summary } from './comments.js'
-import { decodeState, type ReviewState } from './markers.js'
-import { openThreads } from './gates.js'
+import type { ReviewState } from './markers.js'
+import { loadState, openThreads } from './gates.js'
 import { renderPrior } from './prior.js'
 import { assessRound, tierFields } from './risk.js'
-import type { BotThread, PullRequest, RoundOutcome, WorkflowConfig, WorkflowOptions } from './workflow.js'
+import type { BotThread, PullRequest, ReviewComment, RoundOutcome, WorkflowConfig, WorkflowOptions } from './workflow.js'
 
 /** Options with fixed defaults applied. */
 export type Settings = WorkflowOptions & {
@@ -81,7 +81,7 @@ async function pauseRound(ctx: Context, pr: PullRequest, state: ReviewState | un
   const { maxRounds } = ctx.settings
   if (state?.round === maxRounds) {
     const risk = await skippedRisk(ctx, pr, state)
-    await ctx.github.createReview({ headSha: pr.headSha, body: stepBackComment(maxRounds, { ...state, round, sha: pr.headSha, ...tierFields(risk) }), comments: [] })
+    await ctx.github.upsertSummary(stepBackComment(maxRounds, { ...state, round, sha: pr.headSha, ...tierFields(risk) }))
   }
   return { status: 'paused', round, message: `Round cap (${maxRounds}) reached; not reviewing.` }
 }
@@ -290,22 +290,37 @@ function layout(found: Posting, prFiles: readonly FileDiff[], link: Linker) {
   }
 }
 
-/** Posts the review. If GitHub rejects a line (422), reposts with every finding in the summary, then retries each blocking security comment alone. */
+/** Body of a review that carries only this round's inline comments; the details live in the summary comment. */
+const pointer = (n: number) => `**${plural(n, 'new finding')}** on this push. The full review is in the summary comment on this PR.`
+
+/**
+ * Posts this round: a review only when there are inline comments, then the summary comment (updated in place) with
+ * the state. If GitHub rejects a line (422), every finding goes in the summary instead, and each blocking security
+ * comment is retried alone so the gate can still see it.
+ */
 async function postReview(ctx: Context, pr: PullRequest, found: Posting, prFiles: readonly FileDiff[], body: (outside: Posting) => string) {
   const { bugComments, securityComments, outside } = layout(found, prFiles, permalinker(pr))
   const comments = [...bugComments, ...securityComments.map((c) => c.comment)]
   ctx.log.info(`Posting review: ${plural(comments.length, 'inline comment')}, ${outside.bugs.length + outside.security.length} in the summary only`)
+  const summaryBody = await postInline(ctx, pr, comments, securityComments).then((ok) => body(ok ? outside : found))
+  await ctx.github.upsertSummary(summaryBody)
+}
+
+/** Posts the inline comments as one review (none when there are none); false when GitHub rejected a line (422). */
+async function postInline(ctx: Context, pr: PullRequest, comments: readonly ReviewComment[], securityComments: readonly { readonly finding: SecurityFinding; readonly comment: ReviewComment }[]): Promise<boolean> {
+  if (comments.length === 0) return true
   try {
-    await ctx.github.createReview({ headSha: pr.headSha, body: body(outside), comments })
+    await ctx.github.createReview({ headSha: pr.headSha, body: pointer(comments.length), comments })
+    return true
   } catch (e) {
-    if (statusOf(e) !== 422 || comments.length === 0) throw e
+    if (statusOf(e) !== 422) throw e
     ctx.log.warning(`GitHub rejected inline comments (${errMsg(e)}); posting all findings in the summary.`)
-    await ctx.github.createReview({ headSha: pr.headSha, body: body(found), comments: [] })
     for (const { finding, comment } of securityComments.filter((c) => blocking(c.finding))) {
       await ctx.github
         .createReview({ headSha: pr.headSha, body: '', comments: [comment] })
         .catch((err: unknown) => ctx.log.warning(`Could not post blocking security finding ${finding.file}:${finding.line} inline: ${errMsg(err)}`))
     }
+    return false
   }
 }
 
@@ -432,7 +447,7 @@ async function skipOversized(ctx: Context, pr: PullRequest, state: ReviewState |
     ...tierFields(await skippedRisk(ctx, pr, state)),
     ...fixedFields(state, []),
   }
-  await ctx.github.createReview({ headSha: pr.headSha, body: skippedComment(reason, advanced), comments: [] })
+  await ctx.github.upsertSummary(skippedComment(reason, advanced))
   return skipped(`Review skipped: ${reason}`)
 }
 
@@ -441,7 +456,7 @@ async function skipOversized(ctx: Context, pr: PullRequest, state: ReviewState |
  * enforce the round cap and size limit, then review and post.
  */
 export async function reviewRound(ctx: Context, pr: PullRequest): Promise<RoundOutcome> {
-  const state = decodeState(await ctx.github.botReviewBodies())
+  const state = await loadState(ctx.github)
   const due = { bug: state?.sha !== pr.headSha, security: ctx.settings.securityReview && state?.securitySha !== pr.headSha }
   if (!due.bug && !due.security) return { status: 'up-to-date', message: 'HEAD already reviewed.' }
 

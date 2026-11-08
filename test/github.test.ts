@@ -301,6 +301,32 @@ describe('inTeam', () => {
   })
 })
 
+describe('summary comment', () => {
+  const MARK = '<!-- anthropic-style-code-review:summary -->'
+  const comment = (id: number, login: string | null, body: string) => ({ id, body, user: login === null ? null : { login } })
+
+  it('creates the comment, marked, with secrets redacted, when there is none', async () => {
+    const { gh, calls } = client((route) => (route.startsWith('GET') ? [comment(1, 'human', `${MARK}\nfake`)] : {}), { secrets: ['sk-secret-123'] })
+    await gh.upsertSummary('round 1 sk-secret-123')
+    expect(calls.at(-1)).toMatchObject({ route: 'POST /repos/{owner}/{repo}/issues/{issue_number}/comments', params: { issue_number: 7, body: `${MARK}\nround 1 ***` } })
+  })
+
+  it("updates the bot's latest marked comment in place, ignoring unmarked bot comments", async () => {
+    const page = [comment(1, 'github-actions[bot]', `${MARK}\nold`), comment(2, 'github-actions[bot]', 'unrelated'), comment(3, 'github-actions[bot]', `${MARK}\nnewer`)]
+    const { gh, calls } = client((route) => (route.startsWith('GET') ? page : {}))
+    expect(await gh.botSummary()).toBe(`${MARK}\nnewer`)
+    await gh.upsertSummary('round 2')
+    expect(calls.at(-1)).toMatchObject({ route: 'PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}', params: { comment_id: 3, body: `${MARK}\nround 2` } })
+  })
+
+  it('pages through the comments, and is undefined when the bot has none', async () => {
+    const full = Array.from({ length: 100 }, (_, i) => comment(i, 'human', 'x'))
+    const { gh, calls } = client((_route, params) => (params?.page === 1 ? full : [comment(200, null, `${MARK}\nghost`)]))
+    expect(await gh.botSummary()).toBeUndefined()
+    expect(calls).toHaveLength(2)
+  })
+})
+
 describe('setRiskLabel', () => {
   it('adds the tier label and removes the others, ignoring missing labels', async () => {
     const { gh, calls } = client((route) => {

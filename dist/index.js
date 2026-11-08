@@ -31583,27 +31583,27 @@ function GetIndex(index3, value2) {
 function GetIndices(indices, value2) {
   return indices.reduce((value3, index3) => GetIndex(index3, value3), value2);
 }
-function Indices(pointer2) {
-  if (guard_exports.IsEqual(pointer2.length, 0))
+function Indices(pointer3) {
+  if (guard_exports.IsEqual(pointer3.length, 0))
     return [];
-  const indices = pointer2.split("/").map((index3) => index3.replace(/~1/g, "/").replace(/~0/g, "~"));
+  const indices = pointer3.split("/").map((index3) => index3.replace(/~1/g, "/").replace(/~0/g, "~"));
   return indices.length > 0 && indices[0] === "" ? indices.slice(1) : indices;
 }
-function Has2(value2, pointer2) {
+function Has2(value2, pointer3) {
   let current = value2;
-  return Indices(pointer2).every((index3) => {
+  return Indices(pointer3).every((index3) => {
     if (!HasIndex(index3, current))
       return false;
     current = current[index3];
     return true;
   });
 }
-function Get4(value2, pointer2) {
-  const indices = Indices(pointer2);
+function Get4(value2, pointer3) {
+  const indices = Indices(pointer3);
   return GetIndices(indices, value2);
 }
-function Set4(value2, pointer2, next) {
-  const indices = Indices(pointer2);
+function Set4(value2, pointer3, next) {
+  const indices = Indices(pointer3);
   AssertNotRoot(indices);
   AssertIndices(indices);
   const [head, index3] = TakeIndexRight(indices);
@@ -31612,8 +31612,8 @@ function Set4(value2, pointer2, next) {
   parent[index3] = next;
   return value2;
 }
-function Delete(value2, pointer2) {
-  const indices = Indices(pointer2);
+function Delete(value2, pointer3) {
+  const indices = Indices(pointer3);
   AssertNotRoot(indices);
   AssertIndices(indices);
   const [head, index3] = TakeIndexRight(indices);
@@ -77748,10 +77748,10 @@ function getValidator(schema) {
   validatorCache.set(schema, validator);
   return validator;
 }
-function formatValidationPath(pointer2) {
-  if (pointer2 === "")
+function formatValidationPath(pointer3) {
+  if (pointer3 === "")
     return "root";
-  return pointer2.slice(1).split("/").map((segment2) => segment2.replace(/~1/g, "/").replace(/~0/g, "~")).join(".");
+  return pointer3.slice(1).split("/").map((segment2) => segment2.replace(/~1/g, "/").replace(/~0/g, "~")).join(".");
 }
 function validateToolCall(tools, toolCall) {
   const tool = tools.find((t2) => t2.name === toolCall.name);
@@ -188280,9 +188280,9 @@ var init_tui_alt_screen = __esm({
       }
       autoScrollSelection() {
         const scrollView = this.selectionAnchor?.scrollView;
-        const pointer2 = this.selectionDragPointer;
+        const pointer3 = this.selectionDragPointer;
         const direction = this.selectionAutoScrollDirection;
-        if (!scrollView || !pointer2 || direction === 0) {
+        if (!scrollView || !pointer3 || direction === 0) {
           this.stopSelectionAutoScroll();
           return;
         }
@@ -188291,7 +188291,7 @@ var init_tui_alt_screen = __esm({
           this.stopSelectionAutoScroll();
           return;
         }
-        const point = this.getScrollSelectionPoint(scrollView, pointer2.x, pointer2.y);
+        const point = this.getScrollSelectionPoint(scrollView, pointer3.x, pointer3.y);
         if (point)
           this.updateSelectionFocus(point);
         this.requestRender();
@@ -229598,11 +229598,11 @@ var require_errors3 = __commonJS({
         if (end?.line === line && end.col > col) {
           count3 = Math.max(1, Math.min(end.col - col, 80 - ci));
         }
-        const pointer2 = " ".repeat(ci) + "^".repeat(count3);
+        const pointer3 = " ".repeat(ci) + "^".repeat(count3);
         error2.message += `:
 
 ${lineStr}
-${pointer2}
+${pointer3}
 `;
       }
     };
@@ -302104,21 +302104,21 @@ function createMcpToolName(server, tool, isTaken = () => false) {
 function textOf3(content) {
   return content.filter((block) => block.type === "text").map((block) => block.text).join("\n");
 }
-function relocateSchema(schema, pointer2) {
+function relocateSchema(schema, pointer3) {
   if (Array.isArray(schema))
-    return schema.map((item) => relocateSchema(item, pointer2));
+    return schema.map((item) => relocateSchema(item, pointer3));
   if (typeof schema !== "object" || schema === null)
     return schema;
   const relocated = {};
   for (const [key, value2] of Object.entries(schema)) {
     if (key === "$ref" && typeof value2 === "string" && (value2 === "#" || value2.startsWith("#/"))) {
-      relocated[key] = `${pointer2}${value2.slice(1)}`;
+      relocated[key] = `${pointer3}${value2.slice(1)}`;
     } else if (SCHEMA_DATA_KEYWORDS.has(key)) {
       relocated[key] = value2;
     } else if (SCHEMA_MAP_KEYWORDS.has(key) && typeof value2 === "object" && value2 !== null && !Array.isArray(value2)) {
-      relocated[key] = Object.fromEntries(Object.entries(value2).map(([name, subschema]) => [name, relocateSchema(subschema, pointer2)]));
+      relocated[key] = Object.fromEntries(Object.entries(value2).map(([name, subschema]) => [name, relocateSchema(subschema, pointer3)]));
     } else {
-      relocated[key] = relocateSchema(value2, pointer2);
+      relocated[key] = relocateSchema(value2, pointer3);
     }
   }
   return relocated;
@@ -336259,11 +336259,11 @@ var require_errors4 = __commonJS({
         if (end?.line === line && end.col > col) {
           count3 = Math.max(1, Math.min(end.col - col, 80 - ci));
         }
-        const pointer2 = " ".repeat(ci) + "^".repeat(count3);
+        const pointer3 = " ".repeat(ci) + "^".repeat(count3);
         error2.message += `:
 
 ${lineStr}
-${pointer2}
+${pointer3}
 `;
       }
     };
@@ -344742,6 +344742,24 @@ async function listReviews(c2, item) {
 async function botReviewBodies(c2) {
   return (await listReviews(c2, ReviewSchema)).filter((r2) => r2.user && sameLogin(r2.user.login, c2.botLogin)).map((r2) => r2.body ?? "");
 }
+var SUMMARY_MARKER = "<!-- anthropic-style-code-review:summary -->";
+var IssueCommentSchema = typebox_exports.Object({ id: typebox_exports.Integer(), body: typebox_exports.Optional(typebox_exports.String()), user: typebox_exports.Union([typebox_exports.Object({ login: typebox_exports.String() }), typebox_exports.Null()]) });
+async function findSummary(c2) {
+  let found;
+  for (let page = 1; ; page++) {
+    const { data } = await c2.api.request("GET /repos/{owner}/{repo}/issues/{issue_number}/comments", { owner: c2.owner, repo: c2.repo, issue_number: c2.prNumber, per_page: PAGE_SIZE, page });
+    const comments = expect(typebox_exports.Array(IssueCommentSchema), data, "issues.listComments");
+    found = comments.findLast((m3) => m3.user !== null && sameLogin(m3.user.login, c2.botLogin) && (m3.body ?? "").startsWith(SUMMARY_MARKER)) ?? found;
+    if (comments.length < PAGE_SIZE) return found;
+  }
+}
+async function upsertSummary(c2, body) {
+  const full = `${SUMMARY_MARKER}
+${body}`;
+  const existing = await findSummary(c2);
+  if (existing) await c2.api.request("PATCH /repos/{owner}/{repo}/issues/comments/{comment_id}", { owner: c2.owner, repo: c2.repo, comment_id: existing.id, body: full });
+  else await c2.api.request("POST /repos/{owner}/{repo}/issues/{issue_number}/comments", { owner: c2.owner, repo: c2.repo, issue_number: c2.prNumber, body: full });
+}
 async function pullReviews(c2) {
   return (await listReviews(c2, PullReviewSchema)).flatMap((r2) => r2.user ? [{ login: r2.user.login, isBot: r2.user.type === "Bot", state: r2.state, commitId: r2.commit_id ?? "" }] : []);
 }
@@ -344811,6 +344829,8 @@ function createGitHubClient(config) {
     isAncestor: (ancestor, head) => isAncestor(config, ancestor, head),
     readAtRef: (ref, path19) => requestText(config, "GET /repos/{owner}/{repo}/contents/{path}", { path: path19, ref, mediaType: { format: "raw" } }, true),
     botReviewBodies: () => botReviewBodies(config),
+    botSummary: async () => (await findSummary(config))?.body,
+    upsertSummary: (body) => upsertSummary(config, redact(body)),
     botThreads: () => botThreads(config),
     pullReviews: () => pullReviews(config),
     canApprove(login2) {
@@ -345588,6 +345608,10 @@ var countOpenSecurity = (threads) => threads.filter((t2) => {
 }).length;
 
 // src/workflow/gates.ts
+async function loadState(github) {
+  const summary3 = await github.botSummary();
+  return decodeState([...await github.botReviewBodies(), ...summary3 === void 0 ? [] : [summary3]]);
+}
 var title = (open5, noun) => open5 === 0 ? `No open ${noun}s` : `${open5} open ${noun}${open5 === 1 ? "" : "s"}`;
 var verdict = (blocked) => blocked ? "failure" : "success";
 var SECURITY_SUMMARY = [
@@ -345614,7 +345638,7 @@ async function untrustedReason(github, pr, team) {
   }
 }
 async function publishApprovals(github, pr, name, known) {
-  const state3 = known ?? decodeState(await github.botReviewBodies());
+  const state3 = known ?? await loadState(github);
   const assessed = state3?.tier !== void 0 && state3.sha === pr.headSha;
   const tier = assessed ? state3?.tier ?? "medium" : maxTier(state3?.tier, "medium");
   const reasons = assessed ? state3?.tierReasons ?? [] : ["not assessed yet for this commit; assuming at least medium until the review finishes", ...state3?.tierReasons ?? []];
@@ -345661,7 +345685,7 @@ async function openThreads(github, state3, author) {
   return candidates.filter((_2, i2) => !dismissed[i2]);
 }
 async function publishGates(github, pr, names2) {
-  const state3 = decodeState(await github.botReviewBodies());
+  const state3 = await loadState(github);
   const threads = await openThreads(github, state3, pr.author);
   const openImportant = countOpenImportant(threads);
   await github.setCheck({
@@ -346119,7 +346143,7 @@ async function pauseRound(ctx, pr, state3, round) {
   const { maxRounds } = ctx.settings;
   if (state3?.round === maxRounds) {
     const risk = await skippedRisk(ctx, pr, state3);
-    await ctx.github.createReview({ headSha: pr.headSha, body: stepBackComment(maxRounds, { ...state3, round, sha: pr.headSha, ...tierFields(risk) }), comments: [] });
+    await ctx.github.upsertSummary(stepBackComment(maxRounds, { ...state3, round, sha: pr.headSha, ...tierFields(risk) }));
   }
   return { status: "paused", round, message: `Round cap (${maxRounds}) reached; not reviewing.` };
 }
@@ -346280,19 +346304,26 @@ function layout(found, prFiles, link) {
     outside: { bugs: found.bugs.filter((f4) => !at3.exact(f4)), security: found.security.filter((f4) => securityLine(f4) === void 0) }
   };
 }
+var pointer2 = (n) => `**${plural(n, "new finding")}** on this push. The full review is in the summary comment on this PR.`;
 async function postReview(ctx, pr, found, prFiles, body) {
   const { bugComments, securityComments, outside } = layout(found, prFiles, permalinker(pr));
   const comments = [...bugComments, ...securityComments.map((c2) => c2.comment)];
   ctx.log.info(`Posting review: ${plural(comments.length, "inline comment")}, ${outside.bugs.length + outside.security.length} in the summary only`);
+  const summaryBody = await postInline(ctx, pr, comments, securityComments).then((ok) => body(ok ? outside : found));
+  await ctx.github.upsertSummary(summaryBody);
+}
+async function postInline(ctx, pr, comments, securityComments) {
+  if (comments.length === 0) return true;
   try {
-    await ctx.github.createReview({ headSha: pr.headSha, body: body(outside), comments });
+    await ctx.github.createReview({ headSha: pr.headSha, body: pointer2(comments.length), comments });
+    return true;
   } catch (e2) {
-    if (statusOf3(e2) !== 422 || comments.length === 0) throw e2;
+    if (statusOf3(e2) !== 422) throw e2;
     ctx.log.warning(`GitHub rejected inline comments (${errMsg(e2)}); posting all findings in the summary.`);
-    await ctx.github.createReview({ headSha: pr.headSha, body: body(found), comments: [] });
     for (const { finding, comment } of securityComments.filter((c2) => blocking(c2.finding))) {
       await ctx.github.createReview({ headSha: pr.headSha, body: "", comments: [comment] }).catch((err) => ctx.log.warning(`Could not post blocking security finding ${finding.file}:${finding.line} inline: ${errMsg(err)}`));
     }
+    return false;
   }
 }
 async function reviewRanges(ctx, pr, state3, round, ranges) {
@@ -346391,11 +346422,11 @@ async function skipOversized(ctx, pr, state3, round, changed) {
     ...tierFields(await skippedRisk(ctx, pr, state3)),
     ...fixedFields(state3, [])
   };
-  await ctx.github.createReview({ headSha: pr.headSha, body: skippedComment(reason, advanced), comments: [] });
+  await ctx.github.upsertSummary(skippedComment(reason, advanced));
   return skipped(`Review skipped: ${reason}`);
 }
 async function reviewRound(ctx, pr) {
-  const state3 = decodeState(await ctx.github.botReviewBodies());
+  const state3 = await loadState(ctx.github);
   const due = { bug: state3?.sha !== pr.headSha, security: ctx.settings.securityReview && state3?.securitySha !== pr.headSha };
   if (!due.bug && !due.security) return { status: "up-to-date", message: "HEAD already reviewed." };
   const round = due.bug ? (state3?.round ?? 0) + 1 : state3?.round ?? 1;

@@ -85,6 +85,10 @@ export interface GitHub {
   botReviewBodies(): Promise<readonly string[]>
   /** Review threads started by this bot. */
   botThreads(): Promise<readonly BotThread[]>
+  /** Body of this bot's summary comment (the one {@link GitHub.upsertSummary} keeps up to date), if it exists. */
+  botSummary(): Promise<string | undefined>
+  /** Creates this bot's summary comment on the PR, or replaces the body of the existing one. */
+  upsertSummary(body: string): Promise<void>
   /** Posts one COMMENT review. Rejects with `status: 422` when an inline line is not in the PR diff. */
   createReview(review: { readonly headSha: string; readonly body: string; readonly comments: readonly ReviewComment[] }): Promise<void>
   /** Resolves a review thread. */

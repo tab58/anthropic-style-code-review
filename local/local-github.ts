@@ -31,11 +31,12 @@ export type LocalGitHubConfig = {
 
 const StateSchema = Type.Object({
   reviews: Type.Array(Type.String()),
+  summary: Type.Optional(Type.String()),
   threads: Type.Array(
     Type.Object({ id: Type.String(), isResolved: Type.Boolean(), path: Type.String(), line: Type.Union([Type.Integer(), Type.Null()]), body: Type.String() }),
   ),
 })
-type State = { readonly reviews: readonly string[]; readonly threads: readonly BotThread[] }
+type State = { readonly reviews: readonly string[]; readonly summary?: string; readonly threads: readonly BotThread[] }
 
 /** Runs git in the repo and returns trimmed stdout. */
 const git = async (repo: string, ...args: string[]) => (await run('git', args, { cwd: repo, maxBuffer: 64 * 1024 * 1024 })).stdout
@@ -90,9 +91,15 @@ export function createLocalGitHub(c: LocalGitHubConfig): GitHub {
     readAtRef: (ref, path) => git(c.repo, 'show', `${ref}:${path}`).catch(() => undefined),
     botReviewBodies: async () => (await loadState(c.statePath)).reviews,
     botThreads: async () => (await loadState(c.statePath)).threads,
+    botSummary: async () => (await loadState(c.statePath)).summary,
+    async upsertSummary(body) {
+      c.print(`\n━━━ Summary ━━━\n${visible(body)}`)
+      await update((s) => ({ ...s, summary: body }))
+    },
     async createReview({ body, comments }) {
       printReview(c.print, body, comments)
       await update((s) => ({
+        ...s,
         reviews: [...s.reviews, body],
         threads: [
           ...s.threads,

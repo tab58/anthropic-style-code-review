@@ -7,7 +7,7 @@ A GitHub Action that reviews PRs the way described in
 2. Every finding needs a file, a line and quoted evidence. Style, cleanup and diagnostic findings are dropped.
 3. Findings are deduped. The same bug class is reported once, with every location it appears.
 4. Several **verifier agents vote** on each finding. Only findings that win the vote get posted.
-5. Survivors are posted as one PR review (always `COMMENT`, never an approval). Each inline comment is tagged **Important**, **Nit** or **Pre-existing**, and the summary starts with a count.
+5. Survivors are posted as inline comments in one PR review (always `COMMENT`, never an approval), each tagged **Important**, **Nit** or **Pre-existing**. The summary (count, per-pass table, risk tier, findings outside the diff) is **one PR comment updated in place** every round, so the timeline doesn't fill up with summaries; a round with nothing new inline posts no review at all.
 6. A check run (`anthropic-style-code-review`) fails while any **Important** thread is unresolved.
 7. A separate **security review** runs on every PR (see [Security review](#security-review)), with its own gate check `anthropic-style-code-review/security`.
 
