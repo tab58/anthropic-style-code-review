@@ -32,6 +32,8 @@ async function main(): Promise<void> {
       verifierModel: inputs.verifierModel,
       securityFinderModel: inputs.securityFinderModel,
       securityVerifierModel: inputs.securityVerifierModel,
+      finderReasoning: inputs.finderReasoning,
+      verifierReasoning: inputs.verifierReasoning,
       cwd: workspace,
       log: info,
     })

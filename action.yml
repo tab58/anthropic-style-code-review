@@ -20,6 +20,12 @@ inputs:
   verifier_model:
     description: Model for verifier votes and the risk classifier (a different model family gives more independent votes).
     default: deepseek-v4.1-flash
+  finder_reasoning:
+    description: "none | low | medium | high. Reasoning effort per model call for finder agents. Reasoning is billed as output on every turn, so it is most of a review's output tokens; raise it if reviews miss bugs."
+    default: none
+  verifier_reasoning:
+    description: "none | low | medium | high. Reasoning effort for verifier, recheck, exploit and risk agents."
+    default: none
   security_review:
     description: "on | off. Runs the security pass and publishes its gate check (<check_name>/security)."
     default: "on"

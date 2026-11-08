@@ -1,3 +1,4 @@
+import { parseDiff } from '../diff.js'
 import type { FinderFocus, Finding, PostedIssue, ReviewInput } from '../review/index.js'
 import type { RiskInput } from '../risk/index.js'
 import type { SecurityFinding, SecurityFocus } from '../security/index.js'
@@ -61,6 +62,26 @@ const context = (input: ReviewInput) =>
     .filter(Boolean)
     .join('\n\n')
 
+/**
+ * The diff of just `files` plus the names of the other changed files, so an agent judging one finding doesn't pay
+ * for the whole PR diff on every turn. Falls back to the whole diff when none of `files` is in it.
+ */
+function narrowedDiff(diff: string, files: readonly string[]): string {
+  const all = parseDiff(diff)
+  const wanted = new Set(files)
+  const mine = all.filter((f) => wanted.has(f.path))
+  if (mine.length === 0) return diff
+  const others = all.filter((f) => !wanted.has(f.path)).map((f) => f.path)
+  const note = others.length > 0 ? `\n(Also changed in this PR; read them if they matter: ${others.join(', ')})` : ''
+  return mine.map((f) => f.text).join('') + note
+}
+
+/** {@link context} with the diff narrowed to the files a single finding is about. */
+const focusedContext = (input: ReviewInput, files: readonly string[]) => context({ ...input, diff: narrowedDiff(input.diff, files) })
+
+/** The finding's file and its other locations. */
+const filesOf = (f: { readonly file: string; readonly also?: readonly { readonly file: string }[] }) => [f.file, ...(f.also ?? []).map((l) => l.file)]
+
 /** User prompt for a finder with the given focus. */
 export const finderPrompt = (focus: FinderFocus, input: ReviewInput) =>
   `Focus on: ${FOCUS[focus]}\n\n${context(input)}`
@@ -73,11 +94,11 @@ Explanation: ${f.explanation}
 Quoted evidence:
 ${f.evidence}
 
-${context(input)}`
+${focusedContext(input, filesOf(f))}`
 
 /** User prompt asking whether a posted issue survives the new commits. */
 export const recheckPrompt = (issue: PostedIssue, input: ReviewInput) =>
-  `Earlier comment at ${issue.file}:${issue.line}:\n${issue.text}\n\nNew changes since that comment:\n<diff>\n${input.diff}\n</diff>`
+  `Earlier comment at ${issue.file}:${issue.line}:\n${issue.text}\n\nNew changes since that comment:\n<diff>\n${narrowedDiff(input.diff, [issue.file])}\n</diff>`
 
 /** What each security finder focus concentrates on. */
 export const SECURITY_FOCUS: Record<SecurityFocus, string> = {
@@ -142,7 +163,7 @@ Impact: ${f.impact}
 Quoted evidence:
 ${f.evidence}
 
-${context(input)}`
+${focusedContext(input, filesOf(f))}`
 
 /** System prompt for the risk classifier. */
 export const RISK_SYSTEM = `You are a staff engineer deciding how much human review a pull request needs before merge.

@@ -28,6 +28,32 @@ describe('verifierPrompt', () => {
   })
 })
 
+describe('single-finding prompts narrow the diff to the finding\'s files', () => {
+  const file = (path: string) => `diff --git a/${path} b/${path}\n--- a/${path}\n+++ b/${path}\n@@ -1 +1 @@\n-old ${path}\n+new ${path}\n`
+  const multi = { ...input, diff: file('a.ts') + file('b.ts') + file('c.ts') }
+  const f: Finding = { file: 'a.ts', line: 1, endLine: 1, title: 'T', explanation: 'E', evidence: 'EV', severity: 'important', category: 'bug', bugClass: 'c', also: [{ file: 'b.ts', line: 1, endLine: 1 }] }
+
+  it('verifier: the finding\'s files only, naming the other changed files', () => {
+    const p = verifierPrompt(f, multi)
+    expect(p).toContain('+new a.ts')
+    expect(p).toContain('+new b.ts')
+    expect(p).not.toContain('+new c.ts')
+    expect(p).toContain('Also changed in this PR; read them if they matter: c.ts')
+  })
+
+  it('recheck and exploit: the same narrowing', () => {
+    expect(recheckPrompt({ file: 'c.ts', line: 1, text: 'OLD' }, multi)).not.toContain('+new a.ts')
+    const v: SecurityFinding = { file: 'b.ts', line: 1, endLine: 1, title: 'T', vulnClass: 'x', source: 'S', sink: 'K', exploitScenario: 'X', impact: 'I', evidence: 'EV', severity: 'high', introduced: true }
+    const p = exploitPrompt(v, multi)
+    expect(p).toContain('+new b.ts')
+    expect(p).not.toContain('+new a.ts')
+  })
+
+  it('falls back to the whole diff when the finding\'s file is not in it', () => {
+    expect(verifierPrompt({ ...f, file: 'z.ts', also: [] }, multi)).toContain('+new c.ts')
+  })
+})
+
 describe('recheckPrompt', () => {
   it('includes the earlier comment and the new diff', () => {
     const p = recheckPrompt({ file: 'a.ts', line: 3, text: 'OLD' }, input)

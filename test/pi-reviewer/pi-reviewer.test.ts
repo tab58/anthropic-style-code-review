@@ -127,7 +127,7 @@ describe('createPiReviewer (against a fake OpenAI-compatible server)', () => {
     expect(lines).toContain('  finder:logic grep "save All" in src')
     expect(lines).toContain('  finder:logic read /etc/hosts')
     expect(lines).toContain('  finder:logic ✗ read failed')
-    expect(lines.at(-1)).toMatch(/^✔ finder:logic \d+s, 2 tool calls$/)
+    expect(lines.at(-1)).toMatch(/^✔ finder:logic \d+s, 2 tool calls, \d+ turns, \S+ in \/ \S+ out; run total \S+ in \/ \S+ out$/)
     expect(lines.some((l) => l.includes('submit_findings'))).toBe(false)
   })
 
@@ -146,7 +146,7 @@ describe('createPiReviewer (against a fake OpenAI-compatible server)', () => {
     const lines: string[] = []
     await expect((await reviewer((l) => lines.push(l))).verify({ ...rawFinding, file: 'a.ts', endLine: 3, bugClass: 'boom' } as Finding, input)).rejects.toThrow()
     expect(lines[0]).toBe('▶ verify a.ts:3 "Boom" (verifier-m)')
-    expect(lines.at(-1)).toMatch(/^✗ verify a.ts:3 "Boom" failed after \d+s: \S/)
+    expect(lines.at(-1)).toMatch(/^✗ verify a.ts:3 "Boom" failed after \d+s \(\d+ turns?, .* run total .*\): \S/)
   })
 
   it('refuses tool reads outside the repo (secrets in /proc/self/environ, absolute paths)', async () => {
@@ -160,7 +160,37 @@ describe('createPiReviewer (against a fake OpenAI-compatible server)', () => {
     expect(toolResult).not.toContain('localhost')
   })
 
-    it('fails when the model never calls the tool', async () => {
+  it('sends reasoning_effort "none" by default and the configured level when raised', async () => {
+    turns = [{ tool: 'submit_findings', args: { findings: [] } }]
+    await (await reviewer()).find('logic', input)
+    expect(requests[0]!.body.reasoning_effort).toBe('none')
+
+    const cwd = await mkdtemp(join(tmpdir(), 'repo-'))
+    const r = await createPiReviewer({ baseUrl, apiKey: 'k', finderModel: 'f', verifierModel: 'v', finderReasoning: 'low', verifierReasoning: 'medium', cwd })
+    turns = [{ tool: 'submit_findings', args: { findings: [] } }, { tool: 'submit_verdict', args: { real: true, reason: 'x' } }]
+    await r.find('logic', input)
+    await r.verify({ ...rawFinding, file: 'a.ts', endLine: 3, bugClass: 'boom' } as Finding, input)
+    expect(requests.slice(1).map((q) => q.body.reasoning_effort)).toEqual(['low', 'medium'])
+  })
+
+  it('steers a verifier to submit at its 6-turn budget, and the steer reaches the model', async () => {
+    const explore = { tool: 'ls', args: { path: '.' } }
+    turns = [...Array.from({ length: 6 }, () => explore), { tool: 'submit_verdict', args: { real: true, reason: 'x' } }]
+    const lines: string[] = []
+    expect(await (await reviewer((l) => lines.push(l))).verify({ ...rawFinding, file: 'a.ts', endLine: 3, bugClass: 'boom' } as Finding, input)).toEqual({ real: true, reason: 'x' })
+    expect(lines).toContain('  verify a.ts:3 "Boom" reached its 6-turn budget; asking it to submit')
+    expect(JSON.stringify(requests.at(-1)!.body.messages)).toContain('exploration budget')
+  })
+
+  it('stops an agent that ignores the steer, two turns past its budget', async () => {
+    turns = Array.from({ length: 20 }, () => ({ tool: 'ls', args: { path: '.' } }))
+    const lines: string[] = []
+    await expect((await reviewer((l) => lines.push(l))).verify({ ...rawFinding, file: 'a.ts', endLine: 3, bugClass: 'boom' } as Finding, input)).rejects.toThrow()
+    expect(lines).toContain('  verify a.ts:3 "Boom" still hasn\'t submitted; stopping it')
+    expect(requests.length).toBeLessThanOrEqual(10)
+  })
+
+  it('fails when the model never calls the tool', async () => {
     turns = [{ text: 'no' }, { text: 'still no' }]
     await expect((await reviewer()).find('logic', input)).rejects.toThrow(/without calling submit_findings/)
   })

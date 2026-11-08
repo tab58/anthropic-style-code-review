@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { sealedLoader, toFinding, toSecurityFinding } from '../../src/pi-reviewer/session.js'
+import { sealedLoader, sessionUsage, toFinding, toSecurityFinding } from '../../src/pi-reviewer/session.js'
 
 const raw = {
   file: './src/a.ts',
@@ -52,5 +52,21 @@ describe('toSecurityFinding', () => {
     })
     expect(toSecurityFinding({ ...v, end_line: 9 }).endLine).toBe(9)
     expect(toSecurityFinding({ ...v, end_line: 1 }).endLine).toBe(4)
+  })
+})
+
+describe('sessionUsage', () => {
+  it('sums assistant turns and ignores other messages and turns without usage', () => {
+    const u = (input: number, output: number, cacheRead = 0) => ({ input, output, cacheRead })
+    expect(
+      sessionUsage([
+        { role: 'user' },
+        { role: 'assistant', usage: u(1000, 50) },
+        { role: 'toolResult', usage: u(9, 9) },
+        { role: 'assistant', usage: u(3000, 70, 900) },
+        { role: 'assistant' },
+      ]),
+    ).toEqual({ input: 4000, output: 120, cacheRead: 900, turns: 2 })
+    expect(sessionUsage([])).toEqual({ input: 0, output: 0, cacheRead: 0, turns: 0 })
   })
 })

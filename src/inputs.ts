@@ -1,3 +1,4 @@
+import type { Reasoning } from './pi-reviewer/index.js'
 import type { WorkflowOptions } from './workflow/index.js'
 
 /** Where action inputs come from (e.g. `@actions/core`'s `getInput`). */
@@ -36,6 +37,10 @@ export type ActionInputs = {
   readonly securityFinderModel: string | undefined
   /** Security verifier model ID; undefined → the verifier model. */
   readonly securityVerifierModel: string | undefined
+  /** Reasoning effort for finder agents. */
+  readonly finderReasoning: Reasoning
+  /** Reasoning effort for verifier, recheck, exploit and risk agents. */
+  readonly verifierReasoning: Reasoning
   /** Login the reviews are posted as. */
   readonly botLogin: string
   /** Workflow tuning; unset inputs are left undefined so workflow and REVIEW.md defaults apply. */
@@ -66,6 +71,17 @@ function onOff(source: InputSource, name: string): boolean | undefined {
   if (raw === 'off' || raw === 'false') return false
   throw new Error(`Input ${name} must be on or off, got "${raw}"`)
 }
+const REASONING: readonly Reasoning[] = ['none', 'low', 'medium', 'high']
+
+/** A reasoning-effort input; empty means `none`. */
+function reasoningInput(source: InputSource, name: string): Reasoning {
+  const raw = source.get(name).trim().toLowerCase()
+  if (raw === '') return 'none'
+  const level = REASONING.find((r) => r === raw)
+  if (level === undefined) throw new Error(`Input ${name} must be one of ${REASONING.join(', ')}, got "${raw}"`)
+  return level
+}
+
 /** Events that only recompute the merge gates. `workflow_run` is the relay for hardened setups (see README). */
 const GATE_EVENTS = new Set(['pull_request_review', 'pull_request_review_comment', 'workflow_run'])
 
@@ -108,6 +124,8 @@ export function readInputs(source: InputSource, event: EventInfo): ActionInputs 
     verifierModel: source.get('verifier_model'),
     securityFinderModel: source.get('security_finder_model') || undefined,
     securityVerifierModel: source.get('security_verifier_model') || undefined,
+    finderReasoning: reasoningInput(source, 'finder_reasoning'),
+    verifierReasoning: reasoningInput(source, 'verifier_reasoning'),
     botLogin: source.get('bot_login'),
     workflow: workflowOptions(source),
   }

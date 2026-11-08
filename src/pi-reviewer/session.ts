@@ -132,7 +132,9 @@ export const sealedLoader = (systemPrompt: string): ResourceLoader => ({
 export async function createRuntime(cfg: RuntimeConfig) {
   const agentDir = await mkdtemp(join(tmpdir(), 'anthropic-style-code-review-'))
   const modelsPath = join(agentDir, 'models.json')
-  const models = [...new Set(cfg.models)].map((id) => ({ id }))
+  // Registered as reasoning models with `off` mapped to `reasoning_effort: "none"`: without this the SDK sends no
+  // reasoning flag at all, and most hosted models then think at full effort on every turn (billed as output).
+  const models = [...new Set(cfg.models)].map((id) => ({ id, reasoning: true, thinkingLevelMap: { off: 'none' }, compat: { supportsReasoningEffort: true } }))
   await writeFile(modelsPath, JSON.stringify({ providers: { [PROVIDER]: { baseUrl: cfg.baseUrl, api: 'openai-completions', models } } }))
   const modelRuntime = await ModelRuntime.create({ authPath: join(agentDir, 'auth.json'), modelsPath })
   await modelRuntime.setRuntimeApiKey(PROVIDER, cfg.apiKey)
@@ -141,11 +143,55 @@ export async function createRuntime(cfg: RuntimeConfig) {
     if (!m) throw new Error(`Model ${PROVIDER}/${id} not registered`)
     return m
   }
-  return { agentDir, modelRuntime, model }
+  // ponytail: one mutable tally per runtime, so each log line can show the running total.
+  const total = { input: 0, output: 0, cacheRead: 0 }
+  const addUsage = (u: TokenUsage): TokenUsage => {
+    total.input += u.input
+    total.output += u.output
+    total.cacheRead += u.cacheRead
+    return { ...total, turns: 0 }
+  }
+  return { agentDir, modelRuntime, model, addUsage }
 }
+
+/** Tokens a session (or the whole run, for running totals) used. */
+export type TokenUsage = {
+  /** Prompt tokens sent, not counting those served from cache. */
+  readonly input: number
+  /** Completion tokens. */
+  readonly output: number
+  /** Prompt tokens the provider served from cache (0 when it doesn't cache or report it). */
+  readonly cacheRead: number
+  /** Model calls (turns) in the session. */
+  readonly turns: number
+}
+
+/** Sums the provider-reported usage over a session's assistant turns. */
+export function sessionUsage(messages: readonly { readonly role: string; readonly usage?: { readonly input: number; readonly output: number; readonly cacheRead: number } }[]): TokenUsage {
+  return messages.reduce<TokenUsage>(
+    (t, m) => (m.role === 'assistant' && m.usage ? { input: t.input + m.usage.input, output: t.output + m.usage.output, cacheRead: t.cacheRead + m.usage.cacheRead, turns: t.turns + 1 } : t),
+    { input: 0, output: 0, cacheRead: 0, turns: 0 },
+  )
+}
+
+/** `12.3k`, `1.20M`. */
+const tokens = (n: number) => (n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(1)}k` : String(n))
+
+/** `9 turns, 120.0k in + 80.0k cached / 2.1k out; run total 1.20M in + 900.0k cached / 30.0k out`. */
+function describeUsage(u: TokenUsage, total: TokenUsage): string {
+  const io = (t: TokenUsage) => `${tokens(t.input)} in${t.cacheRead > 0 ? ` + ${tokens(t.cacheRead)} cached` : ''} / ${tokens(t.output)} out`
+  return `${u.turns} turn${u.turns === 1 ? '' : 's'}, ${io(u)}; run total ${io(total)}`
+}
+
+/** How much the model may reason before each reply: `none` sends `reasoning_effort: "none"`. */
+export type Reasoning = 'none' | 'low' | 'medium' | 'high'
 
 /** One structured agent task: which model, prompts and submit tool. */
 export type StructuredTask<S extends TSchema> = {
+  /** Reasoning effort per model call. */
+  readonly reasoning: Reasoning
+  /** Model calls before the agent is told to submit; it is stopped two calls later. */
+  readonly maxTurns: number
   /** Short name for logs, e.g. `finder:logic` or `verify src/a.ts:12 "Title"`. */
   readonly label: string
   /** Model ID. */
@@ -167,7 +213,7 @@ async function openSession(rt: Runtime, cwd: string, task: StructuredTask<TSchem
     agentDir: rt.agentDir,
     modelRuntime: rt.modelRuntime,
     model: rt.model(task.modelId),
-    thinkingLevel: 'off',
+    thinkingLevel: task.reasoning === 'none' ? 'off' : task.reasoning,
     resourceLoader: sealedLoader(task.system),
     // Built-ins off; read/grep/find/ls come back path-confined to the repo.
     noTools: 'builtin',
@@ -205,11 +251,28 @@ function describeCall(tool: string, args: unknown): string {
   return [tool, ...target.filter((t) => t !== undefined)].join(' ')
 }
 
-/** Logs one session's tool calls, failed tools and retries; returns the unsubscribe function and a tool counter. */
+/** Turns past `maxTurns` before a session that ignores the steer to submit is stopped. */
+const TURN_GRACE = 2
+
+/**
+ * Logs one session's tool calls, failed tools and retries, and enforces the turn budget: at `maxTurns` the agent is
+ * steered to submit, and aborted if it still hasn't after {@link TURN_GRACE} more turns. Returns the unsubscribe
+ * function and a tool counter.
+ */
 function watch(session: AgentSession, task: StructuredTask<TSchema>, log: AgentLog) {
   let calls = 0
+  let turns = 0
   const off = session.subscribe((e) => {
-    if (e.type === 'tool_execution_start' && e.toolName !== task.toolName) {
+    if (e.type === 'turn_end') {
+      turns++
+      if (turns === task.maxTurns) {
+        log(`  ${task.label} reached its ${task.maxTurns}-turn budget; asking it to submit`)
+        void session.steer(`You have used your exploration budget. Call ${task.toolName} now with what you have found so far. Do not call any other tool.`)
+      } else if (turns >= task.maxTurns + TURN_GRACE) {
+        if (turns === task.maxTurns + TURN_GRACE) log(`  ${task.label} still hasn't submitted; stopping it`)
+        void session.abort()
+      }
+    } else if (e.type === 'tool_execution_start' && e.toolName !== task.toolName) {
       calls++
       log(`  ${task.label} ${describeCall(e.toolName, e.args)}`)
     } else if (e.type === 'tool_execution_end' && e.isError && e.toolName !== task.toolName) {
@@ -218,7 +281,7 @@ function watch(session: AgentSession, task: StructuredTask<TSchema>, log: AgentL
       log(`  ${task.label} ⟳ retry ${e.attempt}/${e.maxAttempts} in ${Math.round(e.delayMs / 1000)}s (${e.errorMessage})`)
     }
   })
-  return { off, calls: () => calls }
+  return { off, calls: () => calls, overBudget: () => turns >= task.maxTurns + TURN_GRACE }
 }
 
 /** Whole seconds since `start`. */
@@ -247,15 +310,18 @@ export async function runStructured<S extends TSchema>(rt: Runtime, cwd: string,
   const timer = setTimeout(() => void session.abort(), AGENT_TIMEOUT_MS)
   try {
     await session.prompt(task.prompt)
+    if (result === undefined && watcher.overBudget()) throw new Error(`stopped after ${task.maxTurns + TURN_GRACE} turns without calling ${task.toolName}`)
     if (result === undefined) {
       log(`  ${task.label} answered in prose; nudging it to submit`)
       await session.prompt(`Call ${task.toolName} now with your final answer. Do not reply with prose.`)
     }
     if (result === undefined) throw failureReason(session, task.toolName)
-    log(`✔ ${task.label} ${since(start)}, ${watcher.calls()} tool call${watcher.calls() === 1 ? '' : 's'}`)
+    const used = sessionUsage(session.messages)
+    log(`✔ ${task.label} ${since(start)}, ${watcher.calls()} tool call${watcher.calls() === 1 ? '' : 's'}, ${describeUsage(used, rt.addUsage(used))}`)
     return result
   } catch (e) {
-    log(`✗ ${task.label} failed after ${since(start)}: ${e instanceof Error ? e.message : String(e)}`)
+    const used = sessionUsage(session.messages)
+    log(`✗ ${task.label} failed after ${since(start)} (${describeUsage(used, rt.addUsage(used))}): ${e instanceof Error ? e.message : String(e)}`)
     throw e
   } finally {
     clearTimeout(timer)

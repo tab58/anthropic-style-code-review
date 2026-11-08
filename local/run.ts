@@ -12,14 +12,23 @@ import { execFileSync } from 'node:child_process'
 import { rm } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
-import { createPiReviewer } from '../src/pi-reviewer/index.js'
+import { createPiReviewer, type Reasoning } from '../src/pi-reviewer/index.js'
 import { createWorkflow } from '../src/workflow/index.js'
 import { createLocalGitHub } from './local-github.js'
 
 const USAGE = `Usage: npm run local -- [--repo <path>] [--base <ref>] [--depth quick|standard|deep] [--title <text>] [--reset] [--no-security] [--risk]
 
 Env: PROVIDER_API_KEY (or OLLAMA_API_KEY), PROVIDER_BASE_URL (default https://ollama.com/v1),
-     FINDER_MODEL (glm-5.3), VERIFIER_MODEL (deepseek-v4.1-flash), SECURITY_FINDER_MODEL, SECURITY_VERIFIER_MODEL, CONCURRENCY (3)`
+     FINDER_MODEL (glm-5.3), VERIFIER_MODEL (deepseek-v4.1-flash), SECURITY_FINDER_MODEL, SECURITY_VERIFIER_MODEL, CONCURRENCY (3),
+     FINDER_REASONING / VERIFIER_REASONING (none|low|medium|high, default none)`
+
+/** A none|low|medium|high env var; unset means none. */
+function reasoning(name: string): Reasoning {
+  const raw = process.env[name] ?? 'none'
+  const level = (['none', 'low', 'medium', 'high'] as const).find((r) => r === raw)
+  if (level === undefined) throw new Error(`${name} must be none, low, medium or high, got "${raw}"`)
+  return level
+}
 
 async function main() {
   const { values } = parseArgs({
@@ -53,6 +62,8 @@ async function main() {
       verifierModel: process.env.VERIFIER_MODEL ?? 'deepseek-v4.1-flash',
       securityFinderModel: process.env.SECURITY_FINDER_MODEL,
       securityVerifierModel: process.env.SECURITY_VERIFIER_MODEL,
+      finderReasoning: reasoning('FINDER_REASONING'),
+      verifierReasoning: reasoning('VERIFIER_REASONING'),
       cwd: repo,
       log: (m) => console.error(m),
     })

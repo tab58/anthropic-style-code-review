@@ -17,6 +17,8 @@ describe('readInputs', () => {
       verifierModel: 'v',
       securityFinderModel: undefined,
       securityVerifierModel: undefined,
+      finderReasoning: 'none',
+      verifierReasoning: 'none',
       botLogin: 'b',
       workflow: {
         depth: undefined,
@@ -95,5 +97,14 @@ describe('readInputs', () => {
     [{ ...base, risk_tiers: 'sometimes' }, { name: 'pull_request', prNumber: 1 }, /risk_tiers/],
   ])('rejects invalid inputs %#', (values, event, err) => {
     expect(() => readInputs(source(values), event)).toThrow(err)
+  })
+
+  it.each([['', 'none'], ['LOW', 'low'], ['medium', 'medium'], ['high', 'high']] as const)('reads finder_reasoning/verifier_reasoning %j', (value, expected) => {
+    const out = readInputs(source({ ...base, finder_reasoning: value, verifier_reasoning: value }), { name: 'pull_request', prNumber: 1 })
+    expect([out.finderReasoning, out.verifierReasoning]).toEqual([expected, expected])
+  })
+
+  it('rejects an unknown reasoning level', () => {
+    expect(() => readInputs(source({ ...base, verifier_reasoning: 'max' }), { name: 'pull_request', prNumber: 1 })).toThrow(/verifier_reasoning must be one of none, low, medium, high/)
   })
 })

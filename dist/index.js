@@ -59310,9 +59310,9 @@ var require_cache_handler = __commonJS({
     function appendConnectionHeaderTokens(headersToRemove, connectionHeader) {
       const values = Array.isArray(connectionHeader) ? connectionHeader : [connectionHeader];
       for (let i2 = 0; i2 < values.length; i2++) {
-        const tokens = values[i2].split(",");
-        for (let j2 = 0; j2 < tokens.length; j2++) {
-          headersToRemove.push(trimOWS(tokens[j2]).toLowerCase());
+        const tokens2 = values[i2].split(",");
+        for (let j2 = 0; j2 < tokens2.length; j2++) {
+          headersToRemove.push(trimOWS(tokens2[j2]).toLowerCase());
         }
       }
     }
@@ -71970,7 +71970,7 @@ function observeModelRequest(requestedModel, options, poll) {
     instruments = createInstruments(adapter);
     instrumentCache.set(adapter, instruments);
   }
-  const { requestDuration, firstChunkDuration, tokens, cost } = instruments;
+  const { requestDuration, firstChunkDuration, tokens: tokens2, cost } = instruments;
   let span;
   let finish;
   let first = true;
@@ -72037,10 +72037,10 @@ function observeModelRequest(requestedModel, options, poll) {
         }
         requestDuration.record(performance.now() - started, { ...attributes, stop: message3.stopReason }, span);
         if (!poll || message3.stopReason !== "pending" && message3.stopReason !== "deferred") {
-          tokens.add(message3.usage.input, { ...attributes, kind: "input" });
-          tokens.add(message3.usage.output, { ...attributes, kind: "output" });
-          tokens.add(message3.usage.cacheRead, { ...attributes, kind: "cache_read" });
-          tokens.add(message3.usage.cacheWrite, { ...attributes, kind: "cache_write" });
+          tokens2.add(message3.usage.input, { ...attributes, kind: "input" });
+          tokens2.add(message3.usage.output, { ...attributes, kind: "output" });
+          tokens2.add(message3.usage.cacheRead, { ...attributes, kind: "cache_read" });
+          tokens2.add(message3.usage.cacheWrite, { ...attributes, kind: "cache_write" });
           cost.add(message3.usage.cost.total, attributes);
         }
       }
@@ -82002,12 +82002,12 @@ var init_headers = __esm({
     clearSentinel = /* @__PURE__ */ Symbol("clear");
     APPEND_HEADERS = /* @__PURE__ */ new Set(["x-stainless-helper"]);
     appendHeaderValue = (existing, addition) => {
-      const tokens = existing ? existing.split(",").map((t2) => t2.trim()).filter(Boolean) : [];
+      const tokens2 = existing ? existing.split(",").map((t2) => t2.trim()).filter(Boolean) : [];
       for (const tok of addition.split(",").map((t2) => t2.trim())) {
-        if (tok && !tokens.includes(tok))
-          tokens.push(tok);
+        if (tok && !tokens2.includes(tok))
+          tokens2.push(tok);
       }
-      return tokens.join(", ");
+      return tokens2.join(", ");
     };
     buildHeaders = (newHeaders) => {
       const targetHeaders = new Headers();
@@ -88767,7 +88767,7 @@ var init_parser2 = __esm({
   "node_modules/@anthropic-ai/sdk/_vendor/partial-json-parser/parser.mjs"() {
     tokenize = (input2) => {
       let current = 0;
-      let tokens = [];
+      let tokens2 = [];
       while (current < input2.length) {
         let char = input2[current];
         if (char === "\\") {
@@ -88775,7 +88775,7 @@ var init_parser2 = __esm({
           continue;
         }
         if (char === "{") {
-          tokens.push({
+          tokens2.push({
             type: "brace",
             value: "{"
           });
@@ -88783,7 +88783,7 @@ var init_parser2 = __esm({
           continue;
         }
         if (char === "}") {
-          tokens.push({
+          tokens2.push({
             type: "brace",
             value: "}"
           });
@@ -88791,7 +88791,7 @@ var init_parser2 = __esm({
           continue;
         }
         if (char === "[") {
-          tokens.push({
+          tokens2.push({
             type: "paren",
             value: "["
           });
@@ -88799,7 +88799,7 @@ var init_parser2 = __esm({
           continue;
         }
         if (char === "]") {
-          tokens.push({
+          tokens2.push({
             type: "paren",
             value: "]"
           });
@@ -88807,7 +88807,7 @@ var init_parser2 = __esm({
           continue;
         }
         if (char === ":") {
-          tokens.push({
+          tokens2.push({
             type: "separator",
             value: ":"
           });
@@ -88815,7 +88815,7 @@ var init_parser2 = __esm({
           continue;
         }
         if (char === ",") {
-          tokens.push({
+          tokens2.push({
             type: "delimiter",
             value: ","
           });
@@ -88845,7 +88845,7 @@ var init_parser2 = __esm({
           if (danglingQuote) {
             current = input2.length;
           } else {
-            tokens.push({
+            tokens2.push({
               type: "string",
               value: input2.slice(start, end)
             });
@@ -88871,7 +88871,7 @@ var init_parser2 = __esm({
             value2 += char;
             char = input2[++current];
           }
-          tokens.push({
+          tokens2.push({
             type: "number",
             value: value2,
             unterminated: current === input2.length
@@ -88889,7 +88889,7 @@ var init_parser2 = __esm({
             char = input2[++current];
           }
           if (value2 == "true" || value2 == "false" || value2 === "null") {
-            tokens.push({
+            tokens2.push({
               type: "name",
               value: value2
             });
@@ -88901,11 +88901,11 @@ var init_parser2 = __esm({
         }
         current++;
       }
-      return tokens;
+      return tokens2;
     };
-    strip = (tokens) => {
+    strip = (tokens2) => {
       let open5 = [];
-      for (const token of tokens) {
+      for (const token of tokens2) {
         if (token.type === "brace" || token.type === "paren") {
           if (token.value === "{" || token.value === "[") {
             open5.push(token.value);
@@ -88915,10 +88915,10 @@ var init_parser2 = __esm({
         }
       }
       let innermostOpenBracket = open5[open5.length - 1];
-      let length = tokens.length;
+      let length = tokens2.length;
       let JSON_NUMBER = /^-?(0|[1-9][0-9]*)(\.[0-9]+)?([eE][-+]?[0-9]+)?$/;
       while (length > 0) {
-        let lastToken = tokens[length - 1];
+        let lastToken = tokens2[length - 1];
         switch (lastToken.type) {
           case "separator":
             length--;
@@ -88930,7 +88930,7 @@ var init_parser2 = __esm({
             }
             break;
           case "string":
-            let tokenBeforeTheLastToken = tokens[length - 2];
+            let tokenBeforeTheLastToken = tokens2[length - 2];
             if (innermostOpenBracket === "{" && (tokenBeforeTheLastToken?.type === "delimiter" || tokenBeforeTheLastToken?.type === "brace" && tokenBeforeTheLastToken.value === "{")) {
               length--;
               continue;
@@ -88942,11 +88942,11 @@ var init_parser2 = __esm({
         }
         break;
       }
-      return tokens.slice(0, length);
+      return tokens2.slice(0, length);
     };
-    unstrip = (tokens) => {
+    unstrip = (tokens2) => {
       let tail = [];
-      tokens.map((token) => {
+      tokens2.map((token) => {
         if (token.type === "brace") {
           if (token.value === "{") {
             tail.push("}");
@@ -88965,23 +88965,23 @@ var init_parser2 = __esm({
       if (tail.length > 0) {
         tail.reverse().map((item) => {
           if (item === "}") {
-            tokens.push({
+            tokens2.push({
               type: "brace",
               value: "}"
             });
           } else if (item === "]") {
-            tokens.push({
+            tokens2.push({
               type: "paren",
               value: "]"
             });
           }
         });
       }
-      return tokens;
+      return tokens2;
     };
-    generate = (tokens) => {
+    generate = (tokens2) => {
       let output = "";
-      tokens.map((token) => {
+      tokens2.map((token) => {
         switch (token.type) {
           case "string":
             output += '"' + token.value + '"';
@@ -96938,10 +96938,10 @@ function estimateContextTokens(context4) {
     }
     return { tokens: usageTokens + trailingTokens, usageTokens, trailingTokens, lastUsageIndex: usageInfo.index };
   }
-  let tokens = 0;
+  let tokens2 = 0;
   for (const message3 of messages)
-    tokens += estimateMessageTokens(message3);
-  return { tokens, usageTokens: 0, trailingTokens: tokens, lastUsageIndex: null };
+    tokens2 += estimateMessageTokens(message3);
+  return { tokens: tokens2, usageTokens: 0, trailingTokens: tokens2, lastUsageIndex: null };
 }
 function estimateToolsTokens(tools) {
   if (!tools || tools.length === 0)
@@ -132489,13 +132489,13 @@ var require_oauth2client = __commonJS({
         };
         authclient_1.AuthClient.setMethodName(opts, "getTokenAsync");
         const res = await this.transporter.request(opts);
-        const tokens = res.data;
+        const tokens2 = res.data;
         if (res.data && res.data.expires_in) {
-          tokens.expiry_date = (/* @__PURE__ */ new Date()).getTime() + res.data.expires_in * 1e3;
-          delete tokens.expires_in;
+          tokens2.expiry_date = (/* @__PURE__ */ new Date()).getTime() + res.data.expires_in * 1e3;
+          delete tokens2.expires_in;
         }
-        this.emit("tokens", tokens);
-        return { tokens, res };
+        this.emit("tokens", tokens2);
+        return { tokens: tokens2, res };
       }
       /**
        * Refreshes the access token.
@@ -132546,13 +132546,13 @@ var require_oauth2client = __commonJS({
           }
           throw e2;
         }
-        const tokens = res.data;
+        const tokens2 = res.data;
         if (res.data && res.data.expires_in) {
-          tokens.expiry_date = (/* @__PURE__ */ new Date()).getTime() + res.data.expires_in * 1e3;
-          delete tokens.expires_in;
+          tokens2.expiry_date = (/* @__PURE__ */ new Date()).getTime() + res.data.expires_in * 1e3;
+          delete tokens2.expires_in;
         }
-        this.emit("tokens", tokens);
-        return { tokens, res };
+        this.emit("tokens", tokens2);
+        return { tokens: tokens2, res };
       }
       refreshAccessToken(callback) {
         if (callback) {
@@ -132563,9 +132563,9 @@ var require_oauth2client = __commonJS({
       }
       async refreshAccessTokenAsync() {
         const r2 = await this.refreshToken(this.credentials.refresh_token);
-        const tokens = r2.tokens;
-        tokens.refresh_token = this.credentials.refresh_token;
-        this.credentials = tokens;
+        const tokens2 = r2.tokens;
+        tokens2.refresh_token = this.credentials.refresh_token;
+        this.credentials = tokens2;
         return { credentials: this.credentials, res: r2.res };
       }
       getAccessToken(callback) {
@@ -132637,10 +132637,10 @@ var require_oauth2client = __commonJS({
           return { headers: new Headers({ "X-Goog-Api-Key": this.apiKey }) };
         }
         let r2 = null;
-        let tokens = null;
+        let tokens2 = null;
         try {
           r2 = await this.refreshToken(thisCreds.refresh_token);
-          tokens = r2.tokens;
+          tokens2 = r2.tokens;
         } catch (err) {
           const e2 = err;
           if (e2.response && (e2.response.status === 403 || e2.response.status === 404)) {
@@ -132650,10 +132650,10 @@ var require_oauth2client = __commonJS({
         }
         const credentials = this.credentials;
         credentials.token_type = credentials.token_type || "Bearer";
-        tokens.refresh_token = credentials.refresh_token;
-        this.credentials = tokens;
+        tokens2.refresh_token = credentials.refresh_token;
+        this.credentials = tokens2;
         const headers = new Headers({
-          authorization: credentials.token_type + " " + tokens.access_token
+          authorization: credentials.token_type + " " + tokens2.access_token
         });
         return { headers: this.addSharedMetadataHeaders(headers), res: r2.res };
       }
@@ -133055,13 +133055,13 @@ var require_computeclient = __commonJS({
           }
           throw e2;
         }
-        const tokens = data;
+        const tokens2 = data;
         if (data && data.expires_in) {
-          tokens.expiry_date = (/* @__PURE__ */ new Date()).getTime() + data.expires_in * 1e3;
-          delete tokens.expires_in;
+          tokens2.expiry_date = (/* @__PURE__ */ new Date()).getTime() + data.expires_in * 1e3;
+          delete tokens2.expires_in;
         }
-        this.emit("tokens", tokens);
-        return { tokens, res: null };
+        this.emit("tokens", tokens2);
+        return { tokens: tokens2, res: null };
       }
       /**
        * Fetches an ID token.
@@ -134412,10 +134412,10 @@ var require_jwtclient = __commonJS({
         }
         if (!this.apiKey && useSelfSignedJWT) {
           if (this.additionalClaims && this.additionalClaims.target_audience) {
-            const { tokens } = await this.refreshToken();
+            const { tokens: tokens2 } = await this.refreshToken();
             return {
               headers: this.addSharedMetadataHeaders(new Headers({
-                authorization: `Bearer ${tokens.id_token}`
+                authorization: `Bearer ${tokens2.id_token}`
               }))
             };
           } else {
@@ -134514,14 +134514,14 @@ var require_jwtclient = __commonJS({
         const token = await gtoken.getToken({
           forceRefresh: this.isTokenExpiring()
         });
-        const tokens = {
+        const tokens2 = {
           access_token: token.access_token,
           token_type: "Bearer",
           expiry_date: gtoken.expiresAt,
           id_token: gtoken.idToken
         };
-        this.emit("tokens", tokens);
-        return { res: null, tokens };
+        this.emit("tokens", tokens2);
+        return { res: null, tokens: tokens2 };
       }
       /**
        * Create a gToken if it doesn't already exist.
@@ -137164,13 +137164,13 @@ var require_gdchclient = __commonJS({
           if (!tokenResponse.expires_in) {
             throw new Error("Token response did not contain an expires_in field.");
           }
-          const tokens = {
+          const tokens2 = {
             access_token: tokenResponse.access_token,
             token_type: "STS-Bearer",
             expiry_date: Date.now() + tokenResponse.expires_in * 1e3
           };
-          this.emit("tokens", tokens);
-          return { res, tokens };
+          this.emit("tokens", tokens2);
+          return { res, tokens: tokens2 };
         } catch (e2) {
           if (e2 && e2.config && e2.config.data) {
             try {
@@ -174594,8 +174594,8 @@ function fuzzyFilter(items, query, getText) {
   if (!query.trim()) {
     return items;
   }
-  const tokens = query.trim().split(/[\s/]+/).filter((t2) => t2.length > 0);
-  if (tokens.length === 0) {
+  const tokens2 = query.trim().split(/[\s/]+/).filter((t2) => t2.length > 0);
+  if (tokens2.length === 0) {
     return items;
   }
   const results = [];
@@ -174603,7 +174603,7 @@ function fuzzyFilter(items, query, getText) {
     const text = getText(item);
     let totalScore = 0;
     let allMatch = true;
-    for (const token of tokens) {
+    for (const token of tokens2) {
       const match3 = fuzzyMatch(token, text);
       if (match3.matches) {
         totalScore += match3.score;
@@ -175169,7 +175169,7 @@ function* graphemeSegments(text) {
     yield segment2;
 }
 function splitIntoTokensWithAnsi(text) {
-  const tokens = [];
+  const tokens2 = [];
   let current = "";
   let pendingAnsi = "";
   let currentKind = null;
@@ -175178,7 +175178,7 @@ function splitIntoTokensWithAnsi(text) {
     if (!current) {
       return;
     }
-    tokens.push(current);
+    tokens2.push(current);
     current = "";
     currentKind = null;
   };
@@ -175203,7 +175203,7 @@ function splitIntoTokensWithAnsi(text) {
         flushCurrent();
         const token = pendingAnsi + segment2;
         pendingAnsi = "";
-        tokens.push(token);
+        tokens2.push(token);
         continue;
       }
       const segmentKind = segmentIsSpace ? "space" : "word";
@@ -175222,16 +175222,16 @@ function splitIntoTokensWithAnsi(text) {
   if (pendingAnsi) {
     if (current) {
       current += pendingAnsi;
-    } else if (tokens.length > 0) {
-      tokens[tokens.length - 1] += pendingAnsi;
+    } else if (tokens2.length > 0) {
+      tokens2[tokens2.length - 1] += pendingAnsi;
     } else {
       current = pendingAnsi;
     }
   }
   if (current) {
-    tokens.push(current);
+    tokens2.push(current);
   }
-  return tokens;
+  return tokens2;
 }
 function flattenLines(lines) {
   for (const line of lines)
@@ -175264,10 +175264,10 @@ function wrapSingleLine(line, width) {
   }
   const wrapped = [];
   const tracker = new AnsiCodeTracker();
-  const tokens = splitIntoTokensWithAnsi(line);
+  const tokens2 = splitIntoTokensWithAnsi(line);
   let currentLine = "";
   let currentVisibleLength = 0;
-  for (const token of tokens) {
+  for (const token of tokens2) {
     const tokenVisibleLength = visibleWidth(token);
     const isWhitespace = isWhitespaceToken(token);
     if (tokenVisibleLength > width && !isWhitespace) {
@@ -184382,8 +184382,8 @@ function tokenizeBlockLatex(source) {
   }
   return void 0;
 }
-function trimPartialClosingFences(tokens) {
-  const token = tokens[tokens.length - 1];
+function trimPartialClosingFences(tokens2) {
+  const token = tokens2[tokens2.length - 1];
   if (token?.type === "list") {
     trimPartialClosingFences(token.items[token.items.length - 1]?.tokens ?? []);
     return;
@@ -184525,20 +184525,20 @@ var init_markdown = __esm({
         }
         const normalizedText = text.replace(/\t/g, "   ");
         const cached = this.cachedTokens?.deref();
-        let tokens = cached?.source === normalizedText ? cached.tokens : void 0;
-        if (!tokens) {
-          tokens = markdownParser.lexer(normalizedText);
-          trimPartialClosingFences(tokens);
-          this.cachedTokens = new WeakRef({ source: normalizedText, tokens });
+        let tokens2 = cached?.source === normalizedText ? cached.tokens : void 0;
+        if (!tokens2) {
+          tokens2 = markdownParser.lexer(normalizedText);
+          trimPartialClosingFences(tokens2);
+          this.cachedTokens = new WeakRef({ source: normalizedText, tokens: tokens2 });
         }
-        const reuseBlocks = Object.keys(tokens.links).length === 0;
+        const reuseBlocks = Object.keys(tokens2.links).length === 0;
         const previousBlocks = this.blocks?.deref();
         const blocks = /* @__PURE__ */ new Map();
         this.blocks = new WeakRef(blocks);
         const contentLines = [];
-        for (let i2 = 0; i2 < tokens.length; i2++) {
-          const token = tokens[i2];
-          const nextTokenType = tokens[i2 + 1]?.type;
+        for (let i2 = 0; i2 < tokens2.length; i2++) {
+          const token = tokens2[i2];
+          const nextTokenType = tokens2[i2 + 1]?.type;
           const reused = reuseBlocks ? blocks.get(token.raw) ?? previousBlocks?.get(token.raw) : void 0;
           const block = reused ?? { width: -1, nextTokenType, lines: [], highlightedCode: /* @__PURE__ */ new Map() };
           if (block.width !== width || block.nextTokenType !== nextTokenType) {
@@ -184813,7 +184813,7 @@ var init_markdown = __esm({
         }
         return lines;
       }
-      renderInlineTokens(tokens, styleContext) {
+      renderInlineTokens(tokens2, styleContext) {
         let result = "";
         const resolvedStyleContext = styleContext ?? this.getDefaultInlineStyleContext();
         const { applyText, stylePrefix } = resolvedStyleContext;
@@ -184821,7 +184821,7 @@ var init_markdown = __esm({
           const segments = text.split("\n");
           return segments.map((segment2) => applyText(segment2)).join("\n");
         };
-        for (const token of tokens) {
+        for (const token of tokens2) {
           switch (token.type) {
             case "latex": {
               const latexToken = token;
@@ -224932,7 +224932,7 @@ var init_system_theme = __esm({
       "thinking5",
       "thinking6"
     ];
-    each = (tokens, on2, level) => tokens.map((token) => ({ token, on: on2, level }));
+    each = (tokens2, on2, level) => tokens2.map((token) => ({ token, on: on2, level }));
     RULES = [
       ...each(PANELS, ["background"], "panel"),
       { token: "text", on: ["background"], level: "text" },
@@ -224999,11 +224999,11 @@ var init_system_theme = __esm({
 });
 
 // node_modules/@earendil-works/pi-coding-agent/dist/modes/interactive/theme/theme-tokens.js
-function defineThemeTokens(tokens) {
-  for (const [name, descriptor] of Object.entries(tokens)) {
+function defineThemeTokens(tokens2) {
+  for (const [name, descriptor] of Object.entries(tokens2)) {
     if (descriptor.fallback === void 0)
       continue;
-    const fallback = tokens[descriptor.fallback];
+    const fallback = tokens2[descriptor.fallback];
     if (fallback === void 0) {
       throw new Error(`Theme token ${name} has unknown fallback ${descriptor.fallback}`);
     }
@@ -225011,7 +225011,7 @@ function defineThemeTokens(tokens) {
       throw new Error(`Theme token ${name} has fallback ${descriptor.fallback} in a different color slot`);
     }
   }
-  return tokens;
+  return tokens2;
 }
 var THEME_TOKENS;
 var init_theme_tokens = __esm({
@@ -229617,7 +229617,7 @@ ${pointer2}
 var require_resolve_props = __commonJS({
   "node_modules/@earendil-works/pi-coding-agent/node_modules/yaml/dist/compose/resolve-props.js"(exports) {
     "use strict";
-    function resolveProps(tokens, { flow, indicator, next, offset, onError: onError3, parentIndent, startOnNewline }) {
+    function resolveProps(tokens2, { flow, indicator, next, offset, onError: onError3, parentIndent, startOnNewline }) {
       let spaceBefore = false;
       let atNewline = startOnNewline;
       let hasSpace = startOnNewline;
@@ -229632,7 +229632,7 @@ var require_resolve_props = __commonJS({
       let comma = null;
       let found = null;
       let start = null;
-      for (const token of tokens) {
+      for (const token of tokens2) {
         if (reqSpace) {
           if (token.type !== "space" && token.type !== "newline" && token.type !== "comma")
             onError3(token.offset, "MISSING_CHAR", "Tags and anchors must be separated from the next token by white space");
@@ -229723,7 +229723,7 @@ var require_resolve_props = __commonJS({
             hasSpace = false;
         }
       }
-      const last = tokens[tokens.length - 1];
+      const last = tokens2[tokens2.length - 1];
       const end = last ? last.offset + last.source.length : offset;
       if (reqSpace && next && next.type !== "space" && next.type !== "newline" && next.type !== "comma" && (next.type !== "scalar" || next.source !== "")) {
         onError3(next.offset, "MISSING_CHAR", "Tags and anchors must be separated from the next token by white space");
@@ -231062,8 +231062,8 @@ ${cb}` : comment;
        * @param forceDoc - If the stream contains no document, still emit a final document including any comments and directives that would be applied to a subsequent document.
        * @param endOffset - Should be set if `forceDoc` is also set, to set the document range end and to indicate errors correctly.
        */
-      *compose(tokens, forceDoc = false, endOffset = -1) {
-        for (const token of tokens)
+      *compose(tokens2, forceDoc = false, endOffset = -1) {
+        for (const token of tokens2)
           yield* this.next(token);
         yield* this.end(forceDoc, endOffset);
       }
@@ -237749,12 +237749,12 @@ function estimateProjectedContextTokens(projection, branchEntries) {
       return estimate;
   }
   const currentSystem = getCurrentSystemMessage(projection.messages);
-  let tokens = currentSystem ? estimateTokens2(currentSystem) : 0;
+  let tokens2 = currentSystem ? estimateTokens2(currentSystem) : 0;
   for (const message3 of projection.messages) {
     if (message3.role !== "system")
-      tokens += estimateTokens2(message3);
+      tokens2 += estimateTokens2(message3);
   }
-  return { tokens, usageTokens: 0, trailingTokens: tokens, lastUsageIndex: null };
+  return { tokens: tokens2, usageTokens: 0, trailingTokens: tokens2, lastUsageIndex: null };
 }
 function shouldCompact(contextTokens, contextWindow, settings2) {
   if (!settings2.enabled)
@@ -238458,14 +238458,14 @@ function bugReportArchiveFileName(id) {
 }
 function selectMessages(messages, tokenBudget) {
   const selected = [];
-  let tokens = 0;
+  let tokens2 = 0;
   for (let index3 = messages.length - 1; index3 >= 0; index3--) {
     const message3 = messages[index3];
     const next = estimateTokens2(message3);
-    if (selected.length > 0 && tokens + next > tokenBudget)
+    if (selected.length > 0 && tokens2 + next > tokenBudget)
       break;
     selected.push(message3);
-    tokens += next;
+    tokens2 += next;
   }
   return selected.reverse();
 }
@@ -238623,18 +238623,18 @@ function prepareBranchEntries(entries2, tokenBudget = 0) {
     if (!message3)
       continue;
     extractFileOpsFromMessage(message3, fileOps);
-    const tokens = estimateTokens2(message3);
-    if (tokenBudget > 0 && totalTokens + tokens > tokenBudget) {
+    const tokens2 = estimateTokens2(message3);
+    if (tokenBudget > 0 && totalTokens + tokens2 > tokenBudget) {
       if (entry.type === "compaction" || entry.type === "branch_summary") {
         if (totalTokens < tokenBudget * 0.9) {
           messages.unshift(message3);
-          totalTokens += tokens;
+          totalTokens += tokens2;
         }
       }
       break;
     }
     messages.unshift(message3);
-    totalTokens += tokens;
+    totalTokens += tokens2;
   }
   return { messages, fileOps, totalTokens };
 }
@@ -273930,13 +273930,13 @@ var require_ignore = __commonJS({
       if (source.indexOf(WILDCARD) < 0) {
         return source;
       }
-      const tokens = [];
+      const tokens2 = [];
       const { length } = source;
       let index3 = 0;
       while (index3 < length) {
         const char = source[index3];
         if (source.startsWith(WILDCARD, index3)) {
-          tokens.push({ wildcard: true });
+          tokens2.push({ wildcard: true });
           index3 += WILDCARD.length;
         } else if (char === "[") {
           let end = index3 + 1;
@@ -273950,10 +273950,10 @@ var require_ignore = __commonJS({
             end += source[end] === ESCAPE ? 2 : 1;
           }
           end++;
-          tokens.push({ single: source.slice(index3, end) });
+          tokens2.push({ single: source.slice(index3, end) });
           index3 = end;
         } else if (char === ESCAPE) {
-          tokens.push({ single: source.slice(index3, index3 + 2) });
+          tokens2.push({ single: source.slice(index3, index3 + 2) });
           index3 += 2;
         } else if (char === "(") {
           let depth = 0;
@@ -273971,13 +273971,13 @@ var require_ignore = __commonJS({
           if ("*+?".indexOf(source[end]) >= 0) {
             end++;
           }
-          tokens.push({ boundary: source.slice(index3, end) });
+          tokens2.push({ boundary: source.slice(index3, end) });
           index3 = end;
         } else if (char === "^" || char === "$") {
-          tokens.push({ boundary: char });
+          tokens2.push({ boundary: char });
           index3++;
         } else {
-          tokens.push({ single: char });
+          tokens2.push({ single: char });
           index3++;
         }
       }
@@ -273999,7 +273999,7 @@ var require_ignore = __commonJS({
         });
         run = [];
       };
-      tokens.forEach((token) => {
+      tokens2.forEach((token) => {
         if (token.boundary === void 0) {
           run.push(token);
           return;
@@ -278538,30 +278538,30 @@ var init_word = __esm({
         } else {
           parts = value2.match(tokenizeIncludingWhitespace) || [];
         }
-        const tokens = [];
+        const tokens2 = [];
         let prevPart = null;
         parts.forEach((part) => {
           if (/\s/.test(part)) {
             if (prevPart == null) {
-              tokens.push(part);
+              tokens2.push(part);
             } else {
-              tokens.push(tokens.pop() + part);
+              tokens2.push(tokens2.pop() + part);
             }
           } else if (prevPart != null && /\s/.test(prevPart)) {
-            if (tokens[tokens.length - 1] == prevPart) {
-              tokens.push(tokens.pop() + part);
+            if (tokens2[tokens2.length - 1] == prevPart) {
+              tokens2.push(tokens2.pop() + part);
             } else {
-              tokens.push(prevPart + part);
+              tokens2.push(prevPart + part);
             }
           } else {
-            tokens.push(part);
+            tokens2.push(part);
           }
           prevPart = part;
         });
-        return tokens;
+        return tokens2;
       }
-      join(tokens) {
-        return tokens.map((token, i2) => {
+      join(tokens2) {
+        return tokens2.map((token, i2) => {
           if (i2 == 0) {
             return token;
           } else {
@@ -281705,11 +281705,11 @@ function withoutDeletedHeaders(headers) {
   return headers ? Object.fromEntries(Object.entries(headers).filter((entry) => entry[1] !== null)) : void 0;
 }
 function estimateMessagesTokens(messages) {
-  let tokens = 0;
+  let tokens2 = 0;
   for (const message3 of messages) {
-    tokens += estimateTokens2(message3);
+    tokens2 += estimateTokens2(message3);
   }
-  return tokens;
+  return tokens2;
 }
 var runtimeStreamFunctions, AgentSession;
 var init_agent_session = __esm({
@@ -296712,7 +296712,7 @@ function lastPromptTokens(entries2) {
   }
   return 0;
 }
-function price(model2, tokens) {
+function price(model2, tokens2) {
   const usage = {
     input: 0,
     output: 0,
@@ -296720,7 +296720,7 @@ function price(model2, tokens) {
     cacheWrite: 0,
     totalTokens: 0,
     cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, total: 0 },
-    ...tokens
+    ...tokens2
   };
   return calculateCost(model2, usage).total;
 }
@@ -302150,8 +302150,8 @@ async function limitMcpContent(content, saveOutput = saveToTempFile) {
   } catch (error2) {
     where = `[Could not save the full output: ${error2 instanceof Error ? error2.message : String(error2)}]`;
   }
-  const tokens = Math.ceil(truncation.totalBytes / 4);
-  const text = `Warning: truncated output (original token count: ${tokens})
+  const tokens2 = Math.ceil(truncation.totalBytes / 4);
+  const text = `Warning: truncated output (original token count: ${tokens2})
 Total output lines: ${truncation.totalLines}
 
 ${truncation.content}
@@ -303143,11 +303143,11 @@ async function exchangeAuthorizationCode(authorizationServerUrl, options) {
   }));
 }
 async function refreshAuthorization(authorizationServerUrl, options) {
-  const tokens = await tokenRequest(authorizationServerUrl, options, new URLSearchParams({ grant_type: "refresh_token", refresh_token: options.refreshToken }));
-  return { refresh_token: options.refreshToken, ...tokens };
+  const tokens2 = await tokenRequest(authorizationServerUrl, options, new URLSearchParams({ grant_type: "refresh_token", refresh_token: options.refreshToken }));
+  return { refresh_token: options.refreshToken, ...tokens2 };
 }
-function withScope(tokens, scope) {
-  return tokens.scope === void 0 && scope ? { ...tokens, scope } : tokens;
+function withScope(tokens2, scope) {
+  return tokens2.scope === void 0 && scope ? { ...tokens2, scope } : tokens2;
 }
 function stepUpScope(granted, challenged) {
   if (!challenged)
@@ -303219,23 +303219,23 @@ async function runFlow(provider2, options) {
       if (iss !== metadata?.issuer)
         throw new OAuthIssuerMismatchError(metadata?.issuer, iss);
     }
-    const tokens = await exchangeAuthorizationCode(discovered.authorizationServerUrl, {
+    const tokens2 = await exchangeAuthorizationCode(discovered.authorizationServerUrl, {
       ...tokenOptions,
       code: options.authorizationCode,
       codeVerifier: await provider2.codeVerifier(),
       redirectUrl
     });
-    await provider2.saveTokens(withScope(tokens, scope));
+    await provider2.saveTokens(withScope(tokens2, scope));
     return "AUTHORIZED";
   }
   const existing = options.skipRefresh ? void 0 : await provider2.tokens();
   if (existing?.refresh_token) {
     try {
-      const tokens = await refreshAuthorization(discovered.authorizationServerUrl, {
+      const tokens2 = await refreshAuthorization(discovered.authorizationServerUrl, {
         ...tokenOptions,
         refreshToken: existing.refresh_token
       });
-      await provider2.saveTokens(withScope(tokens, existing.scope));
+      await provider2.saveTokens(withScope(tokens2, existing.scope));
       return "AUTHORIZED";
     } catch (error2) {
       if (options.signal?.aborted || error2 instanceof OAuthInsecureEndpointError)
@@ -303337,10 +303337,10 @@ var init_provider2 = __esm({
       async tokens() {
         return (await this.load()).tokens;
       }
-      async saveTokens(tokens) {
-        const expiresAt = tokens.expires_in === void 0 ? void 0 : Date.now() + tokens.expires_in * 1e3;
+      async saveTokens(tokens2) {
+        const expiresAt = tokens2.expires_in === void 0 ? void 0 : Date.now() + tokens2.expires_in * 1e3;
         await this.update((value2) => {
-          const next = { ...value2, tokens };
+          const next = { ...value2, tokens: tokens2 };
           if (expiresAt === void 0)
             delete next.tokensExpireAt;
           else
@@ -305096,7 +305096,7 @@ function createMcpExtension(options = {}) {
       emitChange();
     };
     const reconnectSignedIn = async (ctx) => {
-      const signedIn = [...tokensAtSignIn].filter(([connection, tokens]) => storedTokens(connection) !== tokens);
+      const signedIn = [...tokensAtSignIn].filter(([connection, tokens2]) => storedTokens(connection) !== tokens2);
       if (signedIn.length === 0)
         return;
       for (const [connection] of signedIn)
@@ -307376,7 +307376,7 @@ function parseSearchQuery(query) {
       return { mode: "regex", tokens: [], regex: null, error: msg };
     }
   }
-  const tokens = [];
+  const tokens2 = [];
   let buf = "";
   let inQuote = false;
   let hadUnclosedQuote = false;
@@ -307385,7 +307385,7 @@ function parseSearchQuery(query) {
     buf = "";
     if (!v2)
       return;
-    tokens.push({ kind, value: v2 });
+    tokens2.push({ kind, value: v2 });
   };
   for (let i2 = 0; i2 < trimmed.length; i2++) {
     const ch = trimmed[i2];
@@ -307416,7 +307416,7 @@ function parseSearchQuery(query) {
     };
   }
   flush(inQuote ? "phrase" : "fuzzy");
-  return { mode: "tokens", tokens, regex: null };
+  return { mode: "tokens", tokens: tokens2, regex: null };
 }
 function matchSession(session, parsed) {
   if (parsed.mode === "regex") {
@@ -309074,15 +309074,15 @@ async function labelTokens(request3, labels) {
     }
     return pending;
   }));
-  const tokens = [];
+  const tokens2 = [];
   for (const [index3, id] of ids.entries()) {
     if (id === void 0)
       throw new Error(`Label "${labels[index3]}" is not a single token for ${request3.model.id}`);
-    if (tokens.includes(id))
+    if (tokens2.includes(id))
       throw new Error(`Labels share a token for ${request3.model.id}: ${labels.join(", ")}`);
-    tokens.push(id);
+    tokens2.push(id);
   }
-  return tokens;
+  return tokens2;
 }
 async function renderPrompt(request3, content) {
   const body = await post(request3, "/apply-template", {
@@ -309097,7 +309097,7 @@ async function renderPrompt(request3, content) {
     throw new Error(`${LABEL3} did not return a prompt`);
   return body.prompt.endsWith("<think>") ? `${body.prompt}</think>` : body.prompt;
 }
-async function nextTokenLogprobs(request3, prompt, tokens, depth) {
+async function nextTokenLogprobs(request3, prompt, tokens2, depth) {
   const body = await post(request3, "/completion", {
     model: request3.model.id,
     prompt,
@@ -309117,18 +309117,18 @@ async function nextTokenLogprobs(request3, prompt, tokens, depth) {
       byToken.set(entry.id, entry.logprob);
     }
   }
-  return tokens.map((token) => byToken.get(token));
+  return tokens2.map((token) => byToken.get(token));
 }
 async function classifyQuestion(request3, context4, id, question, temperature) {
   const rendered = renderQuestion(context4, id);
-  const [tokens, prompt] = await Promise.all([
+  const [tokens2, prompt] = await Promise.all([
     labelTokens(request3, rendered.labels),
     renderPrompt(request3, rendered.content)
   ]);
-  const depths = [Math.max(MIN_READOUT_DEPTH, READOUT_DEPTH_PER_LABEL * tokens.length), ...READOUT_ESCALATION];
+  const depths = [Math.max(MIN_READOUT_DEPTH, READOUT_DEPTH_PER_LABEL * tokens2.length), ...READOUT_ESCALATION];
   let logprobs = [];
   for (const depth of depths) {
-    logprobs = await nextTokenLogprobs(request3, prompt, tokens, depth);
+    logprobs = await nextTokenLogprobs(request3, prompt, tokens2, depth);
     if (logprobs.every((logprob) => logprob !== void 0))
       break;
   }
@@ -318281,16 +318281,16 @@ function parseEr(src) {
     }
     const rel = splitErRelationship(st2);
     if (rel) {
-      const tokens = words(rel.rel);
-      if (tokens.length !== 3)
+      const tokens2 = words(rel.rel);
+      if (tokens2.length !== 3)
         return null;
-      const op = parseErOp(tokens[1]);
+      const op = parseErOp(tokens2[1]);
       if (!op)
         return null;
-      const f4 = erEntity(graph, infos, tokens[0]);
+      const f4 = erEntity(graph, infos, tokens2[0]);
       if (f4 === null)
         return null;
-      const t2 = erEntity(graph, infos, tokens[2]);
+      const t2 = erEntity(graph, infos, tokens2[2]);
       if (t2 === null)
         return null;
       if (graph.edges.length >= MAX_EDGES)
@@ -321759,8 +321759,8 @@ var init_tree_selector = __esm({
             break;
           }
           case "compaction": {
-            const tokens = Math.round(entry.tokensBefore / 1e3);
-            result = theme.fg("borderAccent", `[compaction: ${tokens}k tokens]`);
+            const tokens2 = Math.round(entry.tokensBefore / 1e3);
+            result = theme.fg("borderAccent", `[compaction: ${tokens2}k tokens]`);
             break;
           }
           case "branch_summary":
@@ -325828,11 +325828,11 @@ ${message3}`, ["Yes", "No"], opts, {
         if (!this.settingsManager.getShowCacheMissNotices())
           return;
         const { usage } = notice;
-        const tokens = usage.input + usage.output + usage.cacheRead + usage.cacheWrite;
+        const tokens2 = usage.input + usage.output + usage.cacheRead + usage.cacheWrite;
         const cost = usage.cost.total >= 0.01 ? ` (~$${usage.cost.total.toFixed(2)})` : "";
         const label = notice.kind === "compaction" ? "Compaction" : "Branch summary";
         this.chatContainer.addChild(new Spacer(1));
-        this.chatContainer.addChild(new ThemedText(() => theme.fg("warning", `${label}: ${formatTokens(tokens)} tokens billed${cost}`), 1, 0));
+        this.chatContainer.addChild(new ThemedText(() => theme.fg("warning", `${label}: ${formatTokens(tokens2)} tokens billed${cost}`), 1, 0));
       }
       static countDroppedThinkingBlocks(message3) {
         let count3 = 0;
@@ -329567,9 +329567,9 @@ function colorValue(description) {
     })
   ], description ? { description } : {});
 }
-function themeTokenProperties(tokens) {
+function themeTokenProperties(tokens2) {
   const properties = {};
-  for (const [name, descriptor] of Object.entries(tokens)) {
+  for (const [name, descriptor] of Object.entries(tokens2)) {
     const schema = colorValue(descriptor.description);
     properties[name] = descriptor.fallback === void 0 ? schema : typebox_exports.Optional(schema);
   }
@@ -336278,7 +336278,7 @@ ${pointer2}
 var require_resolve_props2 = __commonJS({
   "node_modules/yaml/dist/compose/resolve-props.js"(exports) {
     "use strict";
-    function resolveProps(tokens, { flow, indicator, next, offset, onError: onError3, parentIndent, startOnNewline }) {
+    function resolveProps(tokens2, { flow, indicator, next, offset, onError: onError3, parentIndent, startOnNewline }) {
       let spaceBefore = false;
       let atNewline = startOnNewline;
       let hasSpace = startOnNewline;
@@ -336293,7 +336293,7 @@ var require_resolve_props2 = __commonJS({
       let comma = null;
       let found = null;
       let start = null;
-      for (const token of tokens) {
+      for (const token of tokens2) {
         if (reqSpace) {
           if (token.type !== "space" && token.type !== "newline" && token.type !== "comma")
             onError3(token.offset, "MISSING_CHAR", "Tags and anchors must be separated from the next token by white space");
@@ -336384,7 +336384,7 @@ var require_resolve_props2 = __commonJS({
             hasSpace = false;
         }
       }
-      const last = tokens[tokens.length - 1];
+      const last = tokens2[tokens2.length - 1];
       const end = last ? last.offset + last.source.length : offset;
       if (reqSpace && next && next.type !== "space" && next.type !== "newline" && next.type !== "comma" && (next.type !== "scalar" || next.source !== "")) {
         onError3(next.offset, "MISSING_CHAR", "Tags and anchors must be separated from the next token by white space");
@@ -337724,8 +337724,8 @@ ${cb}` : comment;
        * @param forceDoc - If the stream contains no document, still emit a final document including any comments and directives that would be applied to a subsequent document.
        * @param endOffset - Should be set if `forceDoc` is also set, to set the document range end and to indicate errors correctly.
        */
-      *compose(tokens, forceDoc = false, endOffset = -1) {
-        for (const token of tokens)
+      *compose(tokens2, forceDoc = false, endOffset = -1) {
+        for (const token of tokens2)
           yield* this.next(token);
         yield* this.end(forceDoc, endOffset);
       }
@@ -344859,6 +344859,14 @@ function onOff(source, name) {
   if (raw === "off" || raw === "false") return false;
   throw new Error(`Input ${name} must be on or off, got "${raw}"`);
 }
+var REASONING = ["none", "low", "medium", "high"];
+function reasoningInput(source, name) {
+  const raw = source.get(name).trim().toLowerCase();
+  if (raw === "") return "none";
+  const level = REASONING.find((r2) => r2 === raw);
+  if (level === void 0) throw new Error(`Input ${name} must be one of ${REASONING.join(", ")}, got "${raw}"`);
+  return level;
+}
 var GATE_EVENTS = /* @__PURE__ */ new Set(["pull_request_review", "pull_request_review_comment", "workflow_run"]);
 var workflowOptions = (source) => ({
   depth: source.get("depth") || void 0,
@@ -344888,6 +344896,8 @@ function readInputs(source, event) {
     verifierModel: source.get("verifier_model"),
     securityFinderModel: source.get("security_finder_model") || void 0,
     securityVerifierModel: source.get("security_verifier_model") || void 0,
+    finderReasoning: reasoningInput(source, "finder_reasoning"),
+    verifierReasoning: reasoningInput(source, "verifier_reasoning"),
     botLogin: source.get("bot_login"),
     workflow: workflowOptions(source)
   };
@@ -344948,6 +344958,18 @@ ${input2.intent}
 ${input2.diff}
 </diff>`
 ].filter(Boolean).join("\n\n");
+function narrowedDiff(diff, files) {
+  const all = parseDiff(diff);
+  const wanted = new Set(files);
+  const mine = all.filter((f4) => wanted.has(f4.path));
+  if (mine.length === 0) return diff;
+  const others = all.filter((f4) => !wanted.has(f4.path)).map((f4) => f4.path);
+  const note = others.length > 0 ? `
+(Also changed in this PR; read them if they matter: ${others.join(", ")})` : "";
+  return mine.map((f4) => f4.text).join("") + note;
+}
+var focusedContext = (input2, files) => context3({ ...input2, diff: narrowedDiff(input2.diff, files) });
+var filesOf = (f4) => [f4.file, ...(f4.also ?? []).map((l3) => l3.file)];
 var finderPrompt = (focus, input2) => `Focus on: ${FOCUS[focus]}
 
 ${context3(input2)}`;
@@ -344957,13 +344979,13 @@ Explanation: ${f4.explanation}
 Quoted evidence:
 ${f4.evidence}
 
-${context3(input2)}`;
+${focusedContext(input2, filesOf(f4))}`;
 var recheckPrompt = (issue2, input2) => `Earlier comment at ${issue2.file}:${issue2.line}:
 ${issue2.text}
 
 New changes since that comment:
 <diff>
-${input2.diff}
+${narrowedDiff(input2.diff, [issue2.file])}
 </diff>`;
 var SECURITY_FOCUS = {
   "security-general": "Any exploitable vulnerability: injection, broken authentication/authorization, secrets and crypto misuse, unsafe deserialization or code execution, XSS, SSRF, sensitive data exposure, CI/supply-chain risks.",
@@ -345015,7 +345037,7 @@ Impact: ${f4.impact}
 Quoted evidence:
 ${f4.evidence}
 
-${context3(input2)}`;
+${focusedContext(input2, filesOf(f4))}`;
 var RISK_SYSTEM = `You are a staff engineer deciding how much human review a pull request needs before merge.
 ${SHARED}
 
@@ -345188,7 +345210,7 @@ var sealedLoader = (systemPrompt) => ({
 async function createRuntime(cfg) {
   const agentDir = await mkdtemp(join51(tmpdir8(), "anthropic-style-code-review-"));
   const modelsPath = join51(agentDir, "models.json");
-  const models = [...new Set(cfg.models)].map((id) => ({ id }));
+  const models = [...new Set(cfg.models)].map((id) => ({ id, reasoning: true, thinkingLevelMap: { off: "none" }, compat: { supportsReasoningEffort: true } }));
   await writeFile5(modelsPath, JSON.stringify({ providers: { [PROVIDER]: { baseUrl: cfg.baseUrl, api: "openai-completions", models } } }));
   const modelRuntime = await ModelRuntime.create({ authPath: join51(agentDir, "auth.json"), modelsPath });
   await modelRuntime.setRuntimeApiKey(PROVIDER, cfg.apiKey);
@@ -345197,7 +345219,25 @@ async function createRuntime(cfg) {
     if (!m3) throw new Error(`Model ${PROVIDER}/${id} not registered`);
     return m3;
   };
-  return { agentDir, modelRuntime, model: model2 };
+  const total = { input: 0, output: 0, cacheRead: 0 };
+  const addUsage = (u) => {
+    total.input += u.input;
+    total.output += u.output;
+    total.cacheRead += u.cacheRead;
+    return { ...total, turns: 0 };
+  };
+  return { agentDir, modelRuntime, model: model2, addUsage };
+}
+function sessionUsage(messages) {
+  return messages.reduce(
+    (t2, m3) => m3.role === "assistant" && m3.usage ? { input: t2.input + m3.usage.input, output: t2.output + m3.usage.output, cacheRead: t2.cacheRead + m3.usage.cacheRead, turns: t2.turns + 1 } : t2,
+    { input: 0, output: 0, cacheRead: 0, turns: 0 }
+  );
+}
+var tokens = (n) => n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `${(n / 1e3).toFixed(1)}k` : String(n);
+function describeUsage(u, total) {
+  const io = (t2) => `${tokens(t2.input)} in${t2.cacheRead > 0 ? ` + ${tokens(t2.cacheRead)} cached` : ""} / ${tokens(t2.output)} out`;
+  return `${u.turns} turn${u.turns === 1 ? "" : "s"}, ${io(u)}; run total ${io(total)}`;
 }
 async function openSession(rt2, cwd, task, submit) {
   const { session } = await createAgentSession({
@@ -345205,7 +345245,7 @@ async function openSession(rt2, cwd, task, submit) {
     agentDir: rt2.agentDir,
     modelRuntime: rt2.modelRuntime,
     model: rt2.model(task.modelId),
-    thinkingLevel: "off",
+    thinkingLevel: task.reasoning === "none" ? "off" : task.reasoning,
     resourceLoader: sealedLoader(task.system),
     // Built-ins off; read/grep/find/ls come back path-confined to the repo.
     noTools: "builtin",
@@ -345233,10 +345273,21 @@ function describeCall(tool, args) {
   const target = [pattern === void 0 ? void 0 : `"${pattern}"`, path19 === void 0 ? void 0 : `${pattern === void 0 ? "" : "in "}${path19}${offset ? `:${offset}` : ""}`];
   return [tool, ...target.filter((t2) => t2 !== void 0)].join(" ");
 }
+var TURN_GRACE = 2;
 function watch2(session, task, log) {
   let calls = 0;
+  let turns = 0;
   const off = session.subscribe((e2) => {
-    if (e2.type === "tool_execution_start" && e2.toolName !== task.toolName) {
+    if (e2.type === "turn_end") {
+      turns++;
+      if (turns === task.maxTurns) {
+        log(`  ${task.label} reached its ${task.maxTurns}-turn budget; asking it to submit`);
+        void session.steer(`You have used your exploration budget. Call ${task.toolName} now with what you have found so far. Do not call any other tool.`);
+      } else if (turns >= task.maxTurns + TURN_GRACE) {
+        if (turns === task.maxTurns + TURN_GRACE) log(`  ${task.label} still hasn't submitted; stopping it`);
+        void session.abort();
+      }
+    } else if (e2.type === "tool_execution_start" && e2.toolName !== task.toolName) {
       calls++;
       log(`  ${task.label} ${describeCall(e2.toolName, e2.args)}`);
     } else if (e2.type === "tool_execution_end" && e2.isError && e2.toolName !== task.toolName) {
@@ -345245,7 +345296,7 @@ function watch2(session, task, log) {
       log(`  ${task.label} \u27F3 retry ${e2.attempt}/${e2.maxAttempts} in ${Math.round(e2.delayMs / 1e3)}s (${e2.errorMessage})`);
     }
   });
-  return { off, calls: () => calls };
+  return { off, calls: () => calls, overBudget: () => turns >= task.maxTurns + TURN_GRACE };
 }
 var since = (start) => `${Math.round((Date.now() - start) / 1e3)}s`;
 async function runStructured(rt2, cwd, task, log = () => {
@@ -345268,15 +345319,18 @@ async function runStructured(rt2, cwd, task, log = () => {
   const timer = setTimeout(() => void session.abort(), AGENT_TIMEOUT_MS);
   try {
     await session.prompt(task.prompt);
+    if (result === void 0 && watcher.overBudget()) throw new Error(`stopped after ${task.maxTurns + TURN_GRACE} turns without calling ${task.toolName}`);
     if (result === void 0) {
       log(`  ${task.label} answered in prose; nudging it to submit`);
       await session.prompt(`Call ${task.toolName} now with your final answer. Do not reply with prose.`);
     }
     if (result === void 0) throw failureReason(session, task.toolName);
-    log(`\u2714 ${task.label} ${since(start)}, ${watcher.calls()} tool call${watcher.calls() === 1 ? "" : "s"}`);
+    const used = sessionUsage(session.messages);
+    log(`\u2714 ${task.label} ${since(start)}, ${watcher.calls()} tool call${watcher.calls() === 1 ? "" : "s"}, ${describeUsage(used, rt2.addUsage(used))}`);
     return result;
   } catch (e2) {
-    log(`\u2717 ${task.label} failed after ${since(start)}: ${e2 instanceof Error ? e2.message : String(e2)}`);
+    const used = sessionUsage(session.messages);
+    log(`\u2717 ${task.label} failed after ${since(start)} (${describeUsage(used, rt2.addUsage(used))}): ${e2 instanceof Error ? e2.message : String(e2)}`);
     throw e2;
   } finally {
     clearTimeout(timer);
@@ -345286,6 +345340,8 @@ async function runStructured(rt2, cwd, task, log = () => {
 }
 
 // src/pi-reviewer/pi-reviewer.ts
+var FINDER_TURNS = 15;
+var VERIFIER_TURNS = 6;
 var at2 = (l3) => `${l3.file}:${l3.line}`;
 async function createPiReviewer(config) {
   const securityFinder = config.securityFinderModel ?? config.finderModel;
@@ -345301,21 +345357,25 @@ async function createPiReviewer(config) {
     seen.set(label, n);
     return n === 1 ? label : `${label} #${n}`;
   };
-  const run = (task) => runStructured(rt2, config.cwd, { ...task, label: numbered(task.label) }, config.log);
-  const verdict2 = (label, system, prompt) => run({ label, modelId: config.verifierModel, system, prompt, toolName: "submit_verdict", schema: VerdictSchema });
+  const budgets = {
+    finder: { reasoning: config.finderReasoning ?? "none", maxTurns: FINDER_TURNS },
+    verifier: { reasoning: config.verifierReasoning ?? "none", maxTurns: VERIFIER_TURNS }
+  };
+  const run = (role, task) => runStructured(rt2, config.cwd, { ...task, ...budgets[role], label: numbered(task.label) }, config.log);
+  const verdict2 = (label, system, prompt) => run("verifier", { label, modelId: config.verifierModel, system, prompt, toolName: "submit_verdict", schema: VerdictSchema });
   return {
     async find(focus, input2) {
       const task = { label: `finder:${focus}`, modelId: config.finderModel, system: FINDER_SYSTEM, prompt: finderPrompt(focus, input2), toolName: "submit_findings", schema: FindingsSchema };
-      return (await run(task)).findings.map(toFinding);
+      return (await run("finder", task)).findings.map(toFinding);
     },
     verify: (finding, input2) => verdict2(`verify ${at2(finding)} "${finding.title}"`, VERIFIER_SYSTEM, verifierPrompt(finding, input2)),
     recheck: async (issue2, input2) => (await verdict2(`recheck ${issue2.file}:${issue2.line}`, RECHECK_SYSTEM, recheckPrompt(issue2, input2))).real,
     async findVulnerabilities(focus, input2) {
       const task = { label: `security:${focus}`, modelId: securityFinder, system: SECURITY_FINDER_SYSTEM, prompt: securityFinderPrompt(focus, input2), toolName: "submit_security_findings", schema: SecurityFindingsSchema };
-      return (await run(task)).findings.map(toSecurityFinding);
+      return (await run("finder", task)).findings.map(toSecurityFinding);
     },
-    judgeExploit: (finding, input2) => run({ label: `exploit ${at2(finding)} "${finding.title}"`, modelId: securityVerifier, system: SECURITY_VERIFIER_SYSTEM, prompt: exploitPrompt(finding, input2), toolName: "submit_exploit_verdict", schema: ExploitVerdictSchema }),
-    classifyRisk: (input2) => run({ label: "risk", modelId: config.verifierModel, system: RISK_SYSTEM, prompt: riskPrompt(input2), toolName: "submit_risk", schema: RiskSchema })
+    judgeExploit: (finding, input2) => run("verifier", { label: `exploit ${at2(finding)} "${finding.title}"`, modelId: securityVerifier, system: SECURITY_VERIFIER_SYSTEM, prompt: exploitPrompt(finding, input2), toolName: "submit_exploit_verdict", schema: ExploitVerdictSchema }),
+    classifyRisk: (input2) => run("verifier", { label: "risk", modelId: config.verifierModel, system: RISK_SYSTEM, prompt: riskPrompt(input2), toolName: "submit_risk", schema: RiskSchema })
   };
 }
 
@@ -346313,6 +346373,8 @@ async function main2() {
     verifierModel: inputs.verifierModel,
     securityFinderModel: inputs.securityFinderModel,
     securityVerifierModel: inputs.securityVerifierModel,
+    finderReasoning: inputs.finderReasoning,
+    verifierReasoning: inputs.verifierReasoning,
     cwd: workspace,
     log: info2
   });

@@ -224,6 +224,8 @@ git push && git push origin v1.0.0 && git push -f origin v1   # force only the m
 | `provider_api_key` | (required for reviews) | API key for the OpenAI-compatible endpoint at `base_url` |
 | `finder_model` | `glm-5.3` | Model for the bug finders |
 | `verifier_model` | `deepseek-v4.1-flash` | Model for the voters. A different model family gives more independent votes |
+| `finder_reasoning` | `none` | `none`/`low`/`medium`/`high`: reasoning effort per model call for finders. Hosted models reason on every turn and it's billed as output, so this is most of a review's output tokens. Raise it if reviews miss bugs |
+| `verifier_reasoning` | `none` | Same, for verifiers, rechecks, exploit votes and the risk classifier |
 | `depth` | `standard` | `quick` (2 finders, 1 vote), `standard` (4 specialist finders, 2 of 3 votes), `deep` (6 finders, 3 of 5 votes) |
 | `voters` / `votes_needed` | preset | Override the voting setup |
 | `max_concurrency` | `3` | Max agent sessions running at once |
