@@ -23,7 +23,7 @@ import {
   type SecurityReviewer,
 } from '../security/index.js'
 import { requiredApprovals, type RiskAssessment, type RiskClassifier } from '../risk/index.js'
-import { findingComment, securityComment, skippedComment, stepBackComment, summary } from './comments.js'
+import { findingComment, type Linker, permalinker, securityComment, skippedComment, stepBackComment, summary } from './comments.js'
 import { decodeState, type ReviewState } from './markers.js'
 import { openThreads } from './gates.js'
 import { assessRound, tierFields } from './risk.js'
@@ -260,17 +260,17 @@ type Posting = { readonly bugs: readonly Finding[]; readonly security: readonly 
 const blocking = (f: SecurityFinding) => f.introduced && f.severity !== 'low'
 
 /** Inline comments for this round, plus what stays summary-only. */
-function layout(found: Posting, prFiles: readonly FileDiff[]) {
+function layout(found: Posting, prFiles: readonly FileDiff[], link: Linker) {
   const at = placement(prFiles)
   const securityLine = (f: SecurityFinding) => (at.exact(f) ? f.line : blocking(f) ? at.nearest(f) : undefined)
   const securityComments = found.security.flatMap((f) => {
     const line = securityLine(f)
     if (line === undefined) return []
     const note = line === f.line ? '' : `_Reported at line ${f.line}; anchored to the nearest changed line._\n\n`
-    return [{ finding: f, comment: { path: f.file, line, body: note + securityComment(f) } }]
+    return [{ finding: f, comment: { path: f.file, line, body: note + securityComment(f, link) } }]
   })
   return {
-    bugComments: found.bugs.filter(at.exact).map((f) => ({ path: f.file, line: f.line, body: findingComment(f) })),
+    bugComments: found.bugs.filter(at.exact).map((f) => ({ path: f.file, line: f.line, body: findingComment(f, link) })),
     securityComments,
     outside: { bugs: found.bugs.filter((f) => !at.exact(f)), security: found.security.filter((f) => securityLine(f) === undefined) },
   }
@@ -278,7 +278,7 @@ function layout(found: Posting, prFiles: readonly FileDiff[]) {
 
 /** Posts the review. If GitHub rejects a line (422), reposts with every finding in the summary, then retries each blocking security comment alone. */
 async function postReview(ctx: Context, pr: PullRequest, found: Posting, prFiles: readonly FileDiff[], body: (outside: Posting) => string) {
-  const { bugComments, securityComments, outside } = layout(found, prFiles)
+  const { bugComments, securityComments, outside } = layout(found, prFiles, permalinker(pr))
   const comments = [...bugComments, ...securityComments.map((c) => c.comment)]
   ctx.log.info(`Posting review: ${plural(comments.length, 'inline comment')}, ${outside.bugs.length + outside.security.length} in the summary only`)
   try {
@@ -387,7 +387,7 @@ async function finishRound(ctx: Context, pr: PullRequest, state: ReviewState | u
     unresolvable > 0 ? `${unresolvable} fixed thread${unresolvable === 1 ? '' : 's'} could not be marked resolved (the token lacks permission); they no longer block merge, but please resolve them by hand.` : undefined,
   ].filter((n) => n !== undefined)
   await postReview(ctx, pr, { bugs: bugFindings, security: vulns }, r.ranges.prFiles, (outside) =>
-    summary({ findings: bugFindings, outOfDiff: outside.bugs, security: vulns, securityOutOfDiff: outside.security, notes, passes: [codeRow(r), ...securityRow(ctx, r), ...(riskLine ? [['Risk', riskLine] as const] : [])], resolved: r.resolved, state: newState, maxRounds: ctx.settings.maxRounds }),
+    summary({ findings: bugFindings, outOfDiff: outside.bugs, security: vulns, securityOutOfDiff: outside.security, notes, passes: [codeRow(r), ...securityRow(ctx, r), ...(riskLine ? [['Risk', riskLine] as const] : [])], resolved: r.resolved, state: newState, maxRounds: ctx.settings.maxRounds, link: permalinker(pr) }),
   )
   const stats = r.bugs?.stats ?? { raw: 0, candidates: 0, confirmed: 0 }
   const sec = r.security?.status === 'done' ? `; security ${r.security.result.stats.confirmed} confirmed (${r.security.depth})` : r.security ? '; security FAILED' : ''

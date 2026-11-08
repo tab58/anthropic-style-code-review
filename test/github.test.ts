@@ -49,6 +49,7 @@ describe('getPull', () => {
   it('defaults a null body, missing draft and a deleted author', async () => {
     const { draft: _, ...noDraft } = pull({ body: null, user: null })
     expect(await client(() => noDraft).gh.getPull()).toMatchObject({ body: '', draft: false, author: '' })
+    expect(await client(() => pull({ html_url: 'https://github.com/o/r/pull/7' })).gh.getPull()).toMatchObject({ url: 'https://github.com/o/r/pull/7' })
   })
 
   it.each([

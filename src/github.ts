@@ -30,6 +30,7 @@ export type GitHubClientConfig = {
 
 const PullSchema = Type.Object({
   number: Type.Integer(),
+  html_url: Type.Optional(Type.String()),
   title: Type.String(),
   body: Type.Union([Type.String(), Type.Null()]),
   draft: Type.Optional(Type.Boolean()),
@@ -123,6 +124,7 @@ async function getPull(c: GitHubClientConfig) {
     author: pr.user?.login ?? '',
     isFork: pr.head.repo?.full_name !== pr.base.repo.full_name,
     draft: pr.draft ?? false,
+    ...(pr.html_url !== undefined && { url: pr.html_url }),
   }
 }
 

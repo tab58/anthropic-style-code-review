@@ -154,7 +154,7 @@ describe('createWorkflow().review', () => {
     const gh = fakeGitHub()
     await createWorkflow({ github: gh.github, createReviewer: async () => fakeReviewer([finding({ line: 50, endLine: 50 })]), log: log() }, options).review()
     expect(gh.reviews[0]?.comments).toEqual([])
-    expect(gh.reviews[0]?.body).toContain('`src/a.ts:50`')
+    expect(gh.reviews[0]?.body).toContain('<code>src/a.ts#L50</code>')
   })
 
   it('is up-to-date when HEAD was already reviewed', async () => {
@@ -300,7 +300,7 @@ describe('createWorkflow().review', () => {
     const gh = fakeGitHub({ bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [] })], diffs: { h1: incremental } })
     await createWorkflow({ github: gh.github, createReviewer: async () => fakeReviewer([finding({ line: 5, endLine: 5 })]), log: log() }, options).review()
     expect(gh.reviews[0]?.comments).toEqual([])
-    expect(gh.reviews[0]?.body).toContain('`src/a.ts:5`')
+    expect(gh.reviews[0]?.body).toContain('<code>src/a.ts#L5</code>')
   })
 
   it('retries without inline comments when GitHub rejects a line (422)', async () => {
@@ -308,7 +308,7 @@ describe('createWorkflow().review', () => {
     const l = log()
     await createWorkflow({ github: gh.github, createReviewer: async () => fakeReviewer([finding()]), log: l }, options).review()
     expect(gh.reviews).toHaveLength(1)
-    expect(gh.reviews[0]?.body).toContain('`src/a.ts:2`')
+    expect(gh.reviews[0]?.body).toContain('<code>src/a.ts#L2</code>')
     expect(l.warning).toHaveBeenCalledWith(expect.stringMatching(/rejected inline/))
   })
 
@@ -414,7 +414,7 @@ describe('security pass', () => {
     const gh = fakeGitHub()
     const outcome = await run(gh, fakeReviewer([], { findVulnerabilities: vi.fn(async () => [vuln()]) }))
     expect(gh.reviews[0]?.body.split('\n')[0]).toBe('**1 security finding** (1 high)')
-    expect(gh.reviews[0]?.comments).toEqual([expect.objectContaining({ path: 'src/a.ts', line: 2, body: expect.stringContaining('**Security · High**') })])
+    expect(gh.reviews[0]?.comments).toEqual([expect.objectContaining({ path: 'src/a.ts', line: 2, body: expect.stringContaining('### Security · High: ') })])
     expect(gh.checks).toEqual([
       expect.objectContaining({ name: 'anthropic-style-code-review', conclusion: 'success' }),
       expect.objectContaining({ name: 'anthropic-style-code-review/security', conclusion: 'failure', title: '1 open high/medium security finding' }),
@@ -474,7 +474,7 @@ describe('security pass', () => {
     const findVulnerabilities = vi.fn(async () => [vuln({ line: 40, endLine: 40 }), vuln({ line: 50, endLine: 50, vulnClass: 'info-leak', severity: 'low' })])
     await run(gh, fakeReviewer([], { findVulnerabilities, judgeExploit }))
     expect(gh.reviews[0]?.comments).toEqual([expect.objectContaining({ line: 3, body: expect.stringContaining('Reported at line 40') })])
-    expect(gh.reviews[0]?.body).toContain('`src/a.ts:50` **Security · Low**')
+    expect(gh.reviews[0]?.body).toContain('<summary><h3>Security · Low: ')
     expect(gh.checks.find((c) => c.name.endsWith('/security'))?.conclusion).toBe('failure')
   })
 

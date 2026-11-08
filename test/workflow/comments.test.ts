@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { type Finding, fingerprint } from '../../src/review/index.js'
 import type { SecurityFinding } from '../../src/security/index.js'
-import { findingComment, securityComment, skippedComment, stepBackComment, summary } from '../../src/workflow/comments.js'
+import { findingComment, permalinker, securityComment, skippedComment, stepBackComment, summary } from '../../src/workflow/comments.js'
 import { decodeFindingMarker, decodeSecurityMarker, decodeState } from '../../src/workflow/markers.js'
 
 const f = (over: Partial<Finding> = {}): Finding => ({
@@ -20,15 +20,23 @@ const f = (over: Partial<Finding> = {}): Finding => ({
 describe('findingComment', () => {
   it('tags severity, includes explanation + evidence and a machine marker', () => {
     const body = findingComment(f())
-    expect(body).toMatch(/^\*\*Important\*\*: Null deref on empty list/)
-    expect(body).toContain('items[0] is undefined')
-    expect(body).toContain('const first = items[0].id')
+    expect(body).toMatch(/^### Important: Null deref on empty list\n\nitems\[0\] is undefined when list is empty\n\n```ts\nconst first = items\[0\]\.id\n```/)
     expect(decodeFindingMarker(body)).toEqual({ severity: 'important', fingerprint: fingerprint(f()) })
   })
 
-  it('lists other instances of the same bug class', () => {
-    const body = findingComment(f({ also: [{ file: 'b.ts', line: 7, endLine: 9 }] }))
-    expect(body).toContain('`b.ts:7-9`')
+  it('lists other instances as collapsible permalinks, or plain locations without a link', () => {
+    const also = [{ file: 'src/b c.ts', line: 7, endLine: 9 }]
+    const link = permalinker({ url: 'https://github.com/o/r/pull/7', headSha: 'abc' })
+    const body = findingComment(f({ also }), link)
+    expect(body).toContain('Same issue also at:')
+    expect(body).toContain('<details>\n<summary><code>src/b c.ts#L7-L9</code></summary>\n\nhttps://github.com/o/r/blob/abc/src/b%20c.ts#L7-L9\n\n</details>')
+    expect(findingComment(f({ also }))).toContain('<code>src/b c.ts#L7-L9</code>')
+    expect(findingComment(f({ also }))).not.toContain('<details>')
+  })
+
+  it('fences evidence longer than any backtick run in it, and defuses comment openers inside code', () => {
+    const body = findingComment(f({ file: 'x.unknownext', evidence: 'a ``` b <!-- c' }))
+    expect(body).toContain('````\na ``` b <!-\u200b- c\n````')
   })
 
   it('neutralizes HTML comments in model text so markers cannot be forged', () => {
@@ -37,8 +45,8 @@ describe('findingComment', () => {
   })
 
   it('labels nit and pre-existing', () => {
-    expect(findingComment(f({ severity: 'nit' }))).toMatch(/^\*\*Nit\*\*/)
-    expect(findingComment(f({ severity: 'pre_existing' }))).toMatch(/^\*\*Pre-existing\*\*/)
+    expect(findingComment(f({ severity: 'nit' }))).toMatch(/^### Nit: /)
+    expect(findingComment(f({ severity: 'pre_existing' }))).toMatch(/^### Pre-existing: /)
   })
 })
 
@@ -58,16 +66,18 @@ describe('summary', () => {
   it('lists findings that could not be placed inline, and resolved count', () => {
     const body = summary({ findings: [f()], outOfDiff: [f({ file: 'z.ts', line: 99 })], resolved: 2, state, maxRounds: 3 })
     expect(body.split('\n')[0]).toBe('**1 issue found** (1 important)')
-    expect(body).toContain('`z.ts:99`')
+    expect(body).toContain('**Outside the diff**')
+    expect(body).toContain('<summary><h3>Important: Null deref on empty list</h3></summary>')
+    expect(body).toContain('<code>z.ts#L99</code>')
     expect(body).toContain('2 earlier findings resolved')
   })
 
   it('caps the outside-the-diff list', () => {
     const many = Array.from({ length: 30 }, (_, i) => f({ file: `f${i}.ts` }))
     const body = summary({ findings: many, outOfDiff: many, resolved: 0, state, maxRounds: 3 })
-    expect(body).toContain('`f19.ts:3`')
-    expect(body).not.toContain('`f20.ts:3`')
-    expect(body).toContain('10 more')
+    expect(body).toContain('<code>f19.ts#L3</code>')
+    expect(body).not.toContain('<code>f20.ts#L3</code>')
+    expect(body).toContain('…and 10 more')
   })
 
   it('embeds the state marker', () => {
@@ -99,7 +109,7 @@ describe('findingComment without optional fields', () => {
       file: 'a.ts', line: 1, endLine: 1, title: 't', explanation: 'e', evidence: 'x',
       severity: 'nit', category: 'bug', bugClass: 'c', also: [],
     })
-    expect(body).not.toContain('Same issue also at')
+    expect(body).not.toContain('also at')
   })
 })
 
@@ -111,15 +121,16 @@ const vuln = (over: Partial<SecurityFinding> = {}): SecurityFinding => ({
 describe('securityComment', () => {
   it('tags severity, shows the attack path, and ends with a security marker', () => {
     const body = securityComment(vuln())
-    expect(body).toMatch(/^\*\*Security · High\*\*: SQL injection/)
-    for (const part of ['req.query.id', 'db.query', 'id=1 OR 1=1', 'dump users', '> db.query(x)']) expect(body).toContain(part)
+    expect(body).toMatch(/^### Security · High: SQL injection\n\nid=1 OR 1=1\n\n\*\*Impact:\*\* dump users/)
+    for (const part of ['<summary>Attack path</summary>', '- **Source:** req.query.id', '- **Sink:** db.query', '```ts\ndb.query(x)\n```']) expect(body).toContain(part)
     expect(decodeSecurityMarker(body)).toMatchObject({ level: 'high', introduced: true })
   })
 
   it('labels pre-existing vulnerabilities and lists other locations', () => {
     const body = securityComment(vuln({ severity: 'low', introduced: false, also: [{ file: 'b.ts', line: 1, endLine: 1 }] }))
-    expect(body).toMatch(/^\*\*Security · Low · Pre-existing\*\*/)
-    expect(body).toContain('`b.ts:1`')
+    expect(body).toMatch(/^### Security · Low · Pre-existing: /)
+    expect(body).toContain('Same vulnerability also at:')
+    expect(body).toContain('<code>b.ts#L1</code>')
   })
 
   it('neutralizes HTML comments in model text', () => {
@@ -141,7 +152,8 @@ describe('summary with security findings', () => {
 
   it('lists security findings outside the diff', () => {
     const body = summary({ findings: [], security: [vuln()], outOfDiff: [], securityOutOfDiff: [vuln({ file: 'z.ts', line: 9, endLine: 9 })], resolved: 0, state, maxRounds: 3 })
-    expect(body).toContain('`z.ts:9` **Security · High**: SQL injection')
+    expect(body).toContain('<summary><h3>Security · High: SQL injection</h3></summary>')
+    expect(body).toContain('<code>z.ts#L9</code>')
   })
 })
 
@@ -154,5 +166,19 @@ describe('summary with a passes table', () => {
 
   it('omits the table when there are no rows', () => {
     expect(summary({ findings: [], outOfDiff: [], passes: [], resolved: 0, state, maxRounds: 3 })).not.toContain('| Pass |')
+  })
+})
+
+describe('permalinker', () => {
+  it('links the head commit\'s lines, or nothing without a PR URL', () => {
+    const link = permalinker({ url: 'https://ghe.example.com/o/r/pull/12/', headSha: 'h' })
+    expect(link({ file: 'a/b.go', line: 3, endLine: 3 })).toBe('https://ghe.example.com/o/r/blob/h/a/b.go#L3')
+    expect(link({ file: 'a/b.go', line: 3, endLine: 5 })).toBe('https://ghe.example.com/o/r/blob/h/a/b.go#L3-L5')
+    expect(permalinker({ headSha: 'h' })({ file: 'a.go', line: 1, endLine: 1 })).toBeUndefined()
+  })
+
+  it('summary sections expand to the snippet permalink', () => {
+    const body = summary({ findings: [f()], outOfDiff: [f({ file: 'z.ts', line: 9, endLine: 9 })], resolved: 0, state: { round: 1, sha: 'abc', fingerprints: [] }, maxRounds: 3, link: permalinker({ url: 'https://github.com/o/r/pull/1', headSha: 'h' }) })
+    expect(body).toContain('<summary><code>z.ts#L9</code></summary>\n\nhttps://github.com/o/r/blob/h/z.ts#L9')
   })
 })

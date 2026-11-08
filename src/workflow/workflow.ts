@@ -22,6 +22,8 @@ export type PullRequest = {
   readonly isFork: boolean
   /** True for draft PRs. */
   readonly draft: boolean
+  /** The PR's web URL (e.g. `https://github.com/o/r/pull/7`), used to build code permalinks; absent locally. */
+  readonly url?: string
 }
 
 /** A review thread started by this action's bot. */
