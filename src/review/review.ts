@@ -58,6 +58,8 @@ export type ReviewInput = {
   readonly guidance: string
   /** PR title and description. */
   readonly intent: string
+  /** Findings already posted on this PR, one per line with their status (open, fixed, dismissed + reason); may be empty. */
+  readonly prior?: string
 }
 
 /** The agents that find and judge defects. Implemented by e.g. the Pi reviewer. */

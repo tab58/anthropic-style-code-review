@@ -315,6 +315,25 @@ describe('createWorkflow().review', () => {
     expect(l.info).toHaveBeenCalledWith("Ignoring 1 file the PR doesn't change (merged in from the base branch)")
   })
 
+  it('tells later rounds\' finders what was already flagged, with its status', async () => {
+    const gh = fakeGitHub({
+      bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [] })],
+      writers: ['bob'],
+      threads: [important('t1', 'other.ts'), { ...important('t2', 'other.ts'), replies: [{ login: 'bob', body: '/resolve intended' }] }],
+    })
+    const reviewer = fakeReviewer([])
+    const l = log()
+    await createWorkflow({ github: gh.github, createReviewer: async () => reviewer, log: l }, options).review()
+    expect(vi.mocked(reviewer.find).mock.calls[0]?.[1].prior).toBe('- [open] Important: Boom (other.ts:2)\n- [dismissed: "intended"] Important: Boom (other.ts:2)')
+    expect(l.info).toHaveBeenCalledWith('Telling the agents about 2 earlier findings on this PR')
+  })
+
+  it('sends no earlier-findings list on a first round', async () => {
+    const reviewer = fakeReviewer([])
+    await createWorkflow({ github: fakeGitHub().github, createReviewer: async () => reviewer, log: log() }, options).review()
+    expect(vi.mocked(reviewer.find).mock.calls[0]?.[1]).not.toHaveProperty('prior')
+  })
+
   it('keeps every file of a full-PR (non-incremental) range', async () => {
     const gh = fakeGitHub({ diffs: { b0: diffFor('src/a.ts', ['x()']) + diffFor('src/b.ts', ['y()']) } })
     const reviewer = fakeReviewer([])

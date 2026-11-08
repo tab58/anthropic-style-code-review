@@ -54,6 +54,16 @@ describe('single-finding prompts narrow the diff to the finding\'s files', () =>
   })
 })
 
+describe('already_flagged context', () => {
+  it('is fenced into finder and verifier prompts when present, and absent otherwise', () => {
+    const withPrior = { ...input, prior: '- [open] Important: Boom (a.ts:3)' }
+    expect(finderPrompt('logic', withPrior)).toContain('<already_flagged>\n- [open] Important: Boom (a.ts:3)\n</already_flagged>')
+    const f: Finding = { file: 'a.ts', line: 3, endLine: 3, title: 'T', explanation: 'E', evidence: 'EV', severity: 'important', category: 'bug', bugClass: 'c' }
+    expect(verifierPrompt(f, withPrior)).toContain('<already_flagged>')
+    expect(finderPrompt('logic', input)).not.toContain('<already_flagged>')
+  })
+})
+
 describe('recheckPrompt', () => {
   it('includes the earlier comment and the new diff', () => {
     const p = recheckPrompt({ file: 'a.ts', line: 3, text: 'OLD' }, input)

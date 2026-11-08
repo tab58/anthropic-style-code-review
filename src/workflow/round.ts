@@ -26,6 +26,7 @@ import { requiredApprovals, type RiskAssessment, type RiskClassifier } from '../
 import { findingComment, type Linker, permalinker, securityComment, skippedComment, stepBackComment, summary } from './comments.js'
 import { decodeState, type ReviewState } from './markers.js'
 import { openThreads } from './gates.js'
+import { renderPrior } from './prior.js'
 import { assessRound, tierFields } from './risk.js'
 import type { BotThread, PullRequest, RoundOutcome, WorkflowConfig, WorkflowOptions } from './workflow.js'
 
@@ -143,10 +144,11 @@ function describeRange(files: readonly FileDiff[]): string {
 }
 
 /** What the agents see for a range. */
-const buildInput = (pr: PullRequest, range: PassRange, guidance: Guidance): ReviewInput => ({
+const buildInput = (pr: PullRequest, range: PassRange, guidance: Guidance, prior = ''): ReviewInput => ({
   diff: range.files.map((f) => f.text).join(''),
   guidance: renderGuidance(guidance),
   intent: `${pr.title}\n\n${pr.body}`.trim(),
+  ...(prior !== '' && { prior }),
 })
 
 /** Asks `depth.voters` verifiers whether one thread's issue is still present; true if a quorum says fixed. */
@@ -202,6 +204,8 @@ type PassArgs = {
   readonly pr: PullRequest
   readonly depth: DepthConfig
   readonly posted: readonly string[]
+  /** Earlier findings for the agents (see renderPrior); empty on a first round. */
+  readonly prior: string
 }
 
 /** Runs the bug pass if due and non-empty. */
@@ -209,7 +213,7 @@ async function runBugPass(ctx: Context, a: PassArgs): Promise<ReviewResult | und
   const range = a.ranges.bug
   if (!range || range.files.length === 0) return undefined
   const nitCap = ctx.settings.nitCap ?? a.ranges.guidance.review?.config.nitCap ?? ctx.settings.nitCapDefault
-  const input = buildInput(a.pr, range, a.ranges.guidance)
+  const input = buildInput(a.pr, range, a.ranges.guidance, a.prior)
   return runReview(a.reviewer, { input, paths: livePaths(range), depth: a.depth, posted: a.posted, nitCap, maxFindings: ctx.settings.maxFindings, limit: a.limit, onProgress: ctx.log.info })
 }
 
@@ -224,7 +228,7 @@ async function runSecurityPass(ctx: Context, a: PassArgs): Promise<SecurityPass>
   if (range.files.length === 0) return { status: 'done', depth: plan.depth, result: { findings: [], stats: { raw: 0, candidates: 0, confirmed: 0 }, errors: [], inconclusive: 0 } }
   const addedLines = new Map(a.ranges.prFiles.map((f) => [f.path, f.addedLines]))
   const request = {
-    input: buildInput(a.pr, range, a.ranges.guidance),
+    input: buildInput(a.pr, range, a.ranges.guidance, a.prior),
     paths: livePaths(range),
     plan,
     posted: a.posted,
@@ -318,7 +322,9 @@ async function reviewRanges(ctx: Context, pr: PullRequest, state: ReviewState | 
   const anyRange = ranges.bug ?? ranges.security
   const auto = state && anyRange ? await autoResolve(ctx, state, { author: pr.author, reviewer, limit, touched, input: buildInput(pr, anyRange, ranges.guidance), depth }) : { count: 0, fixed: [], unresolvable: [] }
   const posted = state?.fingerprints ?? []
-  const args = { reviewer, limit, ranges, pr, depth, posted }
+  const prior = state ? renderPrior(await ctx.github.botThreads(), new Set([...(state.fixedThreads ?? []), ...auto.fixed]), pr.author) : ''
+  if (prior !== '') ctx.log.info(`Telling the agents about ${plural(prior.split('\n').length, 'earlier finding')} on this PR`)
+  const args = { reviewer, limit, ranges, pr, depth, posted, prior }
   const [bugs, security] = await Promise.all([runBugPass(ctx, args), runSecurityPass(ctx, args)])
   for (const e of [...(bugs?.errors ?? []), ...(security?.status === 'done' ? security.result.errors : [])]) ctx.log.warning(e)
   if (security?.status === 'failed') ctx.log.warning(`Security review failed: ${security.reason}`)

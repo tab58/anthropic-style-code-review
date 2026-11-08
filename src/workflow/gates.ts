@@ -1,5 +1,6 @@
 import { loadGuidance } from '../guidance.js'
 import { approvers, maxTier, requiredApprovals, type RiskApprovals } from '../risk/index.js'
+import { RESOLVE_COMMAND } from './prior.js'
 import { countOpenImportant, countOpenSecurity, decodeState, type ReviewState } from './markers.js'
 import type { ApprovalsResult, BotThread, CheckConclusion, GateResult, GitHub, PullRequest } from './workflow.js'
 
@@ -94,8 +95,6 @@ export async function publishApprovals(github: GitHub, pr: PullRequest, name: st
   return { conclusion, tier, required, approved, assessed }
 }
 
-/** A reply that dismisses a finding: `/resolve` followed by a reason (a bare `/resolve` doesn't count). */
-const RESOLVE_COMMAND = /^\s*\/resolve\s+\S/i
 
 /** Case-insensitive login match. */
 const sameUser = (a: string | undefined, b: string) => a !== undefined && a.toLowerCase() === b.toLowerCase()
