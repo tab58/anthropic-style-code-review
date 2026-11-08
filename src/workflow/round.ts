@@ -116,7 +116,7 @@ async function loadRanges(ctx: Context, pr: PullRequest, state: ReviewState | un
   }
 }
 
-/** State field carrying every thread recorded as fixed-but-unresolvable. */
+/** State field carrying every thread a re-review found fixed. */
 const fixedFields = (state: ReviewState | undefined, added: readonly string[]) => {
   const fixedThreads = [...(state?.fixedThreads ?? []), ...added]
   return fixedThreads.length > 0 ? { fixedThreads } : {}
@@ -156,7 +156,7 @@ async function isFixed(ctx: Context, reviewer: Reviewer, limit: Limiter, t: BotT
 }
 
 /** Threads a quorum found fixed this round, and which of them the token couldn't resolve. */
-type AutoResolved = { readonly count: number; readonly unresolvable: readonly string[] }
+type AutoResolved = { readonly count: number; readonly fixed: readonly string[]; readonly unresolvable: readonly string[] }
 
 /** Resolves a fixed thread; on failure (GITHUB_TOKEN often may not resolve threads) warns and reports false. */
 async function tryResolve(ctx: Context, t: BotThread): Promise<boolean> {
@@ -170,9 +170,9 @@ async function tryResolve(ctx: Context, t: BotThread): Promise<boolean> {
 }
 
 /** Resolves open bot threads in touched files that a verifier quorum says are fixed. */
-async function autoResolve(ctx: Context, state: ReviewState, a: { reviewer: Reviewer; limit: Limiter; touched: ReadonlySet<string>; input: ReviewInput; depth: DepthConfig }): Promise<AutoResolved> {
+async function autoResolve(ctx: Context, state: ReviewState, a: { author: string; reviewer: Reviewer; limit: Limiter; touched: ReadonlySet<string>; input: ReviewInput; depth: DepthConfig }): Promise<AutoResolved> {
   const { reviewer, limit, input, depth } = a
-  const open = (await openThreads(ctx.github, state)).filter((t) => a.touched.has(t.path))
+  const open = (await openThreads(ctx.github, state, a.author)).filter((t) => a.touched.has(t.path))
   if (open.length > 0) ctx.log.info(`Rechecking ${plural(open.length, 'open finding')} in changed files`)
   const results = await Promise.all(
     open.map(async (t) => {
@@ -181,7 +181,7 @@ async function autoResolve(ctx: Context, state: ReviewState, a: { reviewer: Revi
     }),
   )
   const fixed = results.filter((r) => r !== undefined)
-  return { count: fixed.length, unresolvable: fixed.filter((r) => !r.resolved).map((r) => r.id) }
+  return { count: fixed.length, fixed: fixed.map((r) => r.id), unresolvable: fixed.filter((r) => !r.resolved).map((r) => r.id) }
 }
 
 /** Inputs shared by both passes. */
@@ -306,13 +306,13 @@ async function reviewRanges(ctx: Context, pr: PullRequest, state: ReviewState | 
   const limit = createLimiter(settings.concurrency) // one pool for every agent session this round
   const touched = new Set([...(ranges.bug?.files ?? []), ...(ranges.security?.files ?? [])].map((f) => f.path))
   const anyRange = ranges.bug ?? ranges.security
-  const auto = state && anyRange ? await autoResolve(ctx, state, { reviewer, limit, touched, input: buildInput(pr, anyRange, ranges.guidance), depth }) : { count: 0, unresolvable: [] }
+  const auto = state && anyRange ? await autoResolve(ctx, state, { author: pr.author, reviewer, limit, touched, input: buildInput(pr, anyRange, ranges.guidance), depth }) : { count: 0, fixed: [], unresolvable: [] }
   const posted = state?.fingerprints ?? []
   const args = { reviewer, limit, ranges, pr, depth, posted }
   const [bugs, security] = await Promise.all([runBugPass(ctx, args), runSecurityPass(ctx, args)])
   for (const e of [...(bugs?.errors ?? []), ...(security?.status === 'done' ? security.result.errors : [])]) ctx.log.warning(e)
   if (security?.status === 'failed') ctx.log.warning(`Security review failed: ${security.reason}`)
-  return finishRound(ctx, pr, state, round, { ranges, bugs, security, resolved: auto.count, unresolvable: auto.unresolvable, posted, depth, classifier: reviewer })
+  return finishRound(ctx, pr, state, round, { ranges, bugs, security, resolved: auto.count, fixed: auto.fixed, unresolvable: auto.unresolvable, posted, depth, classifier: reviewer })
 }
 
 /** Everything a round produced, ready to post. */
@@ -321,6 +321,8 @@ type RoundResult = {
   readonly bugs: ReviewResult | undefined
   readonly security: SecurityPass
   readonly resolved: number
+  /** Threads a quorum found fixed this round (recorded so an author-resolved thread stops counting too). */
+  readonly fixed?: readonly string[]
   /** Fixed threads the token couldn't resolve this round. */
   readonly unresolvable?: readonly string[]
   readonly posted: readonly string[]
@@ -377,7 +379,7 @@ async function finishRound(ctx: Context, pr: PullRequest, state: ReviewState | u
     fingerprints: [...r.posted, ...bugFindings.map(fingerprint), ...vulns.map(securityFingerprint)],
     ...(securitySha !== undefined && { securitySha }),
     ...tierFields(risk),
-    ...fixedFields(state, r.unresolvable ?? []),
+    ...fixedFields(state, r.fixed ?? []),
   }
   const unresolvable = r.unresolvable?.length ?? 0
   const notes = [

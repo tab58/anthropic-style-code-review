@@ -157,6 +157,15 @@ describe('botThreads', () => {
     expect(await gh.botThreads()).toEqual([{ id: '1', isResolved: false, path: 'a.ts', line: 3, body: 'body 1', replies: [] }])
   })
 
+  it('maps who resolved a thread, when GitHub knows', async () => {
+    const { gh } = client(() =>
+      page([node('1', 'github-actions', { isResolved: true, resolvedBy: { login: 'alice' } }), node('2', 'github-actions', { isResolved: true, resolvedBy: null })]),
+    )
+    const [byAlice, unknown] = await gh.botThreads()
+    expect(byAlice).toMatchObject({ isResolved: true, resolvedBy: 'alice' })
+    expect(unknown).not.toHaveProperty('resolvedBy')
+  })
+
   it('maps replies, skipping deleted authors', async () => {
     const comments = {
       nodes: [

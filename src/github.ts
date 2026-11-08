@@ -58,6 +58,7 @@ const ThreadsSchema = Type.Object({
             Type.Object({
               id: Type.String(),
               isResolved: Type.Boolean(),
+              resolvedBy: Type.Optional(Type.Union([Type.Object({ login: Type.String() }), Type.Null()])),
               path: Type.String(),
               line: Type.Union([Type.Integer(), Type.Null()]),
               comments: Type.Object({
@@ -82,7 +83,7 @@ const THREADS_QUERY = `query($owner: String!, $repo: String!, $pr: Int!, $after:
       reviewThreads(first: 100, after: $after) {
         pageInfo { hasNextPage endCursor }
         nodes {
-          id isResolved path line
+          id isResolved resolvedBy { login } path line
           comments(first: 50) { nodes { body author { login } } }
         }
       }
@@ -223,6 +224,7 @@ async function botThreads(c: GitHubClientConfig): Promise<readonly BotThread[]> 
         out.push({
           id: t.id,
           isResolved: t.isResolved,
+          ...(t.resolvedBy && { resolvedBy: t.resolvedBy.login }),
           path: t.path,
           line: t.line,
           body: first.body,

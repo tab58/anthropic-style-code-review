@@ -35,9 +35,11 @@ export async function assessRound(pr: PullRequest, state: ReviewState | undefine
   const floor = assessRisk({
     files: round.prFiles,
     highPaths: config?.riskHighPaths ?? [],
-    securityPaths: config?.securityPaths ?? [],
+    mediumPaths: config?.riskMediumPaths ?? [],
+    skipPaths: config?.skipPaths ?? [],
+    ...(config?.riskDefault !== undefined && { defaultTier: config.riskDefault }),
+    ...(config?.riskLargePrLines !== undefined && { largeLines: config.riskLargePrLines }),
     blockingSecurity: round.security.some((f) => f.introduced && f.severity !== 'low'),
-    importantBug: round.bugs.some((f) => f.severity === 'important'),
     skipped: round.skipped,
   })
   const intent = `${pr.title}\n\n${pr.body}`.trim()

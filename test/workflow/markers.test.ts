@@ -83,15 +83,15 @@ describe('countOpenImportant', () => {
     expect(countOpenImportant([thread(false, encodeFindingMarker('important', 'a')), thread(false, encodeFindingMarker('important', 'b'))])).toBe(2)
   })
 
-  it('ignores resolved, nit, pre-existing and human threads', () => {
+  it('counts important threads it is given and ignores nit, pre-existing and human threads', () => {
     expect(
       countOpenImportant([
-        thread(true, encodeFindingMarker('important', 'a')),
+        thread(false, encodeFindingMarker('important', 'a')),
         thread(false, encodeFindingMarker('nit', 'b')),
         thread(false, encodeFindingMarker('pre_existing', 'c')),
         thread(false, 'human says important'),
       ]),
-    ).toBe(0)
+    ).toBe(1)
   })
 })
 
@@ -111,20 +111,19 @@ describe('security marker', () => {
   })
 
   it('is invisible to the bug gate', () => {
-    expect(countOpenImportant([{ isResolved: false, body: encodeSecurityMarker('high', true, 'x') }])).toBe(0)
+    expect(countOpenImportant([{ body: encodeSecurityMarker('high', true, 'x') }])).toBe(0)
   })
 })
 
 describe('countOpenSecurity', () => {
   const t = (isResolved: boolean, body: string) => ({ isResolved, body })
-  it('counts unresolved, introduced High and Medium only', () => {
+  it('counts introduced High and Medium only', () => {
     expect(
       countOpenSecurity([
         t(false, encodeSecurityMarker('high', true, 'a')),
         t(false, encodeSecurityMarker('medium', true, 'b')),
         t(false, encodeSecurityMarker('low', true, 'c')),
         t(false, encodeSecurityMarker('high', false, 'd')),
-        t(true, encodeSecurityMarker('high', true, 'e')),
         t(false, encodeFindingMarker('important', 'f')),
       ]),
     ).toBe(2)

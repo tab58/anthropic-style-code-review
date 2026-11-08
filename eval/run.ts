@@ -99,9 +99,7 @@ async function runCase(name: string, apiKey: string, depth: DepthConfig, { secur
   const floor = assessRisk({
     files,
     highPaths: [],
-    securityPaths: [],
     blockingSecurity: (vulns?.findings ?? []).some((f) => f.introduced && f.severity !== 'low'),
-    importantBug: bugs.findings.some((f) => f.severity === 'important'),
     skipped: false,
   })
   const tier: RiskTier | undefined = risk ? (await classifyRisk(reviewer, { diff, intent: expected.intent, floor })).tier : undefined

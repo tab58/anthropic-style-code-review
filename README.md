@@ -128,8 +128,10 @@ The action posts findings; the merge block comes from GitHub:
 From then on, a PR can't merge while any **Important** finding or any **Security · High/Medium** finding it introduced is open. Nits and pre-existing findings never block. A finding stops blocking when:
 
 - **You fix it.** The next push re-checks open findings, and a verifier quorum marks fixed ones resolved.
-- **Someone with write access replies `/resolve <reason>`** in the thread, e.g. `/resolve false positive: the id is validated by the router`. The reason is required. The checks recount within seconds.
-- **The thread is resolved on GitHub.** Clicking **Resolve conversation** has no workflow event either, so it also counts on the next run.
+- **Someone with write access other than the PR author replies `/resolve <reason>`** in the thread, e.g. `/resolve false positive: the id is validated by the router`. The reason is required. The checks recount within seconds.
+- **Someone other than the PR author resolves the thread on GitHub.** Clicking **Resolve conversation** has no workflow event, so it counts on the next run.
+
+The author can't dismiss their own findings, by `/resolve` or by resolving the thread: overruling the reviewer is a judgment call, so it takes a second person. An author clears a finding by fixing it.
 
 The default `GITHUB_TOKEN` usually can't resolve threads. When a fix is confirmed but the bot can't close the thread, the action records it as fixed (it stops blocking) and the summary asks a human to click resolve.
 
@@ -201,7 +203,7 @@ The action recognizes its own reviews and threads by `bot_login`. After switchin
 | `model error: …` in the warnings | The model ID or `base_url` is wrong, or the provider rejected the request. Check them against your provider's model list |
 | Reviews are slow or requests are rejected | `max_concurrency` is above your provider's limit; lower it |
 | Check stays red after resolving a thread | Thread resolution has no workflow event. Reply `/resolve <reason>` instead (instant), or re-run the latest job |
-| `/resolve` didn't count | The replier needs write access, the reply must start with `/resolve` followed by a reason (a bare `/resolve` doesn't count), and the workflow needs the `pull_request_review_comment` trigger |
+| `/resolve` didn't count | The replier needs write access and can't be the PR author, the reply must start with `/resolve` followed by a reason (a bare `/resolve` doesn't count), and the workflow needs the `pull_request_review_comment` trigger |
 | Reviews posted as a different user aren't recognized | You passed a custom `github_token`; set `bot_login` to that identity's login |
 
 ## Releasing
@@ -258,11 +260,15 @@ Opt-in (`risk_tiers: on`). Each PR gets a tier, and the tier sets how many human
 
 | Tier | Approvals | When (default rules) |
 |---|---|---|
-| **low** | 0 | Docs, tests, or source changes that only touch comments (Go, TS/JS, Python, SQL and other common languages), 200 changed lines or fewer |
-| **medium** | 1 | Any other source change, security-sensitive paths or code (the signals that trigger the full security pass), more than 200 changed lines, or an Important bug was found |
-| **high** | 2 | CI workflow files, `risk_high_paths` (list the paths your owners always want two people on), a High/Medium security finding introduced, or the review was skipped (diff too large, round cap) |
+| **low** | 0 | Docs, tests, or source changes that only touch comments (Go, TS/JS, Python, SQL and other common languages); with `risk_default: low`, also any source no rule matches |
+| **medium** | 1 | `risk_medium_paths`, more than `risk_large_pr_lines` changed lines (default 200; `skip_paths` files don't count), automated review didn't run (diff too large, round cap), or, with the default `risk_default: medium`, any other source change |
+| **high** | 2 | CI workflow files, `risk_high_paths` (list the paths your owners always want two people on), or a High/Medium security finding introduced |
 
-- **The rules set a floor; an LLM can only raise it.** One classifier session (on `verifier_model`) can bump a PR up for risks the rules can't see, such as billing logic in an innocently named file. It can never lower the tier, so a diff can't talk itself down to `low`. If the classifier fails, the tier is at least medium.
+Findings don't change the tier: a blocking finding already stops the merge until it's fixed, or dismissed by someone other than the author (see above). The security pass still runs at full depth on sensitive-looking code; only a confirmed High/Medium finding makes the PR high.
+
+**Humans only where tests can't help.** `risk_default: low` turns the tiers around: code needs no human unless a path rule, the size rule or the classifier says so. Pair it with strong CI (tests, contract checks, evals) and list in `risk_medium_paths` / `risk_high_paths` the code where a mistake would slip past tests and cost a lot: migrations, auth, billing, infra.
+
+- **The rules set a floor; an LLM can only raise it.** One classifier session (on `verifier_model`) can bump a PR up when it can name a costly failure that tests and automated review would miss, such as billing logic in an innocently named file. It can never lower the tier, so a diff can't talk itself down to `low`. If the classifier fails, the tier is at least medium.
 - **Trusted authors (optional).** Set `risk_trusted_team: <team slug>` in REVIEW.md and only members of that org team get the lighter paths; anyone else needs at least one approval at every tier, including low. The app or token needs **Organization → Members: read** to look the team up; if the lookup fails, the author counts as untrusted.
 - **Tiers never go down within a PR.** The highest tier any push reached sticks, together with its reasons.
 - **What counts as an approval:** each person's latest review is an approval on the current head commit, from someone with write access who isn't the PR author or a bot. A new push resets approvals.
@@ -306,6 +312,9 @@ security_exclude_paths: ["vendor/**"]     # never report security findings here
 risk_high_paths: ["db/migrations/**"]     # always the high risk tier
 risk_approvals: { low: 0, medium: 1, high: 2 }   # approvals per tier (with risk_tiers: on)
 risk_trusted_team: codeowners             # authors outside this org team need >= 1 approval at every tier
+risk_medium_paths: ["db/schema/**"]       # at least the medium tier
+risk_default: low                         # unmatched source is low (default medium)
+risk_large_pr_lines: 1000                 # bigger PRs are at least medium (default 200)
 ---
 - Config files: a wrong value that silently misroutes traffic is Important.
 - Never flag missing comments or naming.

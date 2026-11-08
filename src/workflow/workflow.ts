@@ -30,13 +30,15 @@ export type BotThread = {
   readonly id: string
   /** Whether the thread is resolved. */
   readonly isResolved: boolean
+  /** Login of whoever resolved it, when known. A thread the PR author resolved still counts as open. */
+  readonly resolvedBy?: string
   /** File the thread is on. */
   readonly path: string
   /** Line the thread is on; null when outdated. */
   readonly line: number | null
   /** Body of the thread's first comment. */
   readonly body: string
-  /** Replies after the first comment, oldest first. A write-access `/resolve <reason>` reply dismisses the finding. */
+  /** Replies after the first comment, oldest first. A `/resolve <reason>` reply from a write-access human other than the PR author dismisses the finding. */
   readonly replies?: readonly { readonly login: string; readonly body: string }[]
 }
 

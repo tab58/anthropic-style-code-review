@@ -17,9 +17,7 @@ const diffOf = (path: string, lines = 1, text = 'x') =>
 const signals = (diff: string, over: Partial<RiskSignals> = {}): RiskSignals => ({
   files: parseDiff(diff),
   highPaths: [],
-  securityPaths: [],
   blockingSecurity: false,
-  importantBug: false,
   skipped: false,
   ...over,
 })
@@ -76,15 +74,23 @@ describe('assessRisk', () => {
     expect(assessRisk(signals(diffOf('docs/a.md', 200))).tier).toBe('low')
   })
 
-  it('is medium when an Important bug was posted', () => {
-    expect(assessRisk(signals(diffOf('README.md'), { importantBug: true }))).toEqual({ tier: 'medium', reasons: ['an Important bug was found'] })
+  it('does not raise the tier just because code looks security-sensitive (the security pass decides)', () => {
+    expect(assessRisk(signals(diffOf('docs/session.md'))).tier).toBe('low')
+    expect(assessRisk(signals(diffOf('src/run.ts', 1, 'child_process.exec(cmd)'), { defaultTier: 'low' })).tier).toBe('low')
   })
 
-  it('is medium (not high) for paths or code that escalate the security pass, even docs-like ones', () => {
-    expect(assessRisk(signals(diffOf('src/auth/login.ts')))).toEqual({ tier: 'medium', reasons: ['security-sensitive paths or code', 'changes source: src/auth/login.ts'] })
-    expect(assessRisk(signals(diffOf('src/run.ts', 1, 'child_process.exec(cmd)'))).tier).toBe('medium')
-    expect(assessRisk(signals(diffOf('docs/session.md'))).reasons).toContain('security-sensitive paths or code')
-    expect(assessRisk(signals(diffOf('src/pay.ts'), { securityPaths: ['src/pay.ts'] })).reasons).toContain('security-sensitive paths or code')
+  it('with risk_default low, unmatched source is low and only listed paths need people', () => {
+    expect(assessRisk(signals(diffOf('src/ui.ts'), { defaultTier: 'low' }))).toEqual({ tier: 'low', reasons: ['no risk rule matched these source changes (risk_default: low)'] })
+    expect(assessRisk(signals(diffOf('db/migrations/1.sql'), { defaultTier: 'low', mediumPaths: ['db/migrations/**'] }))).toEqual({ tier: 'medium', reasons: ['matches risk_medium_paths: db/migrations/1.sql'] })
+    expect(assessRisk(signals(diffOf('.github/CODEOWNERS'), { defaultTier: 'low', mediumPaths: ['.github/**'] })).tier).toBe('medium')
+    expect(assessRisk(signals(diffOf('src/a.ts'), { defaultTier: 'low', mediumPaths: ['src/**'], highPaths: ['src/a.ts'] })).tier).toBe('high')
+  })
+
+  it('uses risk_large_pr_lines and leaves skip_paths out of the count', () => {
+    expect(assessRisk(signals(diffOf('src/a.ts', 300), { defaultTier: 'low', largeLines: 1000 })).tier).toBe('low')
+    expect(assessRisk(signals(diffOf('src/a.ts', 1001), { defaultTier: 'low', largeLines: 1000 }))).toEqual({ tier: 'medium', reasons: ['1001 changed lines (> 1000)'] })
+    const generated = diffOf('gen/x.go', 5000) + diffOf('src/a.ts', 10)
+    expect(assessRisk(signals(generated, { defaultTier: 'low', largeLines: 1000, skipPaths: ['gen/**'] })).tier).toBe('low')
   })
 
   it('is high for CI workflow files', () => {
@@ -93,19 +99,19 @@ describe('assessRisk', () => {
     expect(assessRisk(signals(diffOf('.github/dependabot.yml'))).tier).toBe('medium')
   })
 
-  it('matches risk_high_paths and security_paths against dotfiles and dot-directories', () => {
+  it('matches risk path globs against dotfiles and dot-directories', () => {
     expect(assessRisk(signals(diffOf('config/.prod.env'), { highPaths: ['config/**'] })).tier).toBe('high')
-    expect(assessRisk(signals(diffOf('src/.secrets/x.ts'), { securityPaths: ['src/**'] })).reasons).toContain('security-sensitive paths or code')
+    expect(assessRisk(signals(diffOf('src/.secrets/x.ts'), { defaultTier: 'low', mediumPaths: ['src/**'] })).tier).toBe('medium')
   })
 
-  it('is high for risk_high_paths, blocking security findings, or a skipped review', () => {
+  it('is high for risk_high_paths or blocking security findings; medium for a skipped review', () => {
     expect(assessRisk(signals(diffOf('db/schema.sql'), { highPaths: ['db/**'] })).reasons).toContain('matches risk_high_paths: db/schema.sql')
     expect(assessRisk(signals(diffOf('README.md'), { blockingSecurity: true }))).toEqual({ tier: 'high', reasons: ['a High/Medium security finding was introduced'] })
-    expect(assessRisk(signals(diffOf('README.md'), { skipped: true }))).toEqual({ tier: 'high', reasons: ['automated review did not run on these commits'] })
+    expect(assessRisk(signals(diffOf('README.md'), { skipped: true }))).toEqual({ tier: 'medium', reasons: ['automated review did not run on these commits'] })
   })
 
   it('lists every reason at the winning tier only', () => {
-    const r = assessRisk(signals(diffOf('.github/workflows/ci.yml'), { blockingSecurity: true, importantBug: true }))
+    const r = assessRisk(signals(diffOf('.github/workflows/ci.yml'), { blockingSecurity: true, skipped: true }))
     expect(r.tier).toBe('high')
     expect(r.reasons).toEqual(['changes CI workflows: .github/workflows/ci.yml', 'a High/Medium security finding was introduced'])
   })

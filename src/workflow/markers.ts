@@ -77,9 +77,9 @@ export function decodeFindingMarker(body: string): { readonly severity: Severity
   return severity !== undefined && fp !== undefined && isSeverity(severity) ? { severity, fingerprint: fp } : undefined
 }
 
-/** Number of unresolved threads whose finding marker says Important. */
-export const countOpenImportant = (threads: readonly { readonly isResolved: boolean; readonly body: string }[]): number =>
-  threads.filter((t) => !t.isResolved && decodeFindingMarker(t.body)?.severity === 'important').length
+/** Number of threads whose finding marker says Important. Pass only the threads that still count (see `openThreads`). */
+export const countOpenImportant = (threads: readonly { readonly body: string }[]): number =>
+  threads.filter((t) => decodeFindingMarker(t.body)?.severity === 'important').length
 
 /** Hidden marker tagging an inline security comment: level, introduced (`new`) or pre-existing (`pre`), fingerprint. */
 export const encodeSecurityMarker = (level: SecurityLevel, introduced: boolean, fingerprint: string): string =>
@@ -93,9 +93,9 @@ export function decodeSecurityMarker(body: string): { readonly level: SecurityLe
   return level !== undefined && fp !== undefined && isLevel(level) ? { level, introduced: m?.[2] === 'new', fingerprint: fp } : undefined
 }
 
-/** Number of unresolved security threads that block merge: introduced by the PR, High or Medium. */
-export const countOpenSecurity = (threads: readonly { readonly isResolved: boolean; readonly body: string }[]): number =>
+/** Number of security threads that block merge (introduced by the PR, High or Medium). Pass only threads that still count. */
+export const countOpenSecurity = (threads: readonly { readonly body: string }[]): number =>
   threads.filter((t) => {
-    const m = t.isResolved ? undefined : decodeSecurityMarker(t.body)
+    const m = decodeSecurityMarker(t.body)
     return m !== undefined && m.introduced && m.level !== 'low'
   }).length

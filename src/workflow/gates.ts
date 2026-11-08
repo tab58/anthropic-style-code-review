@@ -97,35 +97,40 @@ export async function publishApprovals(github: GitHub, pr: PullRequest, name: st
 /** A reply that dismisses a finding: `/resolve` followed by a reason (a bare `/resolve` doesn't count). */
 const RESOLVE_COMMAND = /^\s*\/resolve\s+\S/i
 
-/** True when a non-bot user with write access replied `/resolve <reason>` to the finding. */
-async function dismissedByHuman(github: GitHub, t: BotThread): Promise<boolean> {
+/** Case-insensitive login match. */
+const sameUser = (a: string | undefined, b: string) => a !== undefined && a.toLowerCase() === b.toLowerCase()
+
+/** True when a write-access human other than the PR author replied `/resolve <reason>` to the finding. */
+async function dismissedByHuman(github: GitHub, t: BotThread, author: string): Promise<boolean> {
   const logins = (t.replies ?? []).filter((r) => RESOLVE_COMMAND.test(r.body)).map((r) => r.login)
-  for (const login of new Set(logins.filter((l) => !l.endsWith('[bot]')))) if (await github.canApprove(login)) return true
+  for (const login of new Set(logins.filter((l) => !l.endsWith('[bot]') && !sameUser(l, author)))) if (await github.canApprove(login)) return true
   return false
 }
 
 /**
- * Unresolved bot threads that still count: not resolved on GitHub, not recorded as fixed in the state, and not
- * dismissed by a write-access human with a `/resolve <reason>` reply.
+ * Bot threads that still count: not resolved on GitHub by someone other than the PR author, not recorded as fixed in
+ * the state, and not dismissed with a `/resolve <reason>` reply by a write-access human other than the author. So
+ * an author can clear a finding only by fixing it (the re-review confirms the fix), never by dismissing it.
  */
-export async function openThreads(github: GitHub, state: ReviewState | undefined): Promise<readonly BotThread[]> {
+export async function openThreads(github: GitHub, state: ReviewState | undefined, author: string): Promise<readonly BotThread[]> {
   const fixed = new Set(state?.fixedThreads ?? [])
-  const candidates = (await github.botThreads()).filter((t) => !t.isResolved && !fixed.has(t.id))
-  const dismissed = await Promise.all(candidates.map((t) => dismissedByHuman(github, t)))
+  const closed = (t: BotThread) => t.isResolved && !sameUser(t.resolvedBy, author)
+  const candidates = (await github.botThreads()).filter((t) => !closed(t) && !fixed.has(t.id))
+  const dismissed = await Promise.all(candidates.map((t) => dismissedByHuman(github, t, author)))
   return candidates.filter((_, i) => !dismissed[i])
 }
 
 /** Counts blocking threads, checks security coverage of HEAD, and publishes the enabled gates. */
 export async function publishGates(github: GitHub, pr: PullRequest, names: GateNames): Promise<GateResult> {
   const state = decodeState(await github.botReviewBodies())
-  const threads = await openThreads(github, state)
+  const threads = await openThreads(github, state, pr.author)
   const openImportant = countOpenImportant(threads)
   await github.setCheck({
     name: names.name,
     headSha: pr.headSha,
     conclusion: verdict(openImportant > 0),
     title: title(openImportant, 'important finding'),
-    summary: 'Fails while any review thread tagged **Important** is open. Fix it (the next push auto-resolves it), or reply `/resolve <reason>` to dismiss it (write access needed).',
+    summary: 'Fails while any review thread tagged **Important** is open. Fix it (the next push auto-resolves it), or have someone other than the author reply `/resolve <reason>` to dismiss it (write access needed).',
   })
   return {
     conclusion: verdict(openImportant > 0),

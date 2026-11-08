@@ -194,28 +194,47 @@ describe('createWorkflow().review', () => {
     expect(gh.checks.at(-1)?.conclusion).toBe('success')
   })
 
-  it('gate runs ignore threads dismissed by a write-access /resolve reply with a reason, and nothing else', async () => {
+  it('gate runs ignore threads dismissed by a write-access /resolve reply with a reason from someone other than the author', async () => {
     const t = (id: string, over: Partial<BotThread>) => ({ ...important(id, 'src/a.ts'), ...over })
     const gh = fakeGitHub({
       bodies: [encodeState({ round: 1, sha: 'h2', fingerprints: [] })],
-      writers: ['alice'],
+      writers: ['bob', 'alice'],
       threads: [
-        t('reply', { replies: [{ login: 'alice', body: '  /RESOLVE false positive: validated upstream' }] }),
-        t('no-reason', { replies: [{ login: 'alice', body: '/resolve   ' }] }),
-        t('glued', { replies: [{ login: 'alice', body: '/resolved it' }] }),
+        t('reply', { replies: [{ login: 'bob', body: '  /RESOLVE false positive: validated upstream' }] }),
+        t('no-reason', { replies: [{ login: 'bob', body: '/resolve   ' }] }),
+        t('glued', { replies: [{ login: 'bob', body: '/resolved it' }] }),
         t('outsider', { replies: [{ login: 'mallory', body: '/resolve trust me' }] }),
-        t('chatter', { replies: [{ login: 'alice', body: 'will /resolve later' }] }),
-        t('bot', { replies: [{ login: 'alice[bot]', body: '/resolve automated' }] }),
+        t('chatter', { replies: [{ login: 'bob', body: 'will /resolve later' }] }),
+        t('bot', { replies: [{ login: 'bob[bot]', body: '/resolve automated' }] }),
+        t('author', { replies: [{ login: 'Alice', body: '/resolve not a bug' }] }),
       ],
     })
-    expect(await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }, options).gate()).toMatchObject({ openImportant: 5 })
+    expect(await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }, options).gate()).toMatchObject({ openImportant: 6 })
   })
 
-  it('does not recheck threads a human already dismissed', async () => {
+  it('still counts a thread the author resolved on GitHub; one resolved by anyone else is closed', async () => {
+    const gh = fakeGitHub({
+      bodies: [encodeState({ round: 1, sha: 'h2', fingerprints: [] })],
+      threads: [
+        { ...important('by-author', 'src/a.ts', true), resolvedBy: 'alice' },
+        { ...important('by-bob', 'src/a.ts', true), resolvedBy: 'bob' },
+        { ...important('unknown', 'src/a.ts', true) },
+      ],
+    })
+    expect(await createWorkflow({ github: gh.github, createReviewer: vi.fn(), log: log() }, options).gate()).toMatchObject({ openImportant: 1 })
+  })
+
+  it('records an author-resolved thread as fixed once a re-review confirms the fix', async () => {
+    const gh = fakeGitHub({ bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [] })], threads: [{ ...important('t1', 'src/a.ts', true), resolvedBy: 'alice' }] })
+    await createWorkflow({ github: gh.github, createReviewer: async () => fakeReviewer([], { recheck: vi.fn(async () => false) }), log: log() }, options).review()
+    expect(decodeState(gh.reviews.map((r) => r.body))?.fixedThreads).toEqual(['t1'])
+  })
+
+  it('does not recheck threads someone else already dismissed', async () => {
     const gh = fakeGitHub({
       bodies: [encodeState({ round: 1, sha: 'h1', fingerprints: [] })],
-      writers: ['alice'],
-      threads: [{ ...important('t1', 'src/a.ts'), replies: [{ login: 'alice', body: '/resolve intentional' }] }],
+      writers: ['bob'],
+      threads: [{ ...important('t1', 'src/a.ts'), replies: [{ login: 'bob', body: '/resolve intentional' }] }],
     })
     const reviewer = fakeReviewer([], { recheck: vi.fn(async () => false) })
     await createWorkflow({ github: gh.github, createReviewer: async () => reviewer, log: log() }, options).review()
@@ -681,16 +700,16 @@ describe('risk tiers', () => {
     expect(approvals(high).at(-1)?.title).toBe('Risk high: 0 of 2 approvals')
   })
 
-  it('marks oversized and paused rounds high without calling the classifier', async () => {
+  it('marks oversized and paused rounds medium without calling the classifier', async () => {
     const big = fakeGitHub()
     const reviewer = fakeReviewer([])
     await run(big, reviewer, { ...risky, maxDiffLines: 1 })
-    expect(decodeState(big.reviews.map((r) => r.body))?.tier).toBe('high')
+    expect(decodeState(big.reviews.map((r) => r.body))?.tier).toBe('medium')
     expect(reviewer.classifyRisk).not.toHaveBeenCalled()
 
     const capped = fakeGitHub({ bodies: [encodeState({ round: 3, sha: 'h1', fingerprints: [], tier: 'low', tierReasons: [] })] })
     await run(capped)
-    expect(decodeState(capped.reviews.map((r) => r.body))?.tier).toBe('high')
+    expect(decodeState(capped.reviews.map((r) => r.body))?.tier).toBe('medium')
   })
 
   it('assesses rule-only when nothing is reviewable after skip_paths', async () => {

@@ -19,6 +19,12 @@ export type ReviewConfig = {
   readonly riskHighPaths?: readonly string[]
   /** Approvals needed per risk tier; missing tiers keep their defaults (low 0, medium 1, high 2). */
   readonly riskApprovals?: { readonly low?: number; readonly medium?: number; readonly high?: number }
+  /** Globs that force at least the `medium` risk tier. */
+  readonly riskMediumPaths?: readonly string[]
+  /** Tier of source changes no rule matches: `medium` (default) or `low`. */
+  readonly riskDefault?: 'low' | 'medium'
+  /** More changed lines than this (excluding skip_paths) makes a PR at least `medium`; a positive integer, default 200. */
+  readonly riskLargePrLines?: number
   /** Org team slug whose members are trusted authors; anyone else needs at least one approval at every tier. */
   readonly riskTrustedTeam?: string
 }
@@ -68,6 +74,9 @@ const FrontmatterSchema = Type.Object({
     ),
   ),
   risk_trusted_team: Type.Optional(Type.String({ minLength: 1 })),
+  risk_medium_paths: Type.Optional(Type.Array(Type.String())),
+  risk_default: Type.Optional(Type.Union([Type.Literal('low'), Type.Literal('medium')])),
+  risk_large_pr_lines: Type.Optional(Type.Integer({ minimum: 1 })),
 })
 
 /** Parses YAML, rethrowing errors with a REVIEW.md-specific message. */
@@ -82,7 +91,7 @@ function parseFrontmatterYaml(yaml: string): unknown {
 /** Explains which frontmatter field is invalid. */
 function frontmatterError(raw: unknown): Error {
   if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return new Error('REVIEW.md frontmatter must be a mapping')
-  const field = (['depth', 'skip_paths', 'nit_cap', 'security_paths', 'security_exclude_paths', 'risk_high_paths', 'risk_approvals', 'risk_trusted_team'] as const).find((k) => {
+  const field = (['depth', 'skip_paths', 'nit_cap', 'security_paths', 'security_exclude_paths', 'risk_high_paths', 'risk_approvals', 'risk_trusted_team', 'risk_medium_paths', 'risk_default', 'risk_large_pr_lines'] as const).find((k) => {
     const v: unknown = Reflect.get(raw, k)
     return v !== undefined && !Check(FrontmatterSchema.properties[k], v)
   })
@@ -96,6 +105,9 @@ function frontmatterError(raw: unknown): Error {
     risk_high_paths: globs,
     risk_approvals: 'a mapping of low/medium/high to non-negative integers',
     risk_trusted_team: 'a team slug',
+    risk_medium_paths: globs,
+    risk_default: 'low or medium',
+    risk_large_pr_lines: 'a positive integer',
   } as const
   return new Error(field ? `REVIEW.md ${field} must be ${expected[field]}` : 'REVIEW.md frontmatter is invalid')
 }
@@ -123,6 +135,9 @@ export function parseReviewMd(text: string): ReviewMd {
       ...(raw.risk_high_paths !== undefined && { riskHighPaths: raw.risk_high_paths }),
       ...(raw.risk_approvals !== undefined && { riskApprovals: raw.risk_approvals }),
       ...(raw.risk_trusted_team !== undefined && { riskTrustedTeam: raw.risk_trusted_team }),
+      ...(raw.risk_medium_paths !== undefined && { riskMediumPaths: raw.risk_medium_paths }),
+      ...(raw.risk_default !== undefined && { riskDefault: raw.risk_default }),
+      ...(raw.risk_large_pr_lines !== undefined && { riskLargePrLines: raw.risk_large_pr_lines }),
     },
     body: text.slice(match[0].length),
   }

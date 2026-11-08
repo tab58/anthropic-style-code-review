@@ -1,6 +1,5 @@
 import { matchesGlob } from 'node:path'
 import { type FileDiff, matchesGlobDot } from '../diff.js'
-import { chooseSecurityPlan } from '../security/index.js'
 
 /** How risky a PR is; sets how many human approvals it needs. */
 export type RiskTier = 'low' | 'medium' | 'high'
@@ -28,12 +27,16 @@ export type RiskSignals = {
   readonly files: readonly FileDiff[]
   /** REVIEW.md `risk_high_paths`: globs that force `high`. May be empty. */
   readonly highPaths: readonly string[]
-  /** REVIEW.md `security_paths`: extra globs that escalate the security pass (and so mean `high`). May be empty. */
-  readonly securityPaths: readonly string[]
+  /** REVIEW.md `risk_medium_paths`: globs that force at least `medium`. Default none. */
+  readonly mediumPaths?: readonly string[]
+  /** REVIEW.md `skip_paths`: files left out of the size count (generated code, lockfiles, fixtures). Default none. */
+  readonly skipPaths?: readonly string[]
+  /** REVIEW.md `risk_default`: tier of source changes no rule matches. Default `medium`. */
+  readonly defaultTier?: 'low' | 'medium'
+  /** REVIEW.md `risk_large_pr_lines`: more changed lines than this makes a PR at least `medium`. Default 200. */
+  readonly largeLines?: number
   /** A High or Medium security finding introduced by this PR was posted this round. */
   readonly blockingSecurity: boolean
-  /** An Important bug finding was posted this round. */
-  readonly importantBug: boolean
   /** Automated review didn't run on these commits (oversized diff or round cap). */
   readonly skipped: boolean
 }
@@ -69,7 +72,7 @@ export type PullReview = {
   readonly commitId: string
 }
 
-const MEDIUM_LINES = 200
+const DEFAULT_LARGE_LINES = 200
 const DOCS_AND_TESTS = ['**/*.md', 'docs/**', '**/docs/**', 'test/**', 'tests/**', '**/test/**', '**/tests/**', '**/__tests__/**', '**/*.test.*', '**/*.spec.*', '**/*_test.*']
 const rank = (t: RiskTier) => RISK_TIERS.indexOf(t)
 
@@ -109,22 +112,29 @@ export const maxTier = (...tiers: readonly (RiskTier | undefined)[]): RiskTier =
 /** `a, b, c and N more`. */
 const list = (paths: readonly string[]) => paths.slice(0, 3).join(', ') + (paths.length > 3 ? ` and ${paths.length - 3} more` : '')
 
+/** Paths matching any glob (dotfiles included). */
+const matching = (paths: readonly string[], globs: readonly string[] = []) => paths.filter((p) => globs.some((g) => matchesGlobDot(p, g)))
+
+/** Source files whose change is more than docs, tests or comments. */
+const sourceChanges = (files: readonly FileDiff[]) => files.filter((f) => !DOCS_AND_TESTS.some((g) => matchesGlob(f.path, g)) && !commentOnly(f)).map((f) => f.path)
+
 /** Every rule that fired, as [tier, reason]. */
 function rules(s: RiskSignals): readonly (readonly [RiskTier, string])[] {
   const paths = s.files.map((f) => f.path)
-  const forced = paths.filter((p) => s.highPaths.some((g) => matchesGlobDot(p, g)))
-  const workflows = paths.filter((p) => matchesGlobDot(p, '.github/workflows/**'))
-  const code = s.files.filter((f) => !DOCS_AND_TESTS.some((g) => matchesGlob(f.path, g)) && !commentOnly(f)).map((f) => f.path)
-  const changed = s.files.reduce((n, f) => n + f.changed, 0)
+  const forced = matching(paths, s.highPaths)
+  const medium = matching(paths, s.mediumPaths)
+  const workflows = matching(paths, ['.github/workflows/**'])
+  const code = sourceChanges(s.files)
+  const limit = s.largeLines ?? DEFAULT_LARGE_LINES
+  const changed = s.files.filter((f) => matching([f.path], s.skipPaths).length === 0).reduce((n, f) => n + f.changed, 0)
   const fired: (readonly [RiskTier, string] | false)[] = [
     workflows.length > 0 && ['high', `changes CI workflows: ${list(workflows)}`],
     forced.length > 0 && ['high', `matches risk_high_paths: ${list(forced)}`],
     s.blockingSecurity && ['high', 'a High/Medium security finding was introduced'],
-    s.skipped && ['high', 'automated review did not run on these commits'],
-    chooseSecurityPlan(s.files, { extraPaths: s.securityPaths }).depth === 'full' && ['medium', 'security-sensitive paths or code'],
-    changed > MEDIUM_LINES && ['medium', `${changed} changed lines (> ${MEDIUM_LINES})`],
-    code.length > 0 && ['medium', `changes source: ${list(code)}`],
-    s.importantBug && ['medium', 'an Important bug was found'],
+    medium.length > 0 && ['medium', `matches risk_medium_paths: ${list(medium)}`],
+    s.skipped && ['medium', 'automated review did not run on these commits'],
+    changed > limit && ['medium', `${changed} changed lines (> ${limit})`],
+    (s.defaultTier ?? 'medium') === 'medium' && code.length > 0 && ['medium', `changes source: ${list(code)}`],
   ]
   return fired.filter((r) => r !== false)
 }
@@ -133,15 +143,16 @@ function rules(s: RiskSignals): readonly (readonly [RiskTier, string])[] {
  * The rule floor: the minimum tier the deterministic signals justify.
  *
  * @param signals - The full PR diff, REVIEW.md globs and this round's results.
- * @returns `high` for CI workflow files, `risk_high_paths`, blocking security findings or a skipped review;
- *   `medium` for security-sensitive paths or code, source changes, more than 200 changed lines or an Important bug; `low` for small docs/test-only
- *   changes and source changes that only touch comments. Reasons list every rule that fired at the winning tier.
+ * @returns `high` for CI workflow files, `risk_high_paths` or blocking security findings; `medium` for `risk_medium_paths`, a
+ *   skipped review, a large PR, or (with the default `risk_default: medium`) any source change; otherwise `low`: docs, tests,
+ *   comment-only changes, and source no rule matches when `risk_default` is `low`. Reasons list every rule that fired at the winning tier.
  */
 export function assessRisk(signals: RiskSignals): RiskAssessment {
   const fired = rules(signals)
   const tier = maxTier(...fired.map(([t]) => t))
   const reasons = fired.filter(([t]) => t === tier).map(([, r]) => r)
-  return { tier, reasons: reasons.length > 0 ? reasons : ['docs, tests and comments only'] }
+  const fallback = sourceChanges(signals.files).length > 0 ? 'no risk rule matched these source changes (risk_default: low)' : 'docs, tests and comments only'
+  return { tier, reasons: reasons.length > 0 ? reasons : [fallback] }
 }
 
 /**
